@@ -16,6 +16,7 @@ import { setRootPassword } from "./checks/set_root_password";
 import { createFirstUser } from "./checks/create_first_user";
 import { performInstallation } from "./checks/perform_installation";
 import { prepareDasdStorage } from "./checks/prepare_dasd_storage";
+import { prepareStorage } from "./checks/prepare_storage";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -24,7 +25,8 @@ const options = parse((cmd) =>
             .choices(["tumbleweed", "leap", "none"])
             .default("none"))
         .option("--install", "Proceed to install the system (the default is not to install it)")
-        .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
+        .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")
+        .option("--storage", "Prepare storage partitions (the default is not to prepare it)"));
 
 describe("Installation with default values", function () {
     test_init(options);
@@ -34,5 +36,6 @@ describe("Installation with default values", function () {
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
     setRootPassword(options.password);
     if (options.dasd) prepareDasdStorage();
+    if (options.storage) prepareStorage();
     if (options.install) performInstallation();
 });

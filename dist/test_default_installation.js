@@ -136,6 +136,36 @@ function prepareDasdStorage() {
 
 /***/ }),
 
+/***/ "./src/checks/prepare_storage.ts":
+/*!***************************************!*\
+  !*** ./src/checks/prepare_storage.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareStorage = prepareStorage;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+function prepareStorage() {
+    (0, helpers_1.it)("should prepare storage", async function () {
+        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
+        await helpers_1.page.locator("button[id='toggle-partitions-and-file-systems-view']").click();
+        await helpers_1.page.evaluate(() => {
+            let table = document.getElementsByClassName('pf-v5-c-table pf-m-grid-md pf-m-compact')[0];
+            let lastElement = table.rows.item(table.rows.length - 1);
+            lastElement.click();
+        });
+        await helpers_1.page.locator("span::-p-text('Edit')").click();
+        await helpers_1.page.locator("input[id='Fixed']").click();
+        await helpers_1.page.locator("input[id='size']").fill("2");
+        await helpers_1.page.locator("button::-p-text('Accept')").click();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/product_selection.ts":
 /*!*****************************************!*\
   !*** ./src/checks/product_selection.ts ***!
@@ -834,12 +864,14 @@ const set_root_password_1 = __webpack_require__(/*! ./checks/set_root_password *
 const create_first_user_1 = __webpack_require__(/*! ./checks/create_first_user */ "./src/checks/create_first_user.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
 const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_storage */ "./src/checks/prepare_dasd_storage.ts");
+const prepare_storage_1 = __webpack_require__(/*! ./checks/prepare_storage */ "./src/checks/prepare_storage.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-selection <name>", "Selection of product to install")
     .choices(["tumbleweed", "leap", "none"])
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
+    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")
+    .option("--storage", "Prepare storage partitions (the default is not to prepare it)"));
 (0, node_test_1.describe)("Installation with default values", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
@@ -849,6 +881,8 @@ const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Opti
     (0, set_root_password_1.setRootPassword)(options.password);
     if (options.dasd)
         (0, prepare_dasd_storage_1.prepareDasdStorage)();
+    if (options.storage)
+        (0, prepare_storage_1.prepareStorage)();
     if (options.install)
         (0, perform_installation_1.performInstallation)();
 });
