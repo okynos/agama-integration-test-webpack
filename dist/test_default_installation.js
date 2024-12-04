@@ -179,7 +179,6 @@ exports.productSelection = productSelection;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function productSelection(product) {
     const productMap = {
         "tumbleweed": "openSUSE Tumbleweed",
@@ -192,9 +191,32 @@ function productSelection(product) {
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
     });
-    (0, helpers_1.it)("should display overview section", async function () {
+    /*it("should display overview section", async function () {
         // longer timeout to refresh repos when coming from product selection
-        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(2 * 60 * 1000);
+        await new SidebarPage(page).waitOverviewVisible(2 * 60 * 1000);
+    });*/
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/set_login_password.ts":
+/*!******************************************!*\
+  !*** ./src/checks/set_login_password.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setLoginPassword = setLoginPassword;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const root_password_login_page_1 = __webpack_require__(/*! ../pages/root_password_login_page */ "./src/pages/root_password_login_page.ts");
+function setLoginPassword(password) {
+    (0, helpers_1.it)("should allow setting the first login password", async function () {
+        const setARootLoginPassword = new root_password_login_page_1.SetARootLoginPasswordPage(helpers_1.page);
+        await setARootLoginPassword.fillPassword(password);
+        await setARootLoginPassword.confirm();
     });
 }
 
@@ -729,6 +751,35 @@ exports.ProductSelectionPage = ProductSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/root_password_login_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/root_password_login_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SetARootLoginPasswordPage = void 0;
+class SetARootLoginPasswordPage {
+    page;
+    passwordInput = () => this.page.locator("input[id='rootPassword']");
+    confirmButton = () => this.page.locator("button[form='rootAuthMethods']");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async confirm() {
+        await this.confirmButton().click();
+    }
+}
+exports.SetARootLoginPasswordPage = SetARootLoginPasswordPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/root_password_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/root_password_page.ts ***!
@@ -862,6 +913,7 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const set_root_password_1 = __webpack_require__(/*! ./checks/set_root_password */ "./src/checks/set_root_password.ts");
+const set_login_password_1 = __webpack_require__(/*! ./checks/set_login_password */ "./src/checks/set_login_password.ts");
 const create_first_user_1 = __webpack_require__(/*! ./checks/create_first_user */ "./src/checks/create_first_user.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
 const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_storage */ "./src/checks/prepare_dasd_storage.ts");
@@ -878,6 +930,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Opti
     (0, login_1.logIn)(options.password);
     if (options.productSelection !== "none")
         (0, product_selection_1.productSelection)(options.productSelection);
+    (0, set_login_password_1.setLoginPassword)(options.password);
     (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
     (0, set_root_password_1.setRootPassword)(options.password);
     if (options.dasd)

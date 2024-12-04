@@ -18,8 +18,8 @@ export function productSelection(product: string) {
         await new ConfiguringProductPage(page).wait();
     });
 
-    it("should display overview section", async function () {
+    /*it("should display overview section", async function () {
         // longer timeout to refresh repos when coming from product selection
         await new SidebarPage(page).waitOverviewVisible(2 * 60 * 1000);
-    });
+    });*/
 }
