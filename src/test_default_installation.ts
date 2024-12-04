@@ -22,7 +22,7 @@ import { prepareStorage } from "./checks/prepare_storage";
 const options = parse((cmd) =>
     cmd.addOption(
         new Option("--product-selection <name>", "Selection of product to install")
-            .choices(["tumbleweed", "leap", "none"])
+            .choices(["tumbleweed", "leap", "sle", "none"])
             .default("none"))
         .option("--install", "Proceed to install the system (the default is not to install it)")
         .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")

@@ -183,7 +183,8 @@ const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/p
 function productSelection(product) {
     const productMap = {
         "tumbleweed": "openSUSE Tumbleweed",
-        "leap": "Leap 16.0 Alpha"
+        "leap": "Leap 16.0 Alpha",
+        "sle": "SUSE Linux Enterprise Server 16.0 Alpha"
     };
     (0, helpers_1.it)("should allow to select a product", async function () {
         await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productMap[product]);
@@ -867,7 +868,7 @@ const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_sto
 const prepare_storage_1 = __webpack_require__(/*! ./checks/prepare_storage */ "./src/checks/prepare_storage.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-selection <name>", "Selection of product to install")
-    .choices(["tumbleweed", "leap", "none"])
+    .choices(["tumbleweed", "leap", "sle", "none"])
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")

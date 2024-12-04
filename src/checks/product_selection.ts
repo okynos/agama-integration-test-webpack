@@ -6,7 +6,8 @@ import { SidebarPage } from "../pages/sidebar_page";
 export function productSelection(product: string) {
     const productMap = {
         "tumbleweed": "openSUSE Tumbleweed",
-        "leap": "Leap 16.0 Alpha"
+        "leap": "Leap 16.0 Alpha",
+        "sle": "SUSE Linux Enterprise Server 16.0 Alpha"
     };
 
     it("should allow to select a product", async function () {
