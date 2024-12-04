@@ -1,11 +1,9 @@
 import { type Page } from "puppeteer-core";
 
-export class SetARootPasswordPage {
+export class SetARootLoginPasswordPage {
     private readonly page: Page;
-    private readonly passwordInput = () => this.page.locator("input#password");
-    private readonly passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    private readonly confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    private readonly cancelText = () => this.page.locator("button::-p-text(Cancel)");
+    private readonly passwordInput = () => this.page.locator("input[id='rootPassword']");
+    private readonly confirmButton = () => this.page.locator("button[form='rootAuthMethods']");
 
     constructor(page: Page) {
         this.page = page;
@@ -15,11 +13,7 @@ export class SetARootPasswordPage {
         await this.passwordInput().fill(password);
     }
 
-    async fillPasswordConfirmation(password: string) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-
     async confirm() {
-        await this.confirmText().click();
+        await this.confirmButton().click();
     }
 }
