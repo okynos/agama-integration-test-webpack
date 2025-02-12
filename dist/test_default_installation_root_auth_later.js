@@ -415,7 +415,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
     exports.page = await browser.newPage();
     exports.page.setDefaultTimeout(20000);
     await exports.page.goto(agamaServer, {
-        timeout: 60000,
+        timeout: 150000,
         waitUntil: "domcontentloaded",
     });
     return { page: exports.page, browser };
@@ -494,7 +494,7 @@ async function dumpPage(label) {
 async function it(label, test, timeout) {
     (0, node_test_1.it)(label, 
     // abort when the test takes more than one minute
-    { timeout: timeout || 60000 }, async (t) => {
+    { timeout: timeout || 150000 }, async (t) => {
         try {
             // do not run any test after first failure
             if (failed)
@@ -854,7 +854,8 @@ class SelectInstallationDevicePage {
     deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
     deviceRadio = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
     storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
-    deviceType = () => this.page.locator("a[href='#/storage/dasd']");
+    deviceTypeDasd = () => this.page.locator("a[href='#/storage/dasd']");
+    deviceTypeZfcp = () => this.page.locator("a[href='#/storage/zfcp']");
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
@@ -866,12 +867,16 @@ class SelectInstallationDevicePage {
     }
     async prepareDasd() {
         await this.storageTechsToggleButton().click();
-        await this.deviceType().click();
+        await this.deviceTypeDasd().click();
+    }
+    async prepareZfcp() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceTypeZfcp().click();
     }
     async selectDevice(index) {
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
-        await this.deviceRadio(index).click();
+        await this.deviceRadio(index).setTimeout(40000).click();
         await this.acceptButton().click();
     }
 }

@@ -14,7 +14,9 @@ export class SelectInstallationDevicePage {
 
   private readonly storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
 
-  private readonly deviceType = () => this.page.locator("a[href='#/storage/dasd']");
+  private readonly deviceTypeDasd = () => this.page.locator("a[href='#/storage/dasd']");
+
+  private readonly deviceTypeZfcp = () => this.page.locator("a[href='#/storage/zfcp']");
 
   private readonly acceptButton = () => this.page.locator("button::-p-text(Accept)");
 
@@ -30,13 +32,18 @@ export class SelectInstallationDevicePage {
 
   async prepareDasd() {
     await this.storageTechsToggleButton().click();
-    await this.deviceType().click();
+    await this.deviceTypeDasd().click();
+  }
+
+  async prepareZfcp() {
+    await this.storageTechsToggleButton().click();
+    await this.deviceTypeZfcp().click();
   }
 
   async selectDevice(index: number) {
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
-    await this.deviceRadio(index).click();
+    await this.deviceRadio(index).setTimeout(40000).click();
     await this.acceptButton().click();
   }
 }

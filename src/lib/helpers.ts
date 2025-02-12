@@ -67,7 +67,7 @@ export async function startBrowser(
   page = await browser.newPage();
   page.setDefaultTimeout(20000);
   await page.goto(agamaServer, {
-    timeout: 60000,
+    timeout: 150000,
     waitUntil: "domcontentloaded",
   });
   return { page, browser };
@@ -161,7 +161,7 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
   testIt(
     label,
     // abort when the test takes more than one minute
-    { timeout: timeout || 60000 },
+    { timeout: timeout || 150000 },
     async (t) => {
       try {
         // do not run any test after first failure
