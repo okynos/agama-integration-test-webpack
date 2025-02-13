@@ -14,9 +14,10 @@ export function prepareZfcpStorage() {
     await sidebar.goToStorage();
     await storage.changeInstallationDevice();
     await selectInstallationDevice.prepareZfcp();
-    await zfcp.activateDevices();
+    await zfcp.activateDevice(0, "::-p-text('0.0.fa00')");
+    await zfcp.activateDevice(1, "::-p-text('0.0.fc00')");
     await zfcp.backToDeviceSelection();
     await zfcp.activateMultipath();
     await selectInstallationDevice.selectDevice(5);
-  });
+  }, 150000);
 }

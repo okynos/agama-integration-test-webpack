@@ -1,10 +1,9 @@
+//import { timeout } from "puppeteer-core";
 import { type Page } from "puppeteer-core";
 import { sleep } from "../lib/helpers";
 
 export class ZfcpPage {
   private readonly page: Page;
-
-  private optionsDisk;
 
   private readonly activateDisk = () => this.page.locator("::-p-text('Activate')");
 
@@ -17,26 +16,18 @@ export class ZfcpPage {
     this.page = page;
   }
 
-  async activateDevices() {
+  async activateDevice(index, selector) {
     await this.page.waitForSelector("button#zfcp_controllers_actions");
-    this.optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
-    await this.optionsDisk[0].click();
+    const optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
+    await optionsDisk[index].click();
     await this.activateDisk().click();
-
+    await this.page.waitForSelector(selector, { timeout: 80000 });
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-    await sleep(75000);
-
-    // The button dissappears while activating so we need to refresh the array after sleep
-    this.optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
-    await this.optionsDisk[1].click();
-    await this.activateDisk().click();
-
-    // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-    await sleep(20000);
+    await sleep(2000);
   }
 
   async activateMultipath() {
-    await this.enableMultipath().click();
+    await this.enableMultipath().setTimeout(40000).click();
   }
 
   async backToDeviceSelection() {

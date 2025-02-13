@@ -277,11 +277,12 @@ function prepareZfcpStorage() {
         await sidebar.goToStorage();
         await storage.changeInstallationDevice();
         await selectInstallationDevice.prepareZfcp();
-        await zfcp.activateDevices();
+        await zfcp.activateDevice(0, "::-p-text('0.0.fa00')");
+        await zfcp.activateDevice(1, "::-p-text('0.0.fc00')");
         await zfcp.backToDeviceSelection();
         await zfcp.activateMultipath();
         await selectInstallationDevice.selectDevice(5);
-    });
+    }, 150000);
 }
 
 
@@ -479,7 +480,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
     exports.page = await browser.newPage();
     exports.page.setDefaultTimeout(20000);
     await exports.page.goto(agamaServer, {
-        timeout: 150000,
+        timeout: 60000,
         waitUntil: "domcontentloaded",
     });
     return { page: exports.page, browser };
@@ -558,7 +559,7 @@ async function dumpPage(label) {
 async function it(label, test, timeout) {
     (0, node_test_1.it)(label, 
     // abort when the test takes more than one minute
-    { timeout: timeout || 150000 }, async (t) => {
+    { timeout: timeout || 60000 }, async (t) => {
         try {
             // do not run any test after first failure
             if (failed)
@@ -1145,29 +1146,23 @@ exports.ZfcpPage = void 0;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class ZfcpPage {
     page;
-    optionsDisk;
     activateDisk = () => this.page.locator("::-p-text('Activate')");
     backToDeviceSelectionButton = () => this.page.locator("button::-p-text(Back to device selection)");
     enableMultipath = () => this.page.locator("::-p-text('Yes')");
     constructor(page) {
         this.page = page;
     }
-    async activateDevices() {
+    async activateDevice(index, selector) {
         await this.page.waitForSelector("button#zfcp_controllers_actions");
-        this.optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
-        await this.optionsDisk[0].click();
+        const optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
+        await optionsDisk[index].click();
         await this.activateDisk().click();
+        await this.page.waitForSelector(selector, { timeout: 80000 });
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(75000);
-        // The button dissappears while activating so we need to refresh the array after sleep
-        this.optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
-        await this.optionsDisk[1].click();
-        await this.activateDisk().click();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(20000);
+        await (0, helpers_1.sleep)(2000);
     }
     async activateMultipath() {
-        await this.enableMultipath().click();
+        await this.enableMultipath().setTimeout(40000).click();
     }
     async backToDeviceSelection() {
         await this.backToDeviceSelectionButton().click();
@@ -1194,6 +1189,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
+const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
@@ -1208,7 +1204,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--storage <storage-type>", "Prepare storage for installation [dasd/zfcp]"));
+    .addOption(new commander_1.Option("--advance-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1220,12 +1216,10 @@ if (options.productId !== "none")
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
-if (options.storage === "dasd") {
+if (options.advanceStorage === "dasd")
     (0, storage_dasd_1.prepareDasdStorage)();
-}
-else if (options.storage === "zfcp") {
+if (options.advanceStorage === "zfcp")
     (0, storage_zfcp_1.prepareZfcpStorage)();
-}
 if (options.install)
     (0, installation_1.performInstallation)();
 

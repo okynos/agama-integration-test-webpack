@@ -320,7 +320,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
     exports.page = await browser.newPage();
     exports.page.setDefaultTimeout(20000);
     await exports.page.goto(agamaServer, {
-        timeout: 150000,
+        timeout: 60000,
         waitUntil: "domcontentloaded",
     });
     return { page: exports.page, browser };
@@ -399,7 +399,7 @@ async function dumpPage(label) {
 async function it(label, test, timeout) {
     (0, node_test_1.it)(label, 
     // abort when the test takes more than one minute
-    { timeout: timeout || 150000 }, async (t) => {
+    { timeout: timeout || 60000 }, async (t) => {
         try {
             // do not run any test after first failure
             if (failed)
