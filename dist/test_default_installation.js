@@ -264,12 +264,12 @@ function prepareDasdStorage() {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const select_installation_device_page_1 = __webpack_require__(/*! ../pages/select_installation_device_page */ "./src/pages/select_installation_device_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-const select_installation_device_page_1 = __webpack_require__(/*! ../pages/select_installation_device_page */ "./src/pages/select_installation_device_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
-    (0, helpers_1.it)("should prepare ZFCP storage", async function () {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
         const selectInstallationDevice = new select_installation_device_page_1.SelectInstallationDevicePage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
@@ -277,8 +277,8 @@ function prepareZfcpStorage() {
         await sidebar.goToStorage();
         await storage.changeInstallationDevice();
         await selectInstallationDevice.prepareZfcp();
-        await zfcp.activateDevice(0, "::-p-text('0.0.fa00')");
-        await zfcp.activateDevice(1, "::-p-text('0.0.fc00')");
+        await zfcp.activateDevice(0);
+        await zfcp.activateDevice(1);
         await zfcp.backToDeviceSelection();
         await zfcp.activateMultipath();
         await selectInstallationDevice.selectDevice(5);
@@ -948,8 +948,8 @@ class SelectInstallationDevicePage {
     deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
     deviceRadio = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
     storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
-    deviceTypeDasd = () => this.page.locator("a[href='#/storage/dasd']");
-    deviceTypeZfcp = () => this.page.locator("a[href='#/storage/zfcp']");
+    deviceTypeDasdLink = () => this.page.locator("a[href='#/storage/dasd']");
+    deviceTypeZfcpLink = () => this.page.locator("a[href='#/storage/zfcp']");
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
@@ -961,11 +961,11 @@ class SelectInstallationDevicePage {
     }
     async prepareDasd() {
         await this.storageTechsToggleButton().click();
-        await this.deviceTypeDasd().click();
+        await this.deviceTypeDasdLink().click();
     }
     async prepareZfcp() {
         await this.storageTechsToggleButton().click();
-        await this.deviceTypeZfcp().click();
+        await this.deviceTypeZfcpLink().click();
     }
     async selectDevice(index) {
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
@@ -1152,7 +1152,12 @@ class ZfcpPage {
     constructor(page) {
         this.page = page;
     }
-    async activateDevice(index, selector) {
+    async activateDevice(index) {
+        let selector;
+        if (index === 0)
+            selector = "::-p-text('0.0.fa00')";
+        else
+            selector = "::-p-text('0.0.fc00')";
         await this.page.waitForSelector("button#zfcp_controllers_actions");
         const optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
         await optionsDisk[index].click();
@@ -1204,7 +1209,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .addOption(new commander_1.Option("--advance-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
+    .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1216,9 +1221,9 @@ if (options.productId !== "none")
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
-if (options.advanceStorage === "dasd")
+if (options.prepareAdvancedStorage === "dasd")
     (0, storage_dasd_1.prepareDasdStorage)();
-if (options.advanceStorage === "zfcp")
+else if (options.prepareAdvancedStorage === "zfcp")
     (0, storage_zfcp_1.prepareZfcpStorage)();
 if (options.install)
     (0, installation_1.performInstallation)();

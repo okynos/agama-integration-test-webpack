@@ -30,7 +30,7 @@ const options = parse((cmd) =>
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .addOption(
       new Option(
-        "--advance-storage <storage-type>",
+        "--prepare-advanced-storage <storage-type>",
         "Prepare advance storage for installation",
       ).choices(["dasd", "zfcp"]),
     ),
@@ -44,6 +44,6 @@ if (options.productId !== "none")
 setupRootPassword(options.rootPassword);
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
-if (options.advanceStorage === "dasd") prepareDasdStorage();
-if (options.advanceStorage === "zfcp") prepareZfcpStorage();
+if (options.prepareAdvancedStorage === "dasd") prepareDasdStorage();
+else if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) performInstallation();

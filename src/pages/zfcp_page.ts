@@ -16,7 +16,11 @@ export class ZfcpPage {
     this.page = page;
   }
 
-  async activateDevice(index, selector) {
+  async activateDevice(index) {
+    let selector;
+    if (index === 0) selector = "::-p-text('0.0.fa00')";
+    else selector = "::-p-text('0.0.fc00')";
+
     await this.page.waitForSelector("button#zfcp_controllers_actions");
     const optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
     await optionsDisk[index].click();

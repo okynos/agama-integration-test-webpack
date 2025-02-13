@@ -14,9 +14,9 @@ export class SelectInstallationDevicePage {
 
   private readonly storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
 
-  private readonly deviceTypeDasd = () => this.page.locator("a[href='#/storage/dasd']");
+  private readonly deviceTypeDasdLink = () => this.page.locator("a[href='#/storage/dasd']");
 
-  private readonly deviceTypeZfcp = () => this.page.locator("a[href='#/storage/zfcp']");
+  private readonly deviceTypeZfcpLink = () => this.page.locator("a[href='#/storage/zfcp']");
 
   private readonly acceptButton = () => this.page.locator("button::-p-text(Accept)");
 
@@ -32,12 +32,12 @@ export class SelectInstallationDevicePage {
 
   async prepareDasd() {
     await this.storageTechsToggleButton().click();
-    await this.deviceTypeDasd().click();
+    await this.deviceTypeDasdLink().click();
   }
 
   async prepareZfcp() {
     await this.storageTechsToggleButton().click();
-    await this.deviceTypeZfcp().click();
+    await this.deviceTypeZfcpLink().click();
   }
 
   async selectDevice(index: number) {
