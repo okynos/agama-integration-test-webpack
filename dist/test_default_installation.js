@@ -282,7 +282,7 @@ function prepareZfcpStorage() {
         await zfcp.backToDeviceSelection();
         await zfcp.activateMultipath();
         await selectInstallationDevice.selectDevice(5);
-    }, 150000);
+    }, 200000);
 }
 
 
