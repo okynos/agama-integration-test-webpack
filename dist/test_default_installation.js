@@ -1137,12 +1137,13 @@ exports.UsersPage = UsersPage;
 /*!********************************!*\
   !*** ./src/pages/zfcp_page.ts ***!
   \********************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZfcpPage = void 0;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class ZfcpPage {
     page;
     faDisk = () => this.page
@@ -1165,6 +1166,8 @@ class ZfcpPage {
             element = this.fcDisk;
         await element().click();
         await this.activateDisk().click();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
         await element().wait();
     }
     async activateMultipath() {

@@ -1,4 +1,5 @@
 import { type Page } from "puppeteer-core";
+import { sleep } from "../lib/helpers";
 
 export class ZfcpPage {
   private readonly page: Page;
@@ -31,6 +32,8 @@ export class ZfcpPage {
 
     await element().click();
     await this.activateDisk().click();
+    // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+    await sleep(2000);
     await element().wait();
   }
 
