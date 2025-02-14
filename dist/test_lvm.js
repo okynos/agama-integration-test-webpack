@@ -633,8 +633,8 @@ class SelectInstallationDevicePage {
     }
     async selectDevice(index) {
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-        await this.deviceRadio(index).setTimeout(80000).click();
+        await (0, helpers_1.sleep)(5000);
+        await this.deviceRadio(index).click();
         await this.acceptButton().click();
     }
 }

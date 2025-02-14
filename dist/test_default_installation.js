@@ -969,8 +969,8 @@ class SelectInstallationDevicePage {
     }
     async selectDevice(index) {
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-        await this.deviceRadio(index).setTimeout(80000).click();
+        await (0, helpers_1.sleep)(5000);
+        await this.deviceRadio(index).click();
         await this.acceptButton().click();
     }
 }
@@ -1137,15 +1137,20 @@ exports.UsersPage = UsersPage;
 /*!********************************!*\
   !*** ./src/pages/zfcp_page.ts ***!
   \********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZfcpPage = void 0;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class ZfcpPage {
     page;
+    faDisk = () => this.page
+        .locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions")
+        .setTimeout(80000);
+    fcDisk = () => this.page
+        .locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions")
+        .setTimeout(20000);
     activateDisk = () => this.page.locator("::-p-text('Activate')");
     backToDeviceSelectionButton = () => this.page.locator("button::-p-text(Back to device selection)");
     enableMultipath = () => this.page.locator("::-p-text('Yes')");
@@ -1153,18 +1158,14 @@ class ZfcpPage {
         this.page = page;
     }
     async activateDevice(index) {
-        let selector;
+        let element;
         if (index === 0)
-            selector = "::-p-text('0.0.fa00')";
+            element = this.faDisk;
         else
-            selector = "::-p-text('0.0.fc00')";
-        await this.page.waitForSelector("button#zfcp_controllers_actions");
-        const optionsDisk = await this.page.$$("button#zfcp_controllers_actions");
-        await optionsDisk[index].click();
+            element = this.fcDisk;
+        await element().click();
         await this.activateDisk().click();
-        await this.page.waitForSelector(selector, { timeout: 80000 });
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
+        await element().wait();
     }
     async activateMultipath() {
         await this.enableMultipath().setTimeout(40000).click();
