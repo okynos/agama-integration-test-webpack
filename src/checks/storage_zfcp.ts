@@ -14,8 +14,8 @@ export function prepareZfcpStorage() {
     await sidebar.goToStorage();
     await storage.changeInstallationDevice();
     await selectInstallationDevice.prepareZfcp();
-    await zfcp.activateDevice(0);
-    await zfcp.activateDevice(1);
+    await zfcp.activateDevice("0.0.fa00");
+    await zfcp.activateDevice("0.0.fc00");
     await zfcp.backToDeviceSelection();
     await zfcp.activateMultipath();
     await selectInstallationDevice.selectDevice(5);

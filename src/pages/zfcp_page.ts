@@ -7,7 +7,7 @@ export class ZfcpPage {
   private readonly faDisk = () =>
     this.page
       .locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions")
-      .setTimeout(80000);
+      .setTimeout(90000);
 
   private readonly fcDisk = () =>
     this.page
@@ -25,16 +25,16 @@ export class ZfcpPage {
     this.page = page;
   }
 
-  async activateDevice(index) {
+  async activateDevice(channelId) {
     let element;
-    if (index === 0) element = this.faDisk;
-    else element = this.fcDisk;
+    if (channelId === "0.0.fa00") element = this.faDisk();
+    else element = this.fcDisk();
 
-    await element().click();
+    await element.click();
     await this.activateDisk().click();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
-    await element().wait();
+    await element.wait();
   }
 
   async activateMultipath() {

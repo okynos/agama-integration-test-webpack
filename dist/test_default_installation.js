@@ -277,8 +277,8 @@ function prepareZfcpStorage() {
         await sidebar.goToStorage();
         await storage.changeInstallationDevice();
         await selectInstallationDevice.prepareZfcp();
-        await zfcp.activateDevice(0);
-        await zfcp.activateDevice(1);
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
         await zfcp.backToDeviceSelection();
         await zfcp.activateMultipath();
         await selectInstallationDevice.selectDevice(5);
@@ -1148,7 +1148,7 @@ class ZfcpPage {
     page;
     faDisk = () => this.page
         .locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions")
-        .setTimeout(80000);
+        .setTimeout(90000);
     fcDisk = () => this.page
         .locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions")
         .setTimeout(20000);
@@ -1158,17 +1158,17 @@ class ZfcpPage {
     constructor(page) {
         this.page = page;
     }
-    async activateDevice(index) {
+    async activateDevice(channelId) {
         let element;
-        if (index === 0)
-            element = this.faDisk;
+        if (channelId === "0.0.fa00")
+            element = this.faDisk();
         else
-            element = this.fcDisk;
-        await element().click();
+            element = this.fcDisk();
+        await element.click();
         await this.activateDisk().click();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
-        await element().wait();
+        await element.wait();
     }
     async activateMultipath() {
         await this.enableMultipath().setTimeout(40000).click();
