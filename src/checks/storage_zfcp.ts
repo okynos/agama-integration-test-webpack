@@ -5,19 +5,23 @@ import { StoragePage } from "../pages/storage_page";
 import { ZfcpPage } from "../pages/zfcp_page";
 
 export function prepareZfcpStorage() {
-  it("should prepare zFCP storage", async function () {
-    const storage = new StoragePage(page);
-    const selectInstallationDevice = new SelectInstallationDevicePage(page);
-    const zfcp = new ZfcpPage(page);
-    const sidebar = new SidebarPage(page);
+  it(
+    "should prepare zFCP storage",
+    async function () {
+      const storage = new StoragePage(page);
+      const selectInstallationDevice = new SelectInstallationDevicePage(page);
+      const zfcp = new ZfcpPage(page);
+      const sidebar = new SidebarPage(page);
 
-    await sidebar.goToStorage();
-    await storage.changeInstallationDevice();
-    await selectInstallationDevice.prepareZfcp();
-    await zfcp.activateDevice("0.0.fa00");
-    await zfcp.activateDevice("0.0.fc00");
-    await zfcp.backToDeviceSelection();
-    await zfcp.activateMultipath();
-    await selectInstallationDevice.selectDevice(5);
-  }, 200000);
+      await sidebar.goToStorage();
+      await storage.changeInstallationDevice();
+      await selectInstallationDevice.prepareZfcp();
+      await zfcp.activateDevice("0.0.fa00");
+      await zfcp.activateDevice("0.0.fc00");
+      await zfcp.backToDeviceSelection();
+      await zfcp.activateMultipath();
+      await selectInstallationDevice.selectDevice(5);
+    },
+    3 * 60 * 1000,
+  );
 }

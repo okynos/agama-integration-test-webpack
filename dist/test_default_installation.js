@@ -282,7 +282,7 @@ function prepareZfcpStorage() {
         await zfcp.backToDeviceSelection();
         await zfcp.activateMultipath();
         await selectInstallationDevice.selectDevice(5);
-    }, 200000);
+    }, 3 * 60 * 1000);
 }
 
 
@@ -1146,12 +1146,8 @@ exports.ZfcpPage = void 0;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class ZfcpPage {
     page;
-    faDisk = () => this.page
-        .locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions")
-        .setTimeout(90000);
-    fcDisk = () => this.page
-        .locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions")
-        .setTimeout(20000);
+    faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
+    fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
     activateDisk = () => this.page.locator("::-p-text('Activate')");
     backToDeviceSelectionButton = () => this.page.locator("button::-p-text(Back to device selection)");
     enableMultipath = () => this.page.locator("::-p-text('Yes')");
@@ -1164,7 +1160,7 @@ class ZfcpPage {
             element = this.faDisk();
         else
             element = this.fcDisk();
-        await element.click();
+        await element.setTimeout(90000).click();
         await this.activateDisk().click();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);

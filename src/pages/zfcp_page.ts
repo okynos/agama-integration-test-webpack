@@ -5,14 +5,10 @@ export class ZfcpPage {
   private readonly page: Page;
 
   private readonly faDisk = () =>
-    this.page
-      .locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions")
-      .setTimeout(90000);
+    this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
 
   private readonly fcDisk = () =>
-    this.page
-      .locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions")
-      .setTimeout(20000);
+    this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
 
   private readonly activateDisk = () => this.page.locator("::-p-text('Activate')");
 
@@ -30,7 +26,7 @@ export class ZfcpPage {
     if (channelId === "0.0.fa00") element = this.faDisk();
     else element = this.fcDisk();
 
-    await element.click();
+    await element.setTimeout(90000).click();
     await this.activateDisk().click();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
