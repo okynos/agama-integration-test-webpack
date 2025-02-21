@@ -26,11 +26,11 @@ export class ZfcpPage {
     if (channelId === "0.0.fa00") element = this.faDisk();
     else element = this.fcDisk();
 
-    await element.setTimeout(90000).click();
+    await element.click();
     await this.activateDisk().click();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
-    await element.wait();
+    await element.setTimeout(90000).wait();
   }
 
   async activateMultipath() {

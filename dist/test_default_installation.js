@@ -1160,11 +1160,11 @@ class ZfcpPage {
             element = this.faDisk();
         else
             element = this.fcDisk();
-        await element.setTimeout(90000).click();
+        await element.click();
         await this.activateDisk().click();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
-        await element.wait();
+        await element.setTimeout(90000).wait();
     }
     async activateMultipath() {
         await this.enableMultipath().setTimeout(40000).click();
