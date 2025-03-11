@@ -96,6 +96,7 @@ function prepareDasdStorage() {
         await dasd.back();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
+        await dasd.reload();
     });
 }
 
@@ -528,6 +529,9 @@ class DasdPage {
     }
     async back() {
         await this.backButton().click();
+    }
+    async reload() {
+        await this.page.reload();
     }
 }
 exports.DasdPage = DasdPage;

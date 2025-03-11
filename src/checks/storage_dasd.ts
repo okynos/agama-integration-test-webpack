@@ -15,5 +15,6 @@ export function prepareDasdStorage() {
     await dasd.back();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
+    await dasd.reload();
   });
 }

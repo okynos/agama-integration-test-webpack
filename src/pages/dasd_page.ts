@@ -26,4 +26,8 @@ export class DasdPage {
   async back() {
     await this.backButton().click();
   }
+
+  async reload() {
+    await this.page.reload();
+  }
 }
