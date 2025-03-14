@@ -628,7 +628,7 @@ exports.SoftwareSelectionPage = void 0;
 class SoftwareSelectionPage {
     page;
     patternText = (pattern) => this.page.locator(`::-p-aria(Select ${pattern})`);
-    closeButton = () => this.page.locator("button::-p-text(Close)");
+    closeButton = () => this.page.locator("::-p-text(Close)");
     constructor(page) {
         this.page = page;
     }
