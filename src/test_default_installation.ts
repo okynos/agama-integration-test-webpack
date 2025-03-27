@@ -12,6 +12,7 @@ import { Option } from "commander";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { enterRegistration } from "./checks/registration";
+import { enterHostname } from "./checks/hostname";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -28,6 +29,7 @@ const options = parse((cmd) =>
     )
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--hostname <hostname>", "Static Hostname")
     .addOption(
       new Option(
         "--prepare-advanced-storage <storage-type>",
@@ -42,6 +44,7 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 if (options.registrationCode) enterRegistration(options.registrationCode);
+if (options.hostname) enterHostname(options.hostname);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 if (options.dasd) prepareDasdStorage();

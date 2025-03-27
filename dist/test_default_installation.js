@@ -36,6 +36,33 @@ function createFirstUser(password) {
 
 /***/ }),
 
+/***/ "./src/checks/hostname.ts":
+/*!********************************!*\
+  !*** ./src/checks/hostname.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.enterHostname = enterHostname;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function enterHostname(static_hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const hostname = new hostname_page_1.HostnamePage(helpers_1.page);
+        await sidebar.goToHostname();
+        await hostname.activateStatic();
+        await hostname.setHostname(static_hostname);
+        await hostname.accept();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/installation.ts":
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -778,6 +805,39 @@ exports.DasdPage = DasdPage;
 
 /***/ }),
 
+/***/ "./src/pages/hostname_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/hostname_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HostnamePage = void 0;
+class HostnamePage {
+    page;
+    staticToggle = () => this.page.locator("input#hostname");
+    hostnameField = () => this.page.locator("::-p-aria(Static hostname)");
+    acceptButton = () => this.page.locator("::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateStatic() {
+        await this.staticToggle().click();
+    }
+    async setHostname(static_hostname) {
+        await this.hostnameField().fill(static_hostname);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.HostnamePage = HostnamePage;
+
+
+/***/ }),
+
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -1013,6 +1073,7 @@ class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
     overviewText = () => this.page.locator("h2::-p-text('Overview')");
+    hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");
@@ -1026,6 +1087,9 @@ class SidebarPage {
     }
     async waitOverviewVisible(timeout) {
         await this.overviewText().setTimeout(timeout).wait();
+    }
+    async goToHostname() {
+        await this.hostnameLink().click();
     }
     async goToLocalization() {
         await this.localizationLink().click();
@@ -1199,6 +1263,7 @@ const commander_1 = __webpack_require__(/*! commander */ "./node_modules/command
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
+const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
@@ -1210,6 +1275,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--hostname <hostname>", "Static Hostname")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
@@ -1220,6 +1286,8 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
+if (options.hostname)
+    (0, hostname_1.enterHostname)(options.hostname);
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 if (options.dasd)
