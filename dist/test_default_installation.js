@@ -1284,10 +1284,10 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
-if (options.registrationCode)
-    (0, registration_1.enterRegistration)(options.registrationCode);
 if (options.hostname)
     (0, hostname_1.enterHostname)(options.hostname);
+if (options.registrationCode)
+    (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 if (options.dasd)

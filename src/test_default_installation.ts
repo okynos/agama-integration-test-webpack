@@ -43,8 +43,8 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-if (options.registrationCode) enterRegistration(options.registrationCode);
 if (options.hostname) enterHostname(options.hostname);
+if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 if (options.dasd) prepareDasdStorage();
