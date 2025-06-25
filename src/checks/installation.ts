@@ -14,23 +14,4 @@ export function performInstallation() {
     await overview.install();
     await confirmInstallation.continue();
   });
-
-  it(
-    "should finish installation",
-    async function () {
-      await new CongratulationPage(page).wait(14 * 60 * 1000);
-    },
-    15 * 60 * 1000,
-  );
-}
-
-export function finishInstallation() {
-  it(
-    "should finish",
-    async function () {
-      const congratulation = new CongratulationPage(page);
-      await congratulation.wait(14 * 60 * 1000);
-    },
-    15 * 60 * 1000,
-  );
 }
