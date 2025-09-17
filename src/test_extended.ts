@@ -4,7 +4,7 @@ import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
-import { enterProductRegistration } from "./checks/registration";
+import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -20,6 +20,7 @@ const options = parse((cmd) =>
     )
     .option("--registration-code <code>", "Registration code")
     .option("--use-custom-registration-server", "Enable custom registration server")
+    .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "provide registration code for customer registration")
     .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)"),
@@ -34,13 +35,17 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
-testStrategy.enableEncryption(options.password);
+verifyRegistrationWarniningAlerts(
+  options.useCustomRegistrationServer,
+  options.registrationServerUrl,
+);
 if (options.registrationCode)
   enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
+testStrategy.enableEncryption(options.password);
 testStrategy.verifyEncryptionEnabled();
 testStrategy.disableEncryption();
 createFirstUser(options.password);

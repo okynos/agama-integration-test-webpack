@@ -258,7 +258,8 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
-        protocolTimeout: 350000,
+        // This timeout is increased due to DASD format step review in future changes
+        protocolTimeout: 360000,
         slowMo,
         defaultViewport: {
             width: 1280,

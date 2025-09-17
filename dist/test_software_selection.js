@@ -127,7 +127,6 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
-// ts-prune-ignore-next
 function prepareDasdStorage() {
     (0, helpers_1.it)("should prepare DASD storage", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
@@ -334,7 +333,8 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
-        protocolTimeout: 350000,
+        // This timeout is increased due to DASD format step review in future changes
+        protocolTimeout: 360000,
         slowMo,
         defaultViewport: {
             width: 1280,
