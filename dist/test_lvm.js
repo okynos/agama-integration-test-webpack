@@ -761,7 +761,8 @@ const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
 class StorageWithoutTabsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    editEncryptionButton = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");

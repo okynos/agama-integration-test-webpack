@@ -5,7 +5,8 @@ export class StorageWithoutTabsPage {
   private readonly page: Page;
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
 
-  private readonly editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+  private readonly editEncryptionButton = () => this.page.locator("::-p-text(Encryption)");
+  private readonly changeEncryptionButton = () => this.page.locator("::-p-text(Edit)");
   private readonly encryptionIsEnabledText = () =>
     this.page.locator("::-p-text(Encryption is enabled)");
 

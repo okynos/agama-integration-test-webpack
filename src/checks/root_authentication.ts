@@ -1,8 +1,9 @@
-import { it, page, sleep } from "../lib/helpers";
+import { it, page, sleep, getTextContent } from "../lib/helpers";
 import { SetupRootUserAuthenticationPage } from "../pages/setup_root_user_authentication_page";
 import { SetARootPasswordPage } from "../pages/root_authentication_methods";
 import { SidebarPage } from "../pages/sidebar_page";
 import { UsersPage } from "../pages/users_page";
+import assert from "node:assert/strict";
 
 export function editRootUser(password: string) {
   it("should edit the root user", async function () {
@@ -45,10 +46,25 @@ export function verifyPasswordStrength() {
     await sidebar.goToUsers();
     await users.editRootUser();
     await setARootPassword.fillPassword("a23b56c");
-    await setARootPassword.verifyPasswordLess8Characters();
+    const elementTextPasswordLess8Characters = await getTextContent(
+      setARootPassword.alertPasswordLess8Characters(),
+    );
+    assert.deepEqual(
+      elementTextPasswordLess8Characters,
+      "The password is shorter than 8 characters",
+    );
+
     await setARootPassword.fillPassword("a23b56ca");
-    await setARootPassword.verifyPasswordIsWeak();
+    const elementTextPasswordIsWeak = await getTextContent(setARootPassword.alertPasswordIsWeak());
+    assert.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+
     await setARootPassword.fillPassword("a23b5678");
-    await setARootPassword.verifyPasswordFailDictionaryCheck();
+    const elementTextPasswordFailDictionary = await getTextContent(
+      setARootPassword.alertPasswordFailDictionaryCheck(),
+    );
+    assert.deepEqual(
+      elementTextPasswordFailDictionary,
+      "The password fails the dictionary check - it is too simplistic/systematic",
+    );
   });
 }
