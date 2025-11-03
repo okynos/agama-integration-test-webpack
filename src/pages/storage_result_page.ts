@@ -3,7 +3,7 @@ import { type Page } from "puppeteer-core";
 export class StorageResultPage {
   private readonly page: Page;
 
-  private readonly destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+  private readonly destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
   public readonly destructiveActionText = (name: string) =>
     this.page.locator(`::-p-text(Delete ${name})`);
 
@@ -11,7 +11,7 @@ export class StorageResultPage {
     this.page = page;
   }
 
-  async expandDestructiveActionsList() {
-    await this.destructiveActionsList().click();
+  async scrollToDestructiveActionsList() {
+    (await this.destructiveActionsList().waitHandle()).scrollIntoView();
   }
 }
