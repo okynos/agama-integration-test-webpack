@@ -6,20 +6,27 @@
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
   \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
 exports.disableEncryption = disableEncryption;
 exports.enableEncryptionWithoutTabs = enableEncryptionWithoutTabs;
+exports.verifyEncryptionEnabledWithoutTabs = verifyEncryptionEnabledWithoutTabs;
+exports.disableEncryptionWithoutTabs = disableEncryptionWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const encryption_settings_without_tabs_page_1 = __webpack_require__(/*! ../pages/encryption_settings_without_tabs_page */ "./src/pages/encryption_settings_without_tabs_page.ts");
 const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
@@ -38,35 +45,59 @@ function enableEncryption(password) {
 function verifyEncryptionEnabled() {
     (0, helpers_1.it)("should verify that encryption is enabled", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.verifyEncryptionEnabled();
+        await storageSettings.selectEncryption();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is enabled");
     });
 }
 function disableEncryption() {
     (0, helpers_1.it)("should disable encryption", async function () {
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.editEncryption();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
         await encryptionSettings.unmarkEncryptTheSystem();
         await encryptionSettings.accept();
-        await storage.verifyEncryptionDisabled();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is disabled");
     });
 }
 function enableEncryptionWithoutTabs(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
-        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_without_tabs_page_1.EncryptionSettingsWithoutTabsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.editEncryption();
-        await encryptionSettings.markEncryptTheSystem();
+        await encryptionSettings.checkEncryption();
         await encryptionSettings.fillPassword(password);
         await encryptionSettings.fillPasswordConfirmation(password);
         await encryptionSettings.accept();
         await storage.verifyEncryptionEnabled();
+    });
+}
+function verifyEncryptionEnabledWithoutTabs() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.verifyEncryptionEnabled();
+    });
+}
+function disableEncryptionWithoutTabs() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_without_tabs_page_1.EncryptionSettingsWithoutTabsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editEncryption();
+        await encryptionSettings.uncheckEncryption();
+        await encryptionSettings.accept();
+        await storage.verifyEncryptionDisabled();
     });
 }
 
@@ -225,6 +256,8 @@ function parse(callback) {
         .description("Run a simple Agama integration test")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
+        .option("-a, --agama-version <version>", "Agama package version")
+        .option("-v, --product-version <version>", "Product version")
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
         .default("firefox"))
@@ -590,6 +623,49 @@ class EncryptionSettingsPage {
     }
 }
 exports.EncryptionSettingsPage = EncryptionSettingsPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/encryption_settings_without_tabs_page.ts":
+/*!************************************************************!*\
+  !*** ./src/pages/encryption_settings_without_tabs_page.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptionSettingsWithoutTabsPage = void 0;
+class EncryptionSettingsWithoutTabsPage {
+    page;
+    encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
+    encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async checkEncryption() {
+        await this.encryptTheSystemNotCheckedCheckbox().click();
+        await this.encryptTheSystemCheckedCheckbox().wait();
+    }
+    async uncheckEncryption() {
+        await this.encryptTheSystemCheckedCheckbox().click();
+        await this.encryptTheSystemNotCheckedCheckbox().wait();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.EncryptionSettingsWithoutTabsPage = EncryptionSettingsWithoutTabsPage;
 
 
 /***/ }),

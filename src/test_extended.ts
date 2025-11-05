@@ -3,15 +3,29 @@ import { test_init } from "./lib/helpers";
 
 import { createFirstUser } from "./checks/first_user";
 import { decryptDevice } from "./checks/decryption";
-import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
-import { enableEncryption, verifyEncryptionEnabled, disableEncryption } from "./checks/encryption";
+import {
+  editRootUser,
+  verifyPasswordStrength,
+  verifyPasswordStrengthWithoutTabs,
+} from "./checks/root_authentication";
+import {
+  enableEncryption,
+  verifyEncryptionEnabled,
+  disableEncryption,
+  enableEncryptionWithoutTabs,
+  verifyEncryptionEnabledWithoutTabs,
+  disableEncryptionWithoutTabs,
+} from "./checks/encryption";
 import { enterProductRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
-import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
+import {
+  verifyDecryptDestructiveActions,
+  verifyDecryptDestructiveActionsWithoutTabs,
+} from "./checks/storage_result_destructive_actions_planned";
 import { downloadLogs } from "./checks/download_logs";
 
 // parse options from the command line
@@ -41,20 +55,26 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
-verifyDecryptDestructiveActions(options.destructiveActions);
+if (options.agamaVersion.includes("pre"))
+  verifyDecryptDestructiveActions(options.destructiveActions);
+else verifyDecryptDestructiveActionsWithoutTabs(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
-enableEncryption(options.password);
+if (options.agamaVersion.includes("pre")) enableEncryption(options.password);
+else enableEncryptionWithoutTabs(options.password);
 if (options.registrationCode)
   enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-verifyEncryptionEnabled();
-disableEncryption();
+if (options.agamaVersion.includes("pre")) verifyEncryptionEnabled();
+else verifyEncryptionEnabledWithoutTabs();
+if (options.agamaVersion.includes("pre")) disableEncryption();
+else disableEncryptionWithoutTabs();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
-verifyPasswordStrength();
+if (options.agamaVersion.includes("pre")) verifyPasswordStrength();
+else verifyPasswordStrengthWithoutTabs();
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 downloadLogs();
 if (options.install) {

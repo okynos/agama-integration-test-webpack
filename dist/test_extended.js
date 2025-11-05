@@ -62,20 +62,27 @@ async function downloadLogs() {
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
   \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
 exports.disableEncryption = disableEncryption;
 exports.enableEncryptionWithoutTabs = enableEncryptionWithoutTabs;
+exports.verifyEncryptionEnabledWithoutTabs = verifyEncryptionEnabledWithoutTabs;
+exports.disableEncryptionWithoutTabs = disableEncryptionWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const encryption_settings_without_tabs_page_1 = __webpack_require__(/*! ../pages/encryption_settings_without_tabs_page */ "./src/pages/encryption_settings_without_tabs_page.ts");
 const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
@@ -94,35 +101,59 @@ function enableEncryption(password) {
 function verifyEncryptionEnabled() {
     (0, helpers_1.it)("should verify that encryption is enabled", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.verifyEncryptionEnabled();
+        await storageSettings.selectEncryption();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is enabled");
     });
 }
 function disableEncryption() {
     (0, helpers_1.it)("should disable encryption", async function () {
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.editEncryption();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
         await encryptionSettings.unmarkEncryptTheSystem();
         await encryptionSettings.accept();
-        await storage.verifyEncryptionDisabled();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is disabled");
     });
 }
 function enableEncryptionWithoutTabs(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
-        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_without_tabs_page_1.EncryptionSettingsWithoutTabsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.editEncryption();
-        await encryptionSettings.markEncryptTheSystem();
+        await encryptionSettings.checkEncryption();
         await encryptionSettings.fillPassword(password);
         await encryptionSettings.fillPasswordConfirmation(password);
         await encryptionSettings.accept();
         await storage.verifyEncryptionEnabled();
+    });
+}
+function verifyEncryptionEnabledWithoutTabs() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.verifyEncryptionEnabled();
+    });
+}
+function disableEncryptionWithoutTabs() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_without_tabs_page_1.EncryptionSettingsWithoutTabsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editEncryption();
+        await encryptionSettings.uncheckEncryption();
+        await encryptionSettings.accept();
+        await storage.verifyEncryptionDisabled();
     });
 }
 
@@ -409,19 +440,24 @@ function enterExtensionRegistrationPHub() {
 /*!*******************************************!*\
   !*** ./src/checks/root_authentication.ts ***!
   \*******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
 exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
 exports.verifyPasswordStrength = verifyPasswordStrength;
+exports.verifyPasswordStrengthWithoutTabs = verifyPasswordStrengthWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function editRootUser(password) {
     (0, helpers_1.it)("should edit the root user", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
@@ -454,11 +490,32 @@ function verifyPasswordStrength() {
         await sidebar.goToUsers();
         await users.editRootUser();
         await setARootPassword.fillPassword("a23b56c");
-        await setARootPassword.verifyPasswordLess8Characters();
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
         await setARootPassword.fillPassword("a23b56ca");
-        await setARootPassword.verifyPasswordIsWeak();
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
         await setARootPassword.fillPassword("a23b5678");
-        await setARootPassword.verifyPasswordFailDictionaryCheck();
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+    });
+}
+function verifyPasswordStrengthWithoutTabs() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "Warning alert:The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     });
 }
 
@@ -475,16 +532,28 @@ function verifyPasswordStrength() {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
+exports.verifyDecryptDestructiveActionsWithoutTabs = verifyDecryptDestructiveActionsWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
+const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
 function verifyDecryptDestructiveActions(destructiveActions) {
     (0, helpers_1.it)("should display a list of destructive actions", async function () {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
         const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
-        storage.expandDestructiveActionsList();
+        await storage.scrollToDestructiveActionsList();
         for (const action of destructiveActions) {
             await storage.destructiveActionText(action).wait();
+        }
+    });
+}
+function verifyDecryptDestructiveActionsWithoutTabs(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        storage.expandDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.verifyDestructiveAction(action);
         }
     });
 }
@@ -502,11 +571,28 @@ function verifyDecryptDestructiveActions(destructiveActions) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
+exports.prepareZfcpStorageWithoutTabs = prepareZfcpStorageWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.activateZfcp();
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
+        await zfcp.back();
+        await zfcp.activateMultipath();
+        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+        await storage.waitForElement("::-p-text(Activate zFCP disks)", 80000);
+    }, 3 * 60 * 1000);
+}
+function prepareZfcpStorageWithoutTabs() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
         const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
@@ -596,6 +682,8 @@ function parse(callback) {
         .description("Run a simple Agama integration test")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
+        .option("-a, --agama-version <version>", "Agama package version")
+        .option("-v, --product-version <version>", "Product version")
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
         .default("firefox"))
@@ -1033,6 +1121,49 @@ exports.EncryptionSettingsPage = EncryptionSettingsPage;
 
 /***/ }),
 
+/***/ "./src/pages/encryption_settings_without_tabs_page.ts":
+/*!************************************************************!*\
+  !*** ./src/pages/encryption_settings_without_tabs_page.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptionSettingsWithoutTabsPage = void 0;
+class EncryptionSettingsWithoutTabsPage {
+    page;
+    encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
+    encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async checkEncryption() {
+        await this.encryptTheSystemNotCheckedCheckbox().click();
+        await this.encryptTheSystemCheckedCheckbox().wait();
+    }
+    async uncheckEncryption() {
+        await this.encryptTheSystemCheckedCheckbox().click();
+        await this.encryptTheSystemNotCheckedCheckbox().wait();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.EncryptionSettingsWithoutTabsPage = EncryptionSettingsWithoutTabsPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/extension_registration_ha_page.ts":
 /*!*****************************************************!*\
   !*** ./src/pages/extension_registration_ha_page.ts ***!
@@ -1371,16 +1502,12 @@ exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationP
 /*!**************************************************!*\
   !*** ./src/pages/root_authentication_methods.ts ***!
   \**************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetARootPasswordPage = void 0;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class SetARootPasswordPage {
     page;
     acceptText = () => this.page.locator("button::-p-text(Accept)");
@@ -1405,24 +1532,6 @@ class SetARootPasswordPage {
     }
     async fillPasswordConfirmation(password) {
         await this.passwordConfirmationInput().fill(password);
-    }
-    async verifyPasswordLess8Characters() {
-        const elementText = await this.alertPasswordLess8Characters()
-            .map((span) => span.textContent)
-            .wait();
-        strict_1.default.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
-    }
-    async verifyPasswordIsWeak() {
-        const elementText = await this.alertPasswordIsWeak()
-            .map((span) => span.textContent)
-            .wait();
-        strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
-    }
-    async verifyPasswordFailDictionaryCheck() {
-        const elementText = await this.alertPasswordFailDictionaryCheck()
-            .map((span) => span.textContent)
-            .wait();
-        strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();
@@ -1537,13 +1646,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StorageResultPage = void 0;
 class StorageResultPage {
     page;
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsList().click();
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
     }
 }
 exports.StorageResultPage = StorageResultPage;
@@ -1807,21 +1916,36 @@ if (options.productId !== "none")
     else
         (0, product_selection_1.productSelection)(options.productId);
 (0, decryption_1.decryptDevice)(options.decryptPassword);
-(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
+if (options.agamaVersion.includes("pre"))
+    (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
+else
+    (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithoutTabs)(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
-(0, encryption_1.enableEncryption)(options.password);
+if (options.agamaVersion.includes("pre"))
+    (0, encryption_1.enableEncryption)(options.password);
+else
+    (0, encryption_1.enableEncryptionWithoutTabs)(options.password);
 if (options.registrationCode)
     (0, registration_1.enterProductRegistration)({
         use_custom: options.useCustomRegistrationServer,
         code: options.registrationCode,
         provide_code: options.provideRegistrationCode,
     });
-(0, encryption_1.verifyEncryptionEnabled)();
-(0, encryption_1.disableEncryption)();
+if (options.agamaVersion.includes("pre"))
+    (0, encryption_1.verifyEncryptionEnabled)();
+else
+    (0, encryption_1.verifyEncryptionEnabledWithoutTabs)();
+if (options.agamaVersion.includes("pre"))
+    (0, encryption_1.disableEncryption)();
+else
+    (0, encryption_1.disableEncryptionWithoutTabs)();
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
-(0, root_authentication_1.verifyPasswordStrength)();
+if (options.agamaVersion.includes("pre"))
+    (0, root_authentication_1.verifyPasswordStrength)();
+else
+    (0, root_authentication_1.verifyPasswordStrengthWithoutTabs)();
 if (options.prepareAdvancedStorage === "zfcp")
     (0, storage_zfcp_1.prepareZfcpStorage)();
 (0, download_logs_1.downloadLogs)();
