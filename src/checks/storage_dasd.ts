@@ -4,6 +4,7 @@ import { StorageSettingsPage } from "../pages/storage_settings_page";
 import { StorageWithoutTabsPage } from "../pages/storage_without_tabs_page";
 import { DasdPage } from "../pages/dasd_page";
 
+// ts-prune-ignore-next
 export function prepareDasdStorage() {
   it("should prepare DASD storage", async function () {
     const storage = new StorageSettingsPage(page);
@@ -19,6 +20,7 @@ export function prepareDasdStorage() {
   });
 }
 
+// ts-prune-ignore-next
 export function prepareDasdStorageWithoutTabs() {
   it("should prepare DASD storage", async function () {
     const storage = new StorageWithoutTabsPage(page);
