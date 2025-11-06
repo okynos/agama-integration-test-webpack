@@ -1,31 +1,15 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
 import { decryptDevice } from "./checks/decryption";
-import {
-  editRootUser,
-  verifyPasswordStrength,
-  verifyPasswordStrengthWithoutTabs,
-} from "./checks/root_authentication";
-import {
-  enableEncryption,
-  verifyEncryptionEnabled,
-  disableEncryption,
-  enableEncryptionWithoutTabs,
-  verifyEncryptionEnabledWithoutTabs,
-  disableEncryptionWithoutTabs,
-} from "./checks/encryption";
+import { editRootUser } from "./checks/root_authentication";
 import { enterProductRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
-import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
-import {
-  verifyDecryptDestructiveActions,
-  verifyDecryptDestructiveActionsWithoutTabs,
-} from "./checks/storage_result_destructive_actions_planned";
 import { downloadLogs } from "./checks/download_logs";
 
 // parse options from the command line
@@ -50,32 +34,29 @@ const options = parse((cmd) =>
 );
 
 test_init(options);
+
+const testStrategy = ProductStrategyFactory.create(options.agamaVersion);
+
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
-if (options.agamaVersion.includes("pre"))
-  verifyDecryptDestructiveActions(options.destructiveActions);
-else verifyDecryptDestructiveActionsWithoutTabs(options.destructiveActions);
+testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
-if (options.agamaVersion.includes("pre")) enableEncryption(options.password);
-else enableEncryptionWithoutTabs(options.password);
+testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
   enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-if (options.agamaVersion.includes("pre")) verifyEncryptionEnabled();
-else verifyEncryptionEnabledWithoutTabs();
-if (options.agamaVersion.includes("pre")) disableEncryption();
-else disableEncryptionWithoutTabs();
+testStrategy.verifyEncryptionEnabled();
+testStrategy.disableEncryption();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
-if (options.agamaVersion.includes("pre")) verifyPasswordStrength();
-else verifyPasswordStrengthWithoutTabs();
-if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
+testStrategy.verifyPasswordStrength();
+if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
 downloadLogs();
 if (options.install) {
   performInstallation();

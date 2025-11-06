@@ -960,6 +960,31 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
+/***/ "./src/lib/product_strategy_factory.ts":
+/*!*********************************************!*\
+  !*** ./src/lib/product_strategy_factory.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProductStrategyFactory = void 0;
+const pre_release_strategy_1 = __webpack_require__(/*! ../variants/pre_release_strategy */ "./src/variants/pre_release_strategy.ts");
+const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
+class ProductStrategyFactory {
+    static create(agamaVersion) {
+        if (agamaVersion.includes("pre")) {
+            return new pre_release_strategy_1.PreReleaseStrategy();
+        }
+        return new stable_release_strategy_1.StableReleaseStrategy();
+    }
+}
+exports.ProductStrategyFactory = ProductStrategyFactory;
+
+
+/***/ }),
+
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -1885,17 +1910,15 @@ exports.ZfcpPage = ZfcpPage;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
+const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
-const encryption_1 = __webpack_require__(/*! ./checks/encryption */ "./src/checks/encryption.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
-const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
@@ -1909,6 +1932,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option("--destructive-actions <actions>...", "comma separated list of actions (excluding 'Delete ')", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
+const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.agamaVersion);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -1916,44 +1940,107 @@ if (options.productId !== "none")
     else
         (0, product_selection_1.productSelection)(options.productId);
 (0, decryption_1.decryptDevice)(options.decryptPassword);
-if (options.agamaVersion.includes("pre"))
-    (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
-else
-    (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithoutTabs)(options.destructiveActions);
+testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
-if (options.agamaVersion.includes("pre"))
-    (0, encryption_1.enableEncryption)(options.password);
-else
-    (0, encryption_1.enableEncryptionWithoutTabs)(options.password);
+testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
     (0, registration_1.enterProductRegistration)({
         use_custom: options.useCustomRegistrationServer,
         code: options.registrationCode,
         provide_code: options.provideRegistrationCode,
     });
-if (options.agamaVersion.includes("pre"))
-    (0, encryption_1.verifyEncryptionEnabled)();
-else
-    (0, encryption_1.verifyEncryptionEnabledWithoutTabs)();
-if (options.agamaVersion.includes("pre"))
-    (0, encryption_1.disableEncryption)();
-else
-    (0, encryption_1.disableEncryptionWithoutTabs)();
+testStrategy.verifyEncryptionEnabled();
+testStrategy.disableEncryption();
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
-if (options.agamaVersion.includes("pre"))
-    (0, root_authentication_1.verifyPasswordStrength)();
-else
-    (0, root_authentication_1.verifyPasswordStrengthWithoutTabs)();
+testStrategy.verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp")
-    (0, storage_zfcp_1.prepareZfcpStorage)();
+    testStrategy.prepareZfcpStorage();
 (0, download_logs_1.downloadLogs)();
 if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.checkInstallation)();
     (0, installation_1.finishInstallation)();
 }
+
+
+/***/ }),
+
+/***/ "./src/variants/pre_release_strategy.ts":
+/*!**********************************************!*\
+  !*** ./src/variants/pre_release_strategy.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PreReleaseStrategy = void 0;
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+class PreReleaseStrategy {
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
+    }
+    enableEncryption(password) {
+        (0, encryption_1.enableEncryption)(password);
+    }
+    verifyEncryptionEnabled() {
+        (0, encryption_1.verifyEncryptionEnabled)();
+    }
+    disableEncryption() {
+        (0, encryption_1.disableEncryption)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrength)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorage)();
+    }
+}
+exports.PreReleaseStrategy = PreReleaseStrategy;
+
+
+/***/ }),
+
+/***/ "./src/variants/stable_release_strategy.ts":
+/*!*************************************************!*\
+  !*** ./src/variants/stable_release_strategy.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StableReleaseStrategy = void 0;
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+class StableReleaseStrategy {
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithoutTabs)(destructiveActions);
+    }
+    enableEncryption(password) {
+        (0, encryption_1.enableEncryptionWithoutTabs)(password);
+    }
+    verifyEncryptionEnabled() {
+        (0, encryption_1.verifyEncryptionEnabledWithoutTabs)();
+    }
+    disableEncryption() {
+        (0, encryption_1.disableEncryptionWithoutTabs)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrengthWithoutTabs)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorageWithoutTabs)();
+    }
+}
+exports.StableReleaseStrategy = StableReleaseStrategy;
 
 
 /***/ }),
