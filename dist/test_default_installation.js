@@ -151,16 +151,10 @@ function logIn(password) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.productSelectionByName = productSelectionByName;
 exports.productSelection = productSelection;
 exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelectionByName(productName) {
-    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectByName(productName);
-    });
-}
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
         const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
@@ -289,11 +283,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
-exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
 exports.verifyPasswordStrength = verifyPasswordStrength;
 exports.verifyPasswordStrengthWithoutTabs = verifyPasswordStrengthWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
@@ -312,15 +304,6 @@ function editRootUser(password) {
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
     });
-}
-function setupMandatoryRootAuth(password) {
-    (0, helpers_1.it)("should setup root user authentication password", async function () {
-        const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
-        // longer timeout to refresh repos when coming from product selection
-        await setupRootuserAuthentication.wait(3 * 60 * 1000);
-        await setupRootuserAuthentication.fillPassword(password);
-        await setupRootuserAuthentication.submit();
-    }, 3 * 60 * 1000);
 }
 function verifyPasswordStrength() {
     (0, helpers_1.it)("should verify the strength of typed password", async function () {
@@ -580,12 +563,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Desktop = exports.ProductId = exports.page = void 0;
-exports.startBrowser = startBrowser;
-exports.finishBrowser = finishBrowser;
+exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
-exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
@@ -751,27 +731,6 @@ function sleep(ms) {
 function getTextContent(locator) {
     return locator.map((element) => element.textContent).wait();
 }
-// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
-var ProductId;
-(function (ProductId) {
-    ProductId["Leap_16.0"] = "Leap 16.0";
-    ProductId["MicroOS"] = "openSUSE MicroOS";
-    ProductId["SLES_16.0"] = "SUSE Linux Enterprise Server 16.0";
-    ProductId["SLES_SAP_16.0"] = "SUSE Linux Enterprise Server for SAP Applications 16.0";
-    ProductId["Slowroll"] = "Slowroll";
-    ProductId["Tumbleweed"] = "openSUSE Tumbleweed";
-    ProductId["None"] = "none";
-})(ProductId || (exports.ProductId = ProductId = {}));
-;
-var Desktop;
-(function (Desktop) {
-    Desktop["gnome"] = "GNOME Desktop Environment (Wayland)";
-    Desktop["kde"] = "KDE Applications and Plasma Desktop";
-    Desktop["xfce"] = "XFCE Desktop Environment";
-    Desktop["basic"] = "A basic desktop (based on IceWM)";
-    Desktop["none"] = "None";
-})(Desktop || (exports.Desktop = Desktop = {}));
-;
 async function waitOnFile(filePath) {
     const opts = {
         resources: [filePath],
@@ -1221,38 +1180,6 @@ class SetARootPasswordPage {
     }
 }
 exports.SetARootPasswordPage = SetARootPasswordPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/setup_root_user_authentication_page.ts":
-/*!**********************************************************!*\
-  !*** ./src/pages/setup_root_user_authentication_page.ts ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetupRootUserAuthenticationPage = void 0;
-class SetupRootUserAuthenticationPage {
-    page;
-    rootPasswordInput = () => this.page.locator("input#rootPassword");
-    submitButton = () => this.page.locator("button[type='submit']");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait(timeout) {
-        await this.rootPasswordInput().setTimeout(timeout).wait();
-    }
-    async fillPassword(password) {
-        await this.rootPasswordInput().fill(password);
-    }
-    async submit() {
-        await this.submitButton().click();
-    }
-}
-exports.SetupRootUserAuthenticationPage = SetupRootUserAuthenticationPage;
 
 
 /***/ }),

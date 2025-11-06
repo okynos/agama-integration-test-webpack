@@ -221,12 +221,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Desktop = exports.ProductId = exports.page = void 0;
-exports.startBrowser = startBrowser;
-exports.finishBrowser = finishBrowser;
+exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
-exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
@@ -392,27 +389,6 @@ function sleep(ms) {
 function getTextContent(locator) {
     return locator.map((element) => element.textContent).wait();
 }
-// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
-var ProductId;
-(function (ProductId) {
-    ProductId["Leap_16.0"] = "Leap 16.0";
-    ProductId["MicroOS"] = "openSUSE MicroOS";
-    ProductId["SLES_16.0"] = "SUSE Linux Enterprise Server 16.0";
-    ProductId["SLES_SAP_16.0"] = "SUSE Linux Enterprise Server for SAP Applications 16.0";
-    ProductId["Slowroll"] = "Slowroll";
-    ProductId["Tumbleweed"] = "openSUSE Tumbleweed";
-    ProductId["None"] = "none";
-})(ProductId || (exports.ProductId = ProductId = {}));
-;
-var Desktop;
-(function (Desktop) {
-    Desktop["gnome"] = "GNOME Desktop Environment (Wayland)";
-    Desktop["kde"] = "KDE Applications and Plasma Desktop";
-    Desktop["xfce"] = "XFCE Desktop Environment";
-    Desktop["basic"] = "A basic desktop (based on IceWM)";
-    Desktop["none"] = "None";
-})(Desktop || (exports.Desktop = Desktop = {}));
-;
 async function waitOnFile(filePath) {
     const opts = {
         resources: [filePath],

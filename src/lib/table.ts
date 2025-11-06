@@ -104,6 +104,7 @@ async function getCell(
   return cell;
 }
 
+// ts-prune-ignore-next
 export async function getTextInCells(
   page: Page,
   tableSelector: string,
@@ -132,6 +133,7 @@ export async function getTextInCells(
   return readCell(page, tableSelector, row, targetColumns);
 }
 
+// ts-prune-ignore-next
 export async function getElementInCell(
   page: Page,
   tableSelector: string,

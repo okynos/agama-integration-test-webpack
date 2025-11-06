@@ -33,6 +33,11 @@ jobs:
       - name: Run ESLint
         run: npm run eslint
 
+      - name: Run prune check
+        run: |
+          echo "The following is a list of unused exports that need to be removed:"
+          npm run prune
+
       - name: Create archive
         if: github.event_name == 'push'
         run: tar -czf dist.tar.gz dist
