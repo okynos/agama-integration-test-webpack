@@ -234,6 +234,37 @@ function selectPatterns(patterns) {
 
 /***/ }),
 
+/***/ "./src/checks/storage_out_of_sync.ts":
+/*!*******************************************!*\
+  !*** ./src/checks/storage_out_of_sync.ts ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyStorageOutOfSync = verifyStorageOutOfSync;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const util_1 = __importDefault(__webpack_require__(/*! util */ "util"));
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const child_process_1 = __webpack_require__(/*! child_process */ "child_process");
+const storage_out_of_sync_alert_page_1 = __webpack_require__(/*! ../pages/storage_out_of_sync_alert_page */ "./src/pages/storage_out_of_sync_alert_page.ts");
+function verifyStorageOutOfSync() {
+    (0, helpers_1.it)("should verify storage out of sync popup", async function () {
+        const storageOutOfSyncAlertPage = new storage_out_of_sync_alert_page_1.StorageOutOfSyncAlertPage(helpers_1.page);
+        const execPromise = util_1.default.promisify(child_process_1.exec);
+        await execPromise("agama probe");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storageOutOfSyncAlertPage.configurationOutOfSyncWarningAlert()), "Configuration out of sync");
+        await storageOutOfSyncAlertPage.reload();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -949,6 +980,32 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_out_of_sync_alert_page.ts":
+/*!*****************************************************!*\
+  !*** ./src/pages/storage_out_of_sync_alert_page.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageOutOfSyncAlertPage = void 0;
+class StorageOutOfSyncAlertPage {
+    page;
+    configurationOutOfSyncWarningAlert = () => this.page.locator("::-p-text(Configuration out of sync)");
+    reloadButton = () => this.page.locator("::-p-text(Reload now)");
+    constructor(page) {
+        this.page = page;
+    }
+    async reload() {
+        await this.reloadButton().setTimeout(60000).click();
+    }
+}
+exports.StorageOutOfSyncAlertPage = StorageOutOfSyncAlertPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/trust_registration_certificate_page.ts":
 /*!**********************************************************!*\
   !*** ./src/pages/trust_registration_certificate_page.ts ***!
@@ -990,6 +1047,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ./checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
@@ -1000,6 +1058,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
 (0, login_1.logIn)(options.password);
 (0, registration_1.enterExtensionRegistrationPHub)();
 (0, software_selection_1.selectPatterns)(options.patterns);
+(0, storage_out_of_sync_1.verifyStorageOutOfSync)();
 (0, installation_1.performInstallation)();
 (0, installation_1.finishInstallation)();
 
