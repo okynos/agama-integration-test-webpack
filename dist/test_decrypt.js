@@ -28,36 +28,6 @@ function decryptDevice(password) {
 
 /***/ }),
 
-/***/ "./src/checks/download_logs.ts":
-/*!*************************************!*\
-  !*** ./src/checks/download_logs.ts ***!
-  \*************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.downloadLogs = downloadLogs;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
-const options_toggle_page_1 = __webpack_require__(/*! ../pages/options_toggle_page */ "./src/pages/options_toggle_page.ts");
-const filePath = "/root/Downloads/agama-logs.tar.gz";
-async function downloadLogs() {
-    (0, helpers_1.it)(`should download logs`, async function () {
-        await new options_toggle_page_1.OptionsTogglePage(helpers_1.page).downloadLogs();
-        await (0, helpers_1.waitOnFile)(filePath);
-        const fileSize = fs_1.default.statSync(filePath).size;
-        (0, strict_1.default)(fileSize > 0, "Agama Logfile is empty.");
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/encryption.ts":
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
@@ -188,33 +158,6 @@ function createFirstUser(password) {
         await createFirstUser.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/hostname.ts":
-/*!********************************!*\
-  !*** ./src/checks/hostname.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setPermanentHostname = setPermanentHostname;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function setPermanentHostname(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
-        await sidebar.goToHostname();
-        await hostnamePage.useStaticHostname();
-        await hostnamePage.fill(hostname);
-        await hostnamePage.accept();
     });
 }
 
@@ -1209,39 +1152,6 @@ exports.ExtensionRegistrationPHubPage = ExtensionRegistrationPHubPage;
 
 /***/ }),
 
-/***/ "./src/pages/hostname_page.ts":
-/*!************************************!*\
-  !*** ./src/pages/hostname_page.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HostnamePage = void 0;
-class HostnamePage {
-    page;
-    useStaticHostnameToggle = () => this.page.locator("input#hostname");
-    hostnameInput = () => this.page.locator("::-p-aria(Static hostname)");
-    acceptButton = () => this.page.locator("::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async useStaticHostname() {
-        await this.useStaticHostnameToggle().click();
-    }
-    async fill(hostname) {
-        await this.hostnameInput().fill(hostname);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.HostnamePage = HostnamePage;
-
-
-/***/ }),
-
 /***/ "./src/pages/installation_page.ts":
 /*!****************************************!*\
   !*** ./src/pages/installation_page.ts ***!
@@ -1292,33 +1202,6 @@ class LoginAsRootPage {
     }
 }
 exports.LoginAsRootPage = LoginAsRootPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/options_toggle_page.ts":
-/*!******************************************!*\
-  !*** ./src/pages/options_toggle_page.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OptionsTogglePage = void 0;
-class OptionsTogglePage {
-    page;
-    optionsToggle = () => this.page.locator("::-p-aria(Options toggle)");
-    downloadLogsMenuItem = () => this.page.locator("::-p-aria(Download logs)");
-    constructor(page) {
-        this.page = page;
-    }
-    async downloadLogs() {
-        await this.optionsToggle().click();
-        await this.downloadLogsMenuItem().click();
-    }
-}
-exports.OptionsTogglePage = OptionsTogglePage;
 
 
 /***/ }),
@@ -1826,10 +1709,10 @@ exports.ZfcpPage = ZfcpPage;
 
 /***/ }),
 
-/***/ "./src/test_extended.ts":
-/*!******************************!*\
-  !*** ./src/test_extended.ts ***!
-  \******************************/
+/***/ "./src/test_decrypt.ts":
+/*!*****************************!*\
+  !*** ./src/test_decrypt.ts ***!
+  \*****************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1841,20 +1724,19 @@ const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strateg
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
-const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
-const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
+    .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
-    .option("--registration-code <code>", "Registration code")
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--provide-registration-code", "provide registration code for customer registration")
-    .option("--staticHostname <hostname>", "Static Hostname")
-    .option("--install", "Proceed to install the system (the default is not to install it)"));
+    .option("--registration-code <code>", "Registration code")
+    .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
+    .option("--destructive-actions <actions>...", "comma separated list of actions (excluding 'Delete ')", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.agamaVersion);
 (0, login_1.logIn)(options.password);
@@ -1865,26 +1747,16 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
 (0, decryption_1.decryptDevice)(options.decryptPassword);
 testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
-if (options.staticHostname)
-    (0, hostname_1.setPermanentHostname)(options.staticHostname);
-testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
     (0, registration_1.enterProductRegistration)({
         use_custom: options.useCustomRegistrationServer,
         code: options.registrationCode,
         provide_code: options.provideRegistrationCode,
     });
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
-testStrategy.verifyPasswordStrength();
-if (options.prepareAdvancedStorage === "zfcp")
-    testStrategy.prepareZfcpStorage();
-(0, download_logs_1.downloadLogs)();
 if (options.install) {
     (0, installation_1.performInstallation)();
-    (0, installation_1.checkInstallation)();
     (0, installation_1.finishInstallation)();
 }
 
@@ -2351,7 +2223,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_extended.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_decrypt.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -2467,7 +2339,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_extended": 1
+/******/ 			"test_decrypt": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -2519,4 +2391,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_extended.js.map
+//# sourceMappingURL=test_decrypt.js.map

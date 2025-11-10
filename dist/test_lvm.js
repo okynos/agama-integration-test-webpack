@@ -797,19 +797,13 @@ exports.StorageWithoutTabsPage = StorageWithoutTabsPage;
 
 "use strict";
 
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const storage_select_installation_device_1 = __webpack_require__(/*! ./checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ./checks/network */ "./src/checks/network.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-// parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--connections-only-for-installation", "The connections will be used only during installation"));

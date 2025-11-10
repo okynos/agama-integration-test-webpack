@@ -609,12 +609,7 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 "use strict";
 
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");

@@ -697,18 +697,12 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 "use strict";
 
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-// parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)"));

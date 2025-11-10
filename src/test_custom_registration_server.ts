@@ -5,7 +5,6 @@ import { logIn } from "./checks/login";
 import { enterProductRegistration } from "./checks/registration";
 import { performInstallation, finishInstallation } from "./checks/installation";
 
-// parse options from the command line
 const options = parse((cmd) =>
   cmd
     .option("--use-custom-registration-server", "Enable custom registration server")

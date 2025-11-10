@@ -1537,7 +1537,6 @@ const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/c
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
-// parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")

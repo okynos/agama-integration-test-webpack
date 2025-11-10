@@ -1,29 +1,32 @@
-import { parse } from "./lib/cmdline";
+import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
 import { decryptDevice } from "./checks/decryption";
 import { editRootUser } from "./checks/root_authentication";
-import { enterProductRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
-import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
+import { enterProductRegistration } from "./checks/registration";
+import { performInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
-import { setPermanentHostname } from "./checks/hostname";
-import { downloadLogs } from "./checks/download_logs";
 
 const options = parse((cmd) =>
   cmd
+    .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option(
       "--accept-license",
       "Accept license for a product with license (the default is a product without license)",
     )
-    .option("--registration-code <code>", "Registration code")
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--provide-registration-code", "provide registration code for customer registration")
-    .option("--staticHostname <hostname>", "Static Hostname")
-    .option("--install", "Proceed to install the system (the default is not to install it)"),
+    .option("--registration-code <code>", "Registration code")
+    .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
+    .option(
+      "--destructive-actions <actions>...",
+      "comma separated list of actions (excluding 'Delete ')",
+      commaSeparatedList,
+    ),
 );
 
 test_init(options);
@@ -36,23 +39,15 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
 testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
-if (options.staticHostname) setPermanentHostname(options.staticHostname);
-testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
   enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
-downloadLogs();
 if (options.install) {
   performInstallation();
-  checkInstallation();
   finishInstallation();
 }
