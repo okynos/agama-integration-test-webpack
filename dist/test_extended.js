@@ -471,6 +471,44 @@ function verifyPasswordStrength() {
 
 /***/ }),
 
+/***/ "./src/checks/storage_change_disk_to_install.ts":
+/*!******************************************************!*\
+  !*** ./src/checks/storage_change_disk_to_install.ts ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.changeDiskToInstallTheSystem = changeDiskToInstallTheSystem;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const table_1 = __webpack_require__(/*! ../lib/table */ "./src/lib/table.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_change_disk_page_1 = __webpack_require__(/*! ../pages/storage_settings_change_disk_page */ "./src/pages/storage_settings_change_disk_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+function changeDiskToInstallTheSystem() {
+    (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.selectUsedDisk();
+        await storage.changeTheDiskToInstallTheSystem();
+        (await (0, table_1.getElementInCell)(helpers_1.page, storageSettingsChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
+        await storageSettingsChangeDisk.confirm();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
+        await storage.moreOptions();
+        await storage.resetToDefault();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_zfcp.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_zfcp.ts ***!
@@ -831,6 +869,114 @@ async function waitOnFile(filePath) {
     }
 }
 ;
+
+
+/***/ }),
+
+/***/ "./src/lib/table.ts":
+/*!**************************!*\
+  !*** ./src/lib/table.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTextInCells = getTextInCells;
+exports.getElementInCell = getElementInCell;
+async function getHeaders(page, tableSelector) {
+    const headers = await page.$$eval(`${tableSelector} th[scope="col"]`, (ths) => ths.map((th) => th.innerText.trim() || th.getAttribute('aria-label')));
+    return headers.map((h) => (h || "").trim());
+}
+async function getColumnIndex(page, tableSelector, column) {
+    const headers = await getHeaders(page, tableSelector);
+    const index = headers.indexOf(column);
+    if (index === -1) {
+        throw new Error(`Column "${column}" not found in table "${tableSelector}"`);
+    }
+    return index;
+}
+async function selectRow(page, tableSelector, column, value) {
+    const columnIndex = await getColumnIndex(page, tableSelector, column);
+    const rows = await page.$$(`${tableSelector} tbody tr`);
+    for (const row of rows) {
+        const selector = `*:nth-child(${columnIndex + 1})`;
+        const cell = await row.$(selector);
+        if (cell) {
+            const cellText = await cell.evaluate((c) => c.innerText);
+            if (cellText.trim() === value.trim()) {
+                return row;
+            }
+        }
+    }
+    throw new Error(`Row with "${column}: ${value}" not found in table "${tableSelector}"`);
+}
+async function readCells(page, tableSelector, row, columns) {
+    const headers = await getHeaders(page, tableSelector);
+    const columnInfo = columns.map((column) => {
+        const index = headers.indexOf(column);
+        if (index === -1) {
+            throw new Error(`Column "${column}" not found in table "${tableSelector}"`);
+        }
+        return { column, index };
+    });
+    return row.evaluate((r, colInfo) => {
+        const data = [];
+        for (const { index } of colInfo) {
+            const cell = r.querySelector(`*:nth-child(${index + 1})`);
+            if (cell) {
+                data.push(cell.innerText);
+            }
+            else {
+                data.push("");
+            }
+        }
+        return data;
+    }, columnInfo);
+}
+async function readCell(page, tableSelector, row, column) {
+    const columnIndex = await getColumnIndex(page, tableSelector, column);
+    const selector = `*:nth-child(${columnIndex + 1})`;
+    const cell = await row.$(selector);
+    if (!cell) {
+        throw new Error(`Cell in column "${column}" not found for the selected row.`);
+    }
+    return cell.evaluate((c) => c.innerText);
+}
+async function getCell(page, tableSelector, row, column) {
+    const columnIndex = await getColumnIndex(page, tableSelector, column);
+    const selector = `*:nth-child(${columnIndex + 1})`;
+    const cell = await row.$(selector);
+    if (!cell) {
+        throw new Error(`Cell in column "${column}" not found for the selected row.`);
+    }
+    return cell;
+}
+async function getTextInCells(page, tableSelector, rowColumn, rowValue, targetColumns) {
+    const row = await selectRow(page, tableSelector, rowColumn, rowValue);
+    if (Array.isArray(targetColumns)) {
+        return readCells(page, tableSelector, row, targetColumns);
+    }
+    return readCell(page, tableSelector, row, targetColumns);
+}
+// ts-prune-ignore-next
+async function getElementInCell(page, tableSelector, rowColumn, rowValue, elementSelector, targetColumn) {
+    const row = await selectRow(page, tableSelector, rowColumn, rowValue);
+    let searchContext = row;
+    if (targetColumn) {
+        searchContext = await getCell(page, tableSelector, row, targetColumn);
+    }
+    const element = await searchContext.$(elementSelector);
+    if (!element) {
+        let errorMessage = `Element with selector "${elementSelector}" not found`;
+        if (targetColumn) {
+            errorMessage += ` in column "${targetColumn}"`;
+        }
+        errorMessage += ` in the row identified by "${rowColumn}: ${rowValue}".`;
+        throw new Error(errorMessage);
+    }
+    return element;
+}
 
 
 /***/ }),
@@ -1419,6 +1565,33 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_settings_change_disk_page.ts":
+/*!********************************************************!*\
+  !*** ./src/pages/storage_settings_change_disk_page.ts ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageSettingsChangeDiskPage = void 0;
+class StorageSettingsChangeDiskPage {
+    page;
+    confirmButton = () => this.page.locator("button::-p-text(Confirm)");
+    diskTableSelector;
+    constructor(page) {
+        this.page = page;
+        this.diskTableSelector = 'div[aria-modal="true"] table[data-type="agama/expandable-selector"]';
+    }
+    async confirm() {
+        await this.confirmButton().click();
+    }
+}
+exports.StorageSettingsChangeDiskPage = StorageSettingsChangeDiskPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_settings_page.ts":
 /*!********************************************!*\
   !*** ./src/pages/storage_settings_page.ts ***!
@@ -1432,6 +1605,8 @@ exports.StorageSettingsPage = void 0;
 class StorageSettingsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    useDiskButton = () => this.page.locator("::-p-text(Use disk)");
+    selectDiskToInstallButton = () => this.page.locator("::-p-text(Change the disk to install the system)");
     encryptionTab = () => this.page.locator("::-p-text(Encryption)");
     changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
@@ -1442,8 +1617,17 @@ class StorageSettingsPage {
     expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
     optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
     editRootPartitionMenu = () => this.page.locator("::-p-aria(Edit /[role='menuitem'])");
+    threeDotsButton = () => this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
+    storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
+    resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
     constructor(page) {
         this.page = page;
+    }
+    async selectUsedDisk() {
+        await this.useDiskButton().click();
+    }
+    async changeTheDiskToInstallTheSystem() {
+        await this.selectDiskToInstallButton().click();
     }
     async selectMoreDevices() {
         await this.selectMoreDevicesButton().click();
@@ -1470,6 +1654,12 @@ class StorageSettingsPage {
         await this.expandPartitionsButton().click();
         await this.optionForRoot().click();
         await this.editRootPartitionMenu().click();
+    }
+    async moreOptions() {
+        await this.threeDotsButton().click();
+    }
+    async resetToDefault() {
+        await this.resetToDefaultsButton().click();
     }
 }
 exports.StorageSettingsPage = StorageSettingsPage;
@@ -1592,6 +1782,7 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const encryption_1 = __webpack_require__(/*! ./checks/encryption */ "./src/checks/encryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
+const storage_change_disk_to_install_1 = __webpack_require__(/*! ./checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
@@ -1628,6 +1819,7 @@ if (options.registrationCode)
 (0, encryption_1.enableEncryption)(options.password);
 (0, encryption_1.verifyEncryptionEnabled)();
 (0, encryption_1.disableEncryption)();
+(0, storage_change_disk_to_install_1.changeDiskToInstallTheSystem)();
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 (0, root_authentication_1.verifyPasswordStrength)();

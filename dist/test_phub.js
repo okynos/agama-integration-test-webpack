@@ -267,14 +267,14 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const util_1 = __importDefault(__webpack_require__(/*! util */ "util"));
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const child_process_1 = __webpack_require__(/*! child_process */ "child_process");
-const storage_out_of_sync_alert_page_1 = __webpack_require__(/*! ../pages/storage_out_of_sync_alert_page */ "./src/pages/storage_out_of_sync_alert_page.ts");
+const storage_warning_out_of_sync_page_1 = __webpack_require__(/*! ../pages/storage_warning_out_of_sync_page */ "./src/pages/storage_warning_out_of_sync_page.ts");
 function verifyStorageOutOfSync() {
     (0, helpers_1.it)("should verify storage out of sync popup", async function () {
-        const storageOutOfSyncAlertPage = new storage_out_of_sync_alert_page_1.StorageOutOfSyncAlertPage(helpers_1.page);
+        const storageWarningOutOfSyncPage = new storage_warning_out_of_sync_page_1.StorageWarningOutOfSyncPage(helpers_1.page);
         const execPromise = util_1.default.promisify(child_process_1.exec);
         await execPromise("agama probe");
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storageOutOfSyncAlertPage.configurationOutOfSyncWarningAlert()), "Configuration out of sync");
-        await storageOutOfSyncAlertPage.reload();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storageWarningOutOfSyncPage.configurationOutOfSyncWarningAlert()), "Configuration out of sync");
+        await storageWarningOutOfSyncPage.reload();
     });
 }
 
@@ -1005,17 +1005,17 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_out_of_sync_alert_page.ts":
-/*!*****************************************************!*\
-  !*** ./src/pages/storage_out_of_sync_alert_page.ts ***!
-  \*****************************************************/
+/***/ "./src/pages/storage_warning_out_of_sync_page.ts":
+/*!*******************************************************!*\
+  !*** ./src/pages/storage_warning_out_of_sync_page.ts ***!
+  \*******************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StorageOutOfSyncAlertPage = void 0;
-class StorageOutOfSyncAlertPage {
+exports.StorageWarningOutOfSyncPage = void 0;
+class StorageWarningOutOfSyncPage {
     page;
     configurationOutOfSyncWarningAlert = () => this.page.locator("::-p-text(Configuration out of sync)");
     reloadButton = () => this.page.locator("::-p-text(Reload now)");
@@ -1026,7 +1026,7 @@ class StorageOutOfSyncAlertPage {
         await this.reloadButton().setTimeout(60000).click();
     }
 }
-exports.StorageOutOfSyncAlertPage = StorageOutOfSyncAlertPage;
+exports.StorageWarningOutOfSyncPage = StorageWarningOutOfSyncPage;
 
 
 /***/ }),

@@ -1,6 +1,6 @@
 import { type Page } from "puppeteer-core";
 
-export class StorageOutOfSyncAlertPage {
+export class StorageWarningOutOfSyncPage {
   private readonly page: Page;
 
   readonly configurationOutOfSyncWarningAlert = () =>

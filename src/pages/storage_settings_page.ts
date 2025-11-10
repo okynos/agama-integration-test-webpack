@@ -3,6 +3,9 @@ import { type Page } from "puppeteer-core";
 export class StorageSettingsPage {
   private readonly page: Page;
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+  private readonly useDiskButton = () => this.page.locator("::-p-text(Use disk)");
+  private readonly selectDiskToInstallButton = () =>
+    this.page.locator("::-p-text(Change the disk to install the system)");
 
   private readonly encryptionTab = () => this.page.locator("::-p-text(Encryption)");
   private readonly changeEncryptionLink = () =>
@@ -26,8 +29,24 @@ export class StorageSettingsPage {
   private readonly editRootPartitionMenu = () =>
     this.page.locator("::-p-aria(Edit /[role='menuitem'])");
 
+  private readonly threeDotsButton = () =>
+    this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
+
+  public readonly storageAllocationWarningText = () =>
+    this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
+
+  private readonly resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+
   constructor(page: Page) {
     this.page = page;
+  }
+
+  async selectUsedDisk() {
+    await this.useDiskButton().click();
+  }
+
+  async changeTheDiskToInstallTheSystem() {
+    await this.selectDiskToInstallButton().click();
   }
 
   async selectMoreDevices() {
@@ -62,5 +81,13 @@ export class StorageSettingsPage {
     await this.expandPartitionsButton().click();
     await this.optionForRoot().click();
     await this.editRootPartitionMenu().click();
+  }
+
+  async moreOptions() {
+    await this.threeDotsButton().click();
+  }
+
+  async resetToDefault() {
+    await this.resetToDefaultsButton().click();
   }
 }
