@@ -861,7 +861,6 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-// parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--registration-server-url <url>", "Custom registration url")

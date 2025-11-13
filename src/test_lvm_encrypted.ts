@@ -6,7 +6,6 @@ import { performInstallation, finishInstallation } from "./checks/installation";
 import { selectMoreDevices } from "./checks/storage_select_installation_device";
 import { enableEncryption } from "./checks/encryption";
 
-// parse options from the command line
 const options = parse((cmd) =>
   cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
 );

@@ -470,17 +470,11 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 "use strict";
 
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const autoyast_unsupported_1 = __webpack_require__(/*! ./checks/autoyast_unsupported */ "./src/checks/autoyast_unsupported.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-// parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--not-implemented <elements>", "comma-separated list of not implemented yet elements", cmdline_1.commaSeparatedList)
     .option("--not-supported <elements>", "comma-separated list of not supported elements", cmdline_1.commaSeparatedList));

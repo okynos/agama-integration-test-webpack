@@ -12,7 +12,6 @@ import { productSelection, productSelectionWithLicense } from "./checks/product_
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { selectPatterns } from "./checks/software_selection";
 
-// parse options from the command line
 const options = parse((cmd) =>
   cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
