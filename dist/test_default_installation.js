@@ -27,6 +27,108 @@ function ensureProductConfigurationStarted() {
 
 /***/ }),
 
+/***/ "./src/checks/encryption.ts":
+/*!**********************************!*\
+  !*** ./src/checks/encryption.ts ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.enableEncryption = enableEncryption;
+exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
+exports.disableEncryption = disableEncryption;
+exports.enableEncryptionWithoutTabs = enableEncryptionWithoutTabs;
+exports.verifyEncryptionEnabledWithoutTabs = verifyEncryptionEnabledWithoutTabs;
+exports.disableEncryptionWithoutTabs = disableEncryptionWithoutTabs;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const encryption_settings_without_tabs_page_1 = __webpack_require__(/*! ../pages/encryption_settings_without_tabs_page */ "./src/pages/encryption_settings_without_tabs_page.ts");
+const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+function enableEncryption(password) {
+    (0, helpers_1.it)("should enable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.markEncryptTheSystem();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
+        await storageSettings.encryptionIsEnabledText().wait();
+    });
+}
+function verifyEncryptionEnabled() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.selectEncryption();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is enabled");
+    });
+}
+function disableEncryption() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.unmarkEncryptTheSystem();
+        await encryptionSettings.accept();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is disabled");
+    });
+}
+function enableEncryptionWithoutTabs(password) {
+    (0, helpers_1.it)("should enable encryption", async function () {
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_without_tabs_page_1.EncryptionSettingsWithoutTabsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editEncryption();
+        await encryptionSettings.checkEncryption();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
+        await storage.verifyEncryptionEnabled();
+    });
+}
+function verifyEncryptionEnabledWithoutTabs() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.verifyEncryptionEnabled();
+    });
+}
+function disableEncryptionWithoutTabs() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_without_tabs_page_1.EncryptionSettingsWithoutTabsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editEncryption();
+        await encryptionSettings.uncheckEncryption();
+        await encryptionSettings.accept();
+        await storage.verifyEncryptionDisabled();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/first_user.ts":
 /*!**********************************!*\
   !*** ./src/checks/first_user.ts ***!
@@ -369,6 +471,45 @@ function selectPatterns(patterns) {
         for (const pattern of patterns)
             await softwareSelection.selectPattern(pattern);
         await softwareSelection.close();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
+/*!******************************************************************!*\
+  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
+exports.verifyDecryptDestructiveActionsWithoutTabs = verifyDecryptDestructiveActionsWithoutTabs;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
+const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
+function verifyDecryptDestructiveActions(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        await storage.scrollToDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+    });
+}
+function verifyDecryptDestructiveActionsWithoutTabs(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        storage.expandDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.verifyDestructiveAction(action);
+        }
     });
 }
 
@@ -750,6 +891,31 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
+/***/ "./src/lib/product_strategy_factory.ts":
+/*!*********************************************!*\
+  !*** ./src/lib/product_strategy_factory.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProductStrategyFactory = void 0;
+const pre_release_strategy_1 = __webpack_require__(/*! ../variants/pre_release_strategy */ "./src/variants/pre_release_strategy.ts");
+const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
+class ProductStrategyFactory {
+    static create(agamaVersion) {
+        if (agamaVersion.includes("pre")) {
+            return new pre_release_strategy_1.PreReleaseStrategy();
+        }
+        return new stable_release_strategy_1.StableReleaseStrategy();
+    }
+}
+exports.ProductStrategyFactory = ProductStrategyFactory;
+
+
+/***/ }),
+
 /***/ "./src/pages/configuring_product_page.ts":
 /*!***********************************************!*\
   !*** ./src/pages/configuring_product_page.ts ***!
@@ -862,6 +1028,92 @@ class CreateFirstUserPage {
     }
 }
 exports.CreateFirstUserPage = CreateFirstUserPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/encryption_settings_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/encryption_settings_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptionSettingsPage = void 0;
+class EncryptionSettingsPage {
+    page;
+    encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
+    encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async markEncryptTheSystem() {
+        await this.encryptTheSystemNotCheckedCheckbox().click();
+        await this.encryptTheSystemCheckedCheckbox().wait();
+    }
+    async unmarkEncryptTheSystem() {
+        await this.encryptTheSystemCheckedCheckbox().click();
+        await this.encryptTheSystemNotCheckedCheckbox().wait();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.EncryptionSettingsPage = EncryptionSettingsPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/encryption_settings_without_tabs_page.ts":
+/*!************************************************************!*\
+  !*** ./src/pages/encryption_settings_without_tabs_page.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptionSettingsWithoutTabsPage = void 0;
+class EncryptionSettingsWithoutTabsPage {
+    page;
+    encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
+    encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async checkEncryption() {
+        await this.encryptTheSystemNotCheckedCheckbox().click();
+        await this.encryptTheSystemCheckedCheckbox().wait();
+    }
+    async uncheckEncryption() {
+        await this.encryptTheSystemCheckedCheckbox().click();
+        await this.encryptTheSystemNotCheckedCheckbox().wait();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.EncryptionSettingsWithoutTabsPage = EncryptionSettingsWithoutTabsPage;
 
 
 /***/ }),
@@ -1302,6 +1554,32 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_result_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/storage_result_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageResultPage = void 0;
+class StorageResultPage {
+    page;
+    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
+    }
+}
+exports.StorageResultPage = StorageResultPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_settings_page.ts":
 /*!********************************************!*\
   !*** ./src/pages/storage_settings_page.ts ***!
@@ -1528,6 +1806,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
+const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const configuration_started_1 = __webpack_require__(/*! ./checks/configuration_started */ "./src/checks/configuration_started.ts");
@@ -1535,7 +1814,6 @@ const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/c
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
@@ -1547,6 +1825,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--provide-registration-code", "provide registration code for customer registration")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
+const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.agamaVersion);
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1568,11 +1847,89 @@ if (options.patterns)
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp")
-    (0, storage_zfcp_1.prepareZfcpStorage)();
+    testStrategy.prepareZfcpStorage();
 if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.finishInstallation)();
 }
+
+
+/***/ }),
+
+/***/ "./src/variants/pre_release_strategy.ts":
+/*!**********************************************!*\
+  !*** ./src/variants/pre_release_strategy.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PreReleaseStrategy = void 0;
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+class PreReleaseStrategy {
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
+    }
+    enableEncryption(password) {
+        (0, encryption_1.enableEncryption)(password);
+    }
+    verifyEncryptionEnabled() {
+        (0, encryption_1.verifyEncryptionEnabled)();
+    }
+    disableEncryption() {
+        (0, encryption_1.disableEncryption)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrength)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorage)();
+    }
+}
+exports.PreReleaseStrategy = PreReleaseStrategy;
+
+
+/***/ }),
+
+/***/ "./src/variants/stable_release_strategy.ts":
+/*!*************************************************!*\
+  !*** ./src/variants/stable_release_strategy.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StableReleaseStrategy = void 0;
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+class StableReleaseStrategy {
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithoutTabs)(destructiveActions);
+    }
+    enableEncryption(password) {
+        (0, encryption_1.enableEncryptionWithoutTabs)(password);
+    }
+    verifyEncryptionEnabled() {
+        (0, encryption_1.verifyEncryptionEnabledWithoutTabs)();
+    }
+    disableEncryption() {
+        (0, encryption_1.disableEncryptionWithoutTabs)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrengthWithoutTabs)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorageWithoutTabs)();
+    }
+}
+exports.StableReleaseStrategy = StableReleaseStrategy;
 
 
 /***/ }),
