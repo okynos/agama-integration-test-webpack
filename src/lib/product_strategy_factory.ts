@@ -11,8 +11,10 @@ export interface IProductTestStrategy {
 }
 
 export class ProductStrategyFactory {
-  public static create(agamaVersion: string): IProductTestStrategy {
-    if (agamaVersion.includes("pre")) {
+  public static create(productVersion: string, agamaVersion: string): IProductTestStrategy {
+    const major_version = parseInt(productVersion.split('.')[0]);
+    const minor_version = parseInt(productVersion.split('.')[1]);
+    if (( major_version === 16 && minor_version >= 1) || agamaVersion.includes("pre")) {
       return new PreReleaseStrategy();
     }
     return new StableReleaseStrategy();

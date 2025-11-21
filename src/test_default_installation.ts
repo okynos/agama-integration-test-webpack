@@ -34,7 +34,7 @@ const options = parse((cmd) =>
     ),
 );
 
-const testStrategy = ProductStrategyFactory.create(options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 
 test_init(options);
 logIn(options.password);

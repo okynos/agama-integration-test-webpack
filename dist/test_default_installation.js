@@ -904,8 +904,10 @@ exports.ProductStrategyFactory = void 0;
 const pre_release_strategy_1 = __webpack_require__(/*! ../variants/pre_release_strategy */ "./src/variants/pre_release_strategy.ts");
 const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
 class ProductStrategyFactory {
-    static create(agamaVersion) {
-        if (agamaVersion.includes("pre")) {
+    static create(productVersion, agamaVersion) {
+        const major_version = parseInt(productVersion.split('.')[0]);
+        const minor_version = parseInt(productVersion.split('.')[1]);
+        if ((major_version === 16 && minor_version >= 1) || agamaVersion.includes("pre")) {
             return new pre_release_strategy_1.PreReleaseStrategy();
         }
         return new stable_release_strategy_1.StableReleaseStrategy();
@@ -1825,7 +1827,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--provide-registration-code", "provide registration code for customer registration")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
-const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.agamaVersion);
+const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
