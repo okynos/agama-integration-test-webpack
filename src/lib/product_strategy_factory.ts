@@ -12,7 +12,7 @@ export interface IProductTestStrategy {
 
 export class ProductStrategyFactory {
   public static create(agamaVersion: string): IProductTestStrategy {
-    if (agamaVersion.includes("pre")) {
+    if (parseInt(agamaVersion.split('.')[0]) >= 18 || agamaVersion.includes("pre")) {
       return new PreReleaseStrategy();
     }
     return new StableReleaseStrategy();

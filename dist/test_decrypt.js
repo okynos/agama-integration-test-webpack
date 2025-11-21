@@ -876,7 +876,7 @@ const pre_release_strategy_1 = __webpack_require__(/*! ../variants/pre_release_s
 const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
 class ProductStrategyFactory {
     static create(agamaVersion) {
-        if (agamaVersion.includes("pre")) {
+        if (parseInt(agamaVersion.split('.')[0]) >= 18 || agamaVersion.includes("pre")) {
             return new pre_release_strategy_1.PreReleaseStrategy();
         }
         return new stable_release_strategy_1.StableReleaseStrategy();
