@@ -31,7 +31,7 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(options.productVersion);
 
 logIn(options.password);
 if (options.productId !== "none")

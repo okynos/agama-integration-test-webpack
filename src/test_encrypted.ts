@@ -9,7 +9,7 @@ const options = parse((cmd) =>
   cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(options.productVersion);
 
 test_init(options);
 logIn(options.password);
