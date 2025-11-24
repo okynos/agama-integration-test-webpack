@@ -684,12 +684,12 @@ async function waitOnFile(filePath) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductStrategyFactory = void 0;
-const pre_release_strategy_1 = __webpack_require__(/*! ../variants/pre_release_strategy */ "./src/variants/pre_release_strategy.ts");
+const product_release_strategy_1 = __webpack_require__(/*! ../variants/product_release_strategy */ "./src/variants/product_release_strategy.ts");
 const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
 class ProductStrategyFactory {
-    static create(agamaVersion) {
-        if (agamaVersion.includes("pre")) {
-            return new pre_release_strategy_1.PreReleaseStrategy();
+    static create(productVersion) {
+        if (productVersion === "16.1") {
+            return new product_release_strategy_1.ProductReleaseStrategy();
         }
         return new stable_release_strategy_1.StableReleaseStrategy();
     }
@@ -1248,7 +1248,7 @@ const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strateg
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
-const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.agamaVersion);
+const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion);
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 testStrategy.enableEncryption(options.password);
@@ -1260,21 +1260,21 @@ if (options.install) {
 
 /***/ }),
 
-/***/ "./src/variants/pre_release_strategy.ts":
-/*!**********************************************!*\
-  !*** ./src/variants/pre_release_strategy.ts ***!
-  \**********************************************/
+/***/ "./src/variants/product_release_strategy.ts":
+/*!**************************************************!*\
+  !*** ./src/variants/product_release_strategy.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PreReleaseStrategy = void 0;
+exports.ProductReleaseStrategy = void 0;
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
-class PreReleaseStrategy {
+class ProductReleaseStrategy {
     verifyDecryptDestructiveActions(destructiveActions) {
         (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
     }
@@ -1294,7 +1294,7 @@ class PreReleaseStrategy {
         (0, storage_zfcp_1.prepareZfcpStorage)();
     }
 }
-exports.PreReleaseStrategy = PreReleaseStrategy;
+exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
 
 /***/ }),

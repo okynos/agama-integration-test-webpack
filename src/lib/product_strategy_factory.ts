@@ -1,4 +1,4 @@
-import { PreReleaseStrategy } from "../variants/pre_release_strategy";
+import { ProductReleaseStrategy } from "../variants/product_release_strategy";
 import { StableReleaseStrategy } from "../variants/stable_release_strategy";
 
 export interface IProductTestStrategy {
@@ -11,9 +11,9 @@ export interface IProductTestStrategy {
 }
 
 export class ProductStrategyFactory {
-  public static create(agamaVersion: string): IProductTestStrategy {
-    if (agamaVersion.includes("pre")) {
-      return new PreReleaseStrategy();
+  public static create(productVersion: string): IProductTestStrategy {
+    if (productVersion === "16.1") {
+      return new ProductReleaseStrategy();
     }
     return new StableReleaseStrategy();
   }

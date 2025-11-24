@@ -4,7 +4,7 @@ import { enableEncryption, verifyEncryptionEnabled, disableEncryption } from "..
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 
-export class PreReleaseStrategy implements IProductTestStrategy {
+export class ProductReleaseStrategy implements IProductTestStrategy {
   verifyDecryptDestructiveActions(destructiveActions: string[]) {
     verifyDecryptDestructiveActions(destructiveActions);
   }
