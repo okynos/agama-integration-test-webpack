@@ -725,6 +725,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
+        protocolTimeout: 350000,
         slowMo,
         defaultViewport: {
             width: 1280,
