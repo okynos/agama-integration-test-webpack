@@ -57,6 +57,8 @@ async function startBrowser(
     headless,
     ignoreHTTPSErrors: true,
     timeout: 30000,
+    // This timeout is increased due to DASD format step review in future changes
+    protocolTimeout: 360000,
     slowMo,
     defaultViewport: {
       width: 1280,
