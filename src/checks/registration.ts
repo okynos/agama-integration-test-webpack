@@ -108,3 +108,51 @@ export function enterExtensionRegistrationPHub() {
     );
   });
 }
+
+export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: string): void {
+  it("should show warning alert for missing registration code", async function () {
+    const sidebar = new SidebarWithRegistrationPage(page);
+    const customRegistration = new CustomRegistrationPage(page);
+
+    await sidebar.goToRegistration();
+    if (use_custom) await customRegistration.selectProvideRegistrationCode();
+    await customRegistration.register();
+    assert.deepEqual(
+      await getTextContent(customRegistration.enterRegistrationCodeText()),
+      "Enter a registration code",
+    );
+  });
+
+  it("should show warning alert for invalid registration code", async function () {
+    const customRegistration = new CustomRegistrationPage(page);
+
+    await customRegistration.fillCode("1234invalid4321");
+    await customRegistration.register();
+    assert.deepEqual(
+      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+      "Warning alert:Connection to registration server failed: Unknown Registration Code.",
+    );
+  });
+
+  it("should show warning alert for invalid custom registration server", async function () {
+    const customRegistration = new CustomRegistrationPage(page);
+
+    await customRegistration.selectCustomRegistrationServer();
+    await customRegistration.selectProvideRegistrationCode();
+    await customRegistration.fillServerUrl("http://scc.example.net");
+    await customRegistration.register();
+
+    assert.match(
+      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+      /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
+    );
+
+    if (use_custom) {
+      await customRegistration.fillServerUrl(url);
+    } else {
+      await customRegistration.selectSCCRegistrationServer();
+      await customRegistration.fillCode("1234invalid4321");
+    }
+    await customRegistration.register();
+  });
+}

@@ -300,6 +300,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterProductRegistration = enterProductRegistration;
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
+exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const product_registration_page_1 = __webpack_require__(/*! ../pages/product_registration_page */ "./src/pages/product_registration_page.ts");
@@ -366,6 +367,39 @@ function enterExtensionRegistrationPHub() {
         strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.trustKeyText()), /is unknown. Do you want to trust this key?/);
         await extensionRegistrationPHub.trustKey();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
+    });
+}
+function verifyRegistrationWarniningAlerts(use_custom, url) {
+    (0, helpers_1.it)("should show warning alert for missing registration code", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        if (use_custom)
+            await customRegistration.selectProvideRegistrationCode();
+        await customRegistration.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
+    });
+    (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await customRegistration.fillCode("1234invalid4321");
+        await customRegistration.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), "Warning alert:Connection to registration server failed: Unknown Registration Code.");
+    });
+    (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await customRegistration.selectCustomRegistrationServer();
+        await customRegistration.selectProvideRegistrationCode();
+        await customRegistration.fillServerUrl("http://scc.example.net");
+        await customRegistration.register();
+        strict_1.default.match(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/);
+        if (use_custom) {
+            await customRegistration.fillServerUrl(url);
+        }
+        else {
+            await customRegistration.selectSCCRegistrationServer();
+            await customRegistration.fillCode("1234invalid4321");
+        }
+        await customRegistration.register();
     });
 }
 
@@ -754,7 +788,8 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
-        protocolTimeout: 350000,
+        // This timeout is increased due to DASD format step review in future changes
+        protocolTimeout: 360000,
         slowMo,
         defaultViewport: {
             width: 1280,
@@ -1283,6 +1318,8 @@ class RegistrationBasePage {
     infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     registerButton = () => this.page.locator("::-p-aria(Register)");
     registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
+    connectionToRegistrationServerFailedText = () => this.page.locator("::-p-text(Connection to registration server failed:)");
+    enterRegistrationCodeText = () => this.page.locator("::-p-text(Enter a registration code)");
     constructor(page) {
         this.page = page;
     }
@@ -1306,6 +1343,7 @@ function CustomRegistrable(Base) {
     return class extends Base {
         registrationServerButton = () => this.page.locator("::-p-aria(Registration server)");
         registrationServerCustomOption = () => this.page.locator("::-p-aria(Custom Register using a custom registration server)");
+        registrationServerSCCOption = () => this.page.locator("::-p-aria(SUSE Customer Center (SCC) Register using SUSE server)");
         serverUrlTextbox = () => this.page.locator("::-p-aria(Server URL)[type='text']");
         provideRegistrationCodeCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
         async provideRegistrationCode() {
@@ -1315,6 +1353,10 @@ function CustomRegistrable(Base) {
             await this.registrationServerButton().click();
             await this.registrationServerCustomOption().wait();
             await this.registrationServerCustomOption().click();
+        }
+        async selectSCCRegistrationServer() {
+            await this.registrationServerButton().click();
+            await this.registrationServerSCCOption().click();
         }
         async fillServerUrl(url) {
             await this.serverUrlTextbox().wait();
