@@ -193,6 +193,10 @@ export function getTextContent(locator): Promise<string> {
   return locator.map((element) => element.textContent).wait();
 }
 
+export function getValue(locator): Promise<string> {
+  return locator.map((element) => element.value).wait();
+}
+
 // eslint-disable-next-line
 export type GConstructor<T = {}> = new (...args: any[]) => T;
 

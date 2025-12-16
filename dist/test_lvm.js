@@ -66,17 +66,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.logIn = logIn;
+exports.logInWithIncorrectPassword = logInWithIncorrectPassword;
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
-function logIn(password) {
+function verifyAgamaTitle() {
     (0, helpers_1.it)("should have Agama page title", async function () {
         strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
     });
+}
+function logIn(password) {
+    verifyAgamaTitle();
     (0, helpers_1.it)("should allow logging in", async function () {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
         await loginAsRoot.fillPassword(password);
         await loginAsRoot.logIn();
+    });
+}
+function logInWithIncorrectPassword() {
+    verifyAgamaTitle();
+    (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
+        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
+        const invalidpassword = "invalid password";
+        await loginAsRoot.fillPassword(invalidpassword);
+        await loginAsRoot.logIn();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText()), "Danger alert:Could not log in. Please, make sure that the password is correct.");
+        await loginAsRoot.togglePasswordVisibility();
+        strict_1.default.deepEqual(await (0, helpers_1.getValue)(loginAsRoot.passwordInput()), invalidpassword);
     });
 }
 
@@ -288,6 +304,7 @@ exports.setContinueOnError = setContinueOnError;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
+exports.getValue = getValue;
 exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
@@ -452,6 +469,9 @@ function sleep(ms) {
 function getTextContent(locator) {
     return locator.map((element) => element.textContent).wait();
 }
+function getValue(locator) {
+    return locator.map((element) => element.value).wait();
+}
 async function waitOnFile(filePath) {
     const opts = {
         resources: [filePath],
@@ -585,6 +605,8 @@ class LoginAsRootPage {
     page;
     passwordInput = () => this.page.locator("input#password");
     logInButton = () => this.page.locator("button[type='submit']");
+    couldNotLoginText = () => this.page.locator(`::-p-text(Could not log in)`);
+    passwordVisibilityButton = () => this.page.locator("[aria-label='Password visibility button']");
     constructor(page) {
         this.page = page;
     }
@@ -593,6 +615,9 @@ class LoginAsRootPage {
     }
     async logIn() {
         await this.logInButton().click();
+    }
+    async togglePasswordVisibility() {
+        await this.passwordVisibilityButton().click();
     }
 }
 exports.LoginAsRootPage = LoginAsRootPage;
