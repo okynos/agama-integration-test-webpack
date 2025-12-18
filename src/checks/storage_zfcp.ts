@@ -19,7 +19,7 @@ export function prepareZfcpStorage() {
       await zfcp.back();
       await zfcp.activateMultipath();
       // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
-      await storage.waitForElement("::-p-text(Activate zFCP disks)", 80000);
+      await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
     },
     3 * 60 * 1000,
   );
@@ -40,7 +40,7 @@ export function prepareZfcpStorageWithoutTabs() {
       await zfcp.back();
       await zfcp.activateMultipath();
       // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
-      await storage.waitForElement("::-p-text(Activate zFCP disks)", 80000);
+      await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
     },
     3 * 60 * 1000,
   );
