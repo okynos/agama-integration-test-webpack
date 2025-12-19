@@ -1069,6 +1069,9 @@ class StorageSettingsPage {
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
+    optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
+    editRootPartitionMenu = () => this.page.locator("::-p-aria(Edit /[role='menuitem'])");
     constructor(page) {
         this.page = page;
     }
@@ -1089,6 +1092,11 @@ class StorageSettingsPage {
     }
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
+    }
+    async editRootPartition() {
+        await this.expandPartitionsButton().click();
+        await this.optionForRoot().click();
+        await this.editRootPartitionMenu().click();
     }
 }
 exports.StorageSettingsPage = StorageSettingsPage;

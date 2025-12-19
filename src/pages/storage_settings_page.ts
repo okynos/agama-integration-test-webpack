@@ -18,6 +18,13 @@ export class StorageSettingsPage {
 
   private readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
 
+  private readonly expandPartitionsButton = () =>
+    this.page.locator("::-p-text(New partitions will be created)");
+
+  private readonly optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
+  private readonly editRootPartitionMenu = () =>
+    this.page.locator("::-p-aria(Edit /[role='menuitem'])");
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -44,5 +51,11 @@ export class StorageSettingsPage {
 
   async waitForElement(element, timeout) {
     await this.page.locator(element).setTimeout(timeout).wait();
+  }
+
+  async editRootPartition() {
+    await this.expandPartitionsButton().click();
+    await this.optionForRoot().click();
+    await this.editRootPartitionMenu().click();
   }
 }
