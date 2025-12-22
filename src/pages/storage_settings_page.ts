@@ -17,6 +17,7 @@ export class StorageSettingsPage {
   private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
 
   private readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+  private readonly addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
 
   private readonly expandPartitionsButton = () =>
     this.page.locator("::-p-text(New partitions will be created)");
@@ -47,6 +48,10 @@ export class StorageSettingsPage {
 
   async activateZfcp() {
     await this.ActivateZfcpLink().click();
+  }
+
+  async addLvmVolumeGroup() {
+    await this.addLvmVolumeLink().click();
   }
 
   async waitForElement(element, timeout) {

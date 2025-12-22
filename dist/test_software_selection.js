@@ -877,6 +877,7 @@ class StorageSettingsPage {
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
     expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
     optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
     editRootPartitionMenu = () => this.page.locator("::-p-aria(Edit /[role='menuitem'])");
@@ -897,6 +898,9 @@ class StorageSettingsPage {
     }
     async activateZfcp() {
         await this.ActivateZfcpLink().click();
+    }
+    async addLvmVolumeGroup() {
+        await this.addLvmVolumeLink().click();
     }
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
