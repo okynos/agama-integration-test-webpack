@@ -52,35 +52,3 @@ export function verifyPasswordStrength() {
     );
   });
 }
-
-export function verifyPasswordStrengthWithoutTabs() {
-  it("should verify the strength of typed password", async function () {
-    const sidebar = new SidebarPage(page);
-    const users = new UsersPage(page);
-    const setARootPassword = new SetARootPasswordPage(page);
-
-    await sidebar.goToUsers();
-    await users.editRootUser();
-    await setARootPassword.fillPassword("a23b56c");
-    const elementTextPasswordLess8Characters = await getTextContent(
-      setARootPassword.alertPasswordLess8Characters(),
-    );
-    assert.deepEqual(
-      elementTextPasswordLess8Characters,
-      "Warning alert:The password is shorter than 8 characters",
-    );
-
-    await setARootPassword.fillPassword("a23b56ca");
-    const elementTextPasswordIsWeak = await getTextContent(setARootPassword.alertPasswordIsWeak());
-    assert.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
-
-    await setARootPassword.fillPassword("a23b5678");
-    const elementTextPasswordFailDictionary = await getTextContent(
-      setARootPassword.alertPasswordFailDictionaryCheck(),
-    );
-    assert.deepEqual(
-      elementTextPasswordFailDictionary,
-      "Warning alert:The password fails the dictionary check - it is too simplistic/systematic",
-    );
-  });
-}

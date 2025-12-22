@@ -1,5 +1,4 @@
 import { ProductReleaseStrategy } from "../variants/product_release_strategy";
-import { StableReleaseStrategy } from "../variants/stable_release_strategy";
 
 export interface IProductTestStrategy {
   verifyDecryptDestructiveActions(destructiveActions: string[]): void;
@@ -15,6 +14,5 @@ export class ProductStrategyFactory {
     if (productVersion === "16.1") {
       return new ProductReleaseStrategy();
     }
-    return new StableReleaseStrategy();
   }
 }
