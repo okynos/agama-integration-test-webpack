@@ -5,7 +5,7 @@ import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
-import { logIn } from "./checks/login";
+import { logIn, logInWithIncorrectPassword } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
@@ -30,6 +30,7 @@ test_init(options);
 
 const testStrategy = ProductStrategyFactory.create(options.productVersion);
 
+logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
