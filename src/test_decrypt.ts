@@ -1,12 +1,12 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
 import { decryptDevice } from "./checks/decryption";
 import { editRootUser } from "./checks/root_authentication";
 import { logIn } from "./checks/login";
 import { enterProductRegistration } from "./checks/registration";
+import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
 import { performInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 
@@ -31,14 +31,12 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion);
-
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
-testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
+verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.registrationCode)
   enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,

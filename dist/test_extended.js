@@ -471,33 +471,6 @@ function verifyPasswordStrength() {
 
 /***/ }),
 
-/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
-/*!******************************************************************!*\
-  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
-  \******************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
-function verifyDecryptDestructiveActions(destructiveActions) {
-    (0, helpers_1.it)("should display a list of destructive actions", async function () {
-        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
-        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
-        await storage.scrollToDestructiveActionsList();
-        for (const action of destructiveActions) {
-            await storage.destructiveActionText(action).wait();
-        }
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/storage_zfcp.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_zfcp.ts ***!
@@ -858,29 +831,6 @@ async function waitOnFile(filePath) {
     }
 }
 ;
-
-
-/***/ }),
-
-/***/ "./src/lib/product_strategy_factory.ts":
-/*!*********************************************!*\
-  !*** ./src/lib/product_strategy_factory.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductStrategyFactory = void 0;
-const product_release_strategy_1 = __webpack_require__(/*! ../variants/product_release_strategy */ "./src/variants/product_release_strategy.ts");
-class ProductStrategyFactory {
-    static create(productVersion) {
-        if (productVersion === "16.1") {
-            return new product_release_strategy_1.ProductReleaseStrategy();
-        }
-    }
-}
-exports.ProductStrategyFactory = ProductStrategyFactory;
 
 
 /***/ }),
@@ -1469,32 +1419,6 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_result_page.ts":
-/*!******************************************!*\
-  !*** ./src/pages/storage_result_page.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StorageResultPage = void 0;
-class StorageResultPage {
-    page;
-    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
-    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
-    constructor(page) {
-        this.page = page;
-    }
-    async scrollToDestructiveActionsList() {
-        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
-    }
-}
-exports.StorageResultPage = StorageResultPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/storage_settings_page.ts":
 /*!********************************************!*\
   !*** ./src/pages/storage_settings_page.ts ***!
@@ -1665,14 +1589,15 @@ exports.ZfcpPage = ZfcpPage;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
-const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
+const encryption_1 = __webpack_require__(/*! ./checks/encryption */ "./src/checks/encryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
@@ -1684,7 +1609,6 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
-const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion);
 (0, login_1.logInWithIncorrectPassword)();
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1701,59 +1625,20 @@ if (options.registrationCode)
         code: options.registrationCode,
         provide_code: options.provideRegistrationCode,
     });
-testStrategy.enableEncryption(options.password);
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
+(0, encryption_1.enableEncryption)(options.password);
+(0, encryption_1.verifyEncryptionEnabled)();
+(0, encryption_1.disableEncryption)();
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
-testStrategy.verifyPasswordStrength();
+(0, root_authentication_1.verifyPasswordStrength)();
 if (options.prepareAdvancedStorage === "zfcp")
-    testStrategy.prepareZfcpStorage();
+    (0, storage_zfcp_1.prepareZfcpStorage)();
 (0, download_logs_1.downloadLogs)();
 if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.checkInstallation)();
     (0, installation_1.finishInstallation)();
 }
-
-
-/***/ }),
-
-/***/ "./src/variants/product_release_strategy.ts":
-/*!**************************************************!*\
-  !*** ./src/variants/product_release_strategy.ts ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductReleaseStrategy = void 0;
-const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
-const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
-const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
-const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
-class ProductReleaseStrategy {
-    verifyDecryptDestructiveActions(destructiveActions) {
-        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
-    }
-    enableEncryption(password) {
-        (0, encryption_1.enableEncryption)(password);
-    }
-    verifyEncryptionEnabled() {
-        (0, encryption_1.verifyEncryptionEnabled)();
-    }
-    disableEncryption() {
-        (0, encryption_1.disableEncryption)();
-    }
-    verifyPasswordStrength() {
-        (0, root_authentication_1.verifyPasswordStrength)();
-    }
-    prepareZfcpStorage() {
-        (0, storage_zfcp_1.prepareZfcpStorage)();
-    }
-}
-exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
 
 /***/ }),
