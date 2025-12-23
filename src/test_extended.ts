@@ -1,14 +1,15 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
-import { editRootUser } from "./checks/root_authentication";
+import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "./checks/encryption";
+import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
 import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
 import { logIn, logInWithIncorrectPassword } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
+import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { downloadLogs } from "./checks/download_logs";
 
 const options = parse((cmd) =>
@@ -28,8 +29,6 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion);
-
 logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
@@ -46,13 +45,13 @@ if (options.registrationCode)
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-testStrategy.enableEncryption(options.password);
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
+enableEncryption(options.password);
+verifyEncryptionEnabled();
+disableEncryption();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
+verifyPasswordStrength();
+if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 downloadLogs();
 if (options.install) {
   performInstallation();

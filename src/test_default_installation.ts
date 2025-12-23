@@ -1,7 +1,6 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
@@ -10,6 +9,7 @@ import { enterProductRegistration, enterExtensionRegistrationHA } from "./checks
 import { logIn } from "./checks/login";
 import { performInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
+import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { selectPatterns } from "./checks/software_selection";
 
 const options = parse((cmd) =>
@@ -34,8 +34,6 @@ const options = parse((cmd) =>
     ),
 );
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion);
-
 test_init(options);
 logIn(options.password);
 if (options.productId !== "none")
@@ -52,7 +50,7 @@ if (options.registrationCodeHa) enterExtensionRegistrationHA(options.registratio
 if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
+if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) {
   performInstallation();
   finishInstallation();

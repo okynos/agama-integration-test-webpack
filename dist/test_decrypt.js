@@ -28,69 +28,6 @@ function decryptDevice(password) {
 
 /***/ }),
 
-/***/ "./src/checks/encryption.ts":
-/*!**********************************!*\
-  !*** ./src/checks/encryption.ts ***!
-  \**********************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.enableEncryption = enableEncryption;
-exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
-exports.disableEncryption = disableEncryption;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
-function enableEncryption(password) {
-    (0, helpers_1.it)("should enable encryption", async function () {
-        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storageSettings.selectEncryption();
-        await storageSettings.changeEncryption();
-        await encryptionSettings.markEncryptTheSystem();
-        await encryptionSettings.fillPassword(password);
-        await encryptionSettings.fillPasswordConfirmation(password);
-        await encryptionSettings.accept();
-        await storageSettings.encryptionIsEnabledText().wait();
-    });
-}
-function verifyEncryptionEnabled() {
-    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storageSettings.selectEncryption();
-        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
-        strict_1.default.deepEqual(elementText, "Encryption is enabled");
-    });
-}
-function disableEncryption() {
-    (0, helpers_1.it)("should disable encryption", async function () {
-        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storageSettings.selectEncryption();
-        await storageSettings.changeEncryption();
-        await encryptionSettings.unmarkEncryptTheSystem();
-        await encryptionSettings.accept();
-        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
-        strict_1.default.deepEqual(elementText, "Encryption is disabled");
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/first_user.ts":
 /*!**********************************!*\
   !*** ./src/checks/first_user.ts ***!
@@ -467,39 +404,6 @@ function verifyDecryptDestructiveActions(destructiveActions) {
 
 /***/ }),
 
-/***/ "./src/checks/storage_zfcp.ts":
-/*!************************************!*\
-  !*** ./src/checks/storage_zfcp.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareZfcpStorage = prepareZfcpStorage;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
-const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
-function prepareZfcpStorage() {
-    (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storage.activateZfcp();
-        await zfcp.activateDevice("0.0.fa00");
-        await zfcp.activateDevice("0.0.fc00");
-        await zfcp.back();
-        await zfcp.activateMultipath();
-        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
-        await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
-    }, 3 * 60 * 1000);
-}
-
-
-/***/ }),
-
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -831,29 +735,6 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
-/***/ "./src/lib/product_strategy_factory.ts":
-/*!*********************************************!*\
-  !*** ./src/lib/product_strategy_factory.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductStrategyFactory = void 0;
-const product_release_strategy_1 = __webpack_require__(/*! ../variants/product_release_strategy */ "./src/variants/product_release_strategy.ts");
-class ProductStrategyFactory {
-    static create(productVersion) {
-        if (productVersion === "16.1") {
-            return new product_release_strategy_1.ProductReleaseStrategy();
-        }
-    }
-}
-exports.ProductStrategyFactory = ProductStrategyFactory;
-
-
-/***/ }),
-
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -968,49 +849,6 @@ class EncryptedDevice {
     }
 }
 exports.EncryptedDevice = EncryptedDevice;
-
-
-/***/ }),
-
-/***/ "./src/pages/encryption_settings_page.ts":
-/*!***********************************************!*\
-  !*** ./src/pages/encryption_settings_page.ts ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EncryptionSettingsPage = void 0;
-class EncryptionSettingsPage {
-    page;
-    encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
-    encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
-    passwordInput = () => this.page.locator("#password");
-    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async markEncryptTheSystem() {
-        await this.encryptTheSystemNotCheckedCheckbox().click();
-        await this.encryptTheSystemCheckedCheckbox().wait();
-    }
-    async unmarkEncryptTheSystem() {
-        await this.encryptTheSystemCheckedCheckbox().click();
-        await this.encryptTheSystemNotCheckedCheckbox().wait();
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.EncryptionSettingsPage = EncryptionSettingsPage;
 
 
 /***/ }),
@@ -1431,64 +1269,6 @@ exports.StorageResultPage = StorageResultPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_settings_page.ts":
-/*!********************************************!*\
-  !*** ./src/pages/storage_settings_page.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StorageSettingsPage = void 0;
-class StorageSettingsPage {
-    page;
-    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
-    changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
-    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
-    encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
-    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
-    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
-    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
-    expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
-    optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
-    editRootPartitionMenu = () => this.page.locator("::-p-aria(Edit /[role='menuitem'])");
-    constructor(page) {
-        this.page = page;
-    }
-    async selectMoreDevices() {
-        await this.selectMoreDevicesButton().click();
-    }
-    async selectEncryption() {
-        await this.encryptionTab().click();
-    }
-    async changeEncryption() {
-        await this.changeEncryptionLink().click();
-    }
-    async manageDasd() {
-        await this.manageDasdLink().click();
-    }
-    async activateZfcp() {
-        await this.ActivateZfcpLink().click();
-    }
-    async addLvmVolumeGroup() {
-        await this.addLvmVolumeLink().click();
-    }
-    async waitForElement(element, timeout) {
-        await this.page.locator(element).setTimeout(timeout).wait();
-    }
-    async editRootPartition() {
-        await this.expandPartitionsButton().click();
-        await this.optionForRoot().click();
-        await this.editRootPartitionMenu().click();
-    }
-}
-exports.StorageSettingsPage = StorageSettingsPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/trust_registration_certificate_page.ts":
 /*!**********************************************************!*\
   !*** ./src/pages/trust_registration_certificate_page.ts ***!
@@ -1551,45 +1331,6 @@ exports.UsersPage = UsersPage;
 
 /***/ }),
 
-/***/ "./src/pages/zfcp_page.ts":
-/*!********************************!*\
-  !*** ./src/pages/zfcp_page.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ZfcpPage = void 0;
-class ZfcpPage {
-    page;
-    faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
-    fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
-    zfcpDisk = (channelId) => this.page.locator(`xpath=//tr[contains(., "${channelId}")]`);
-    activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
-    backButton = () => this.page.locator("button::-p-text(Back)");
-    enableMultipath = () => this.page.locator("::-p-text('Yes')");
-    constructor(page) {
-        this.page = page;
-    }
-    async activateDevice(channelId) {
-        const rowActions = channelId === "0.0.fa00" ? this.faDisk() : this.fcDisk();
-        await rowActions.click();
-        await this.activateDisk().click();
-        await this.zfcpDisk(channelId).setTimeout(90000).wait();
-    }
-    async activateMultipath() {
-        await this.enableMultipath().setTimeout(40000).click();
-    }
-    async back() {
-        await this.backButton().click();
-    }
-}
-exports.ZfcpPage = ZfcpPage;
-
-
-/***/ }),
-
 /***/ "./src/test_decrypt.ts":
 /*!*****************************!*\
   !*** ./src/test_decrypt.ts ***!
@@ -1601,12 +1342,12 @@ exports.ZfcpPage = ZfcpPage;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
-const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
@@ -1619,7 +1360,6 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option("--destructive-actions <actions>...", "comma separated list of actions (excluding 'Delete ')", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
-const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -1627,7 +1367,7 @@ if (options.productId !== "none")
     else
         (0, product_selection_1.productSelection)(options.productId);
 (0, decryption_1.decryptDevice)(options.decryptPassword);
-testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
+(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
 if (options.registrationCode)
     (0, registration_1.enterProductRegistration)({
         use_custom: options.useCustomRegistrationServer,
@@ -1640,45 +1380,6 @@ if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.finishInstallation)();
 }
-
-
-/***/ }),
-
-/***/ "./src/variants/product_release_strategy.ts":
-/*!**************************************************!*\
-  !*** ./src/variants/product_release_strategy.ts ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductReleaseStrategy = void 0;
-const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
-const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
-const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
-const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
-class ProductReleaseStrategy {
-    verifyDecryptDestructiveActions(destructiveActions) {
-        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
-    }
-    enableEncryption(password) {
-        (0, encryption_1.enableEncryption)(password);
-    }
-    verifyEncryptionEnabled() {
-        (0, encryption_1.verifyEncryptionEnabled)();
-    }
-    disableEncryption() {
-        (0, encryption_1.disableEncryption)();
-    }
-    verifyPasswordStrength() {
-        (0, root_authentication_1.verifyPasswordStrength)();
-    }
-    prepareZfcpStorage() {
-        (0, storage_zfcp_1.prepareZfcpStorage)();
-    }
-}
-exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
 
 /***/ }),
