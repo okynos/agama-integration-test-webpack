@@ -4,6 +4,7 @@ import { test_init } from "./lib/helpers";
 import { createFirstUser } from "./checks/first_user";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "./checks/encryption";
 import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
+import { changeDiskToInstallTheSystem } from "./checks/storage_change_disk_to_install";
 import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
 import { logIn, logInWithIncorrectPassword } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
@@ -48,6 +49,7 @@ if (options.registrationCode)
 enableEncryption(options.password);
 verifyEncryptionEnabled();
 disableEncryption();
+changeDiskToInstallTheSystem();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 verifyPasswordStrength();

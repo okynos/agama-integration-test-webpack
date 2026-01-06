@@ -3,20 +3,20 @@ import util from "util";
 import assert from "node:assert/strict";
 import { exec } from "child_process";
 
-import { StorageOutOfSyncAlertPage } from "../pages/storage_out_of_sync_alert_page";
+import { StorageWarningOutOfSyncPage } from "../pages/storage_warning_out_of_sync_page";
 
 export function verifyStorageOutOfSync() {
   it("should verify storage out of sync popup", async function () {
-    const storageOutOfSyncAlertPage = new StorageOutOfSyncAlertPage(page);
+    const storageWarningOutOfSyncPage = new StorageWarningOutOfSyncPage(page);
     const execPromise = util.promisify(exec);
 
     await execPromise("agama probe");
 
     assert.deepEqual(
-      await getTextContent(storageOutOfSyncAlertPage.configurationOutOfSyncWarningAlert()),
+      await getTextContent(storageWarningOutOfSyncPage.configurationOutOfSyncWarningAlert()),
       "Configuration out of sync",
     );
 
-    await storageOutOfSyncAlertPage.reload();
+    await storageWarningOutOfSyncPage.reload();
   });
 }
