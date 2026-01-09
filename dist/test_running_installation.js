@@ -99,6 +99,34 @@ function logInWithIncorrectPassword() {
 
 /***/ }),
 
+/***/ "./src/checks/multipath.ts":
+/*!*********************************!*\
+  !*** ./src/checks/multipath.ts ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyActivateMultipath = verifyActivateMultipath;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const activate_multipath_page_1 = __webpack_require__(/*! ../pages/activate_multipath_page */ "./src/pages/activate_multipath_page.ts");
+function verifyActivateMultipath() {
+    (0, helpers_1.it)("should allow active multipath", async function () {
+        const multipath = new activate_multipath_page_1.ActivateMultipathPage(helpers_1.page);
+        const elementText = await (0, helpers_1.getTextContent)(multipath.multipathText());
+        strict_1.default.deepEqual(elementText, "The system seems to have multipath hardware. Do you want to activate multipath?");
+        await multipath.activate();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -430,6 +458,32 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
+/***/ "./src/pages/activate_multipath_page.ts":
+/*!**********************************************!*\
+  !*** ./src/pages/activate_multipath_page.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ActivateMultipathPage = void 0;
+class ActivateMultipathPage {
+    page;
+    multipathText = () => this.page.locator("::-p-text(The system seems to have multipath hardware)");
+    activateButton = () => this.page.locator("::-p-text(Yes)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activate() {
+        await this.activateButton().click();
+    }
+}
+exports.ActivateMultipathPage = ActivateMultipathPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -642,10 +696,13 @@ const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const options = (0, cmdline_1.parse)();
+const multipath_1 = __webpack_require__(/*! ./checks/multipath */ "./src/checks/multipath.ts");
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("--activate-multipath", "Activate multipath"));
 (0, node_test_1.describe)("Running installation", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
+    if (options.activateMultipath)
+        (0, multipath_1.verifyActivateMultipath)();
     (0, installation_1.finishInstallation)();
 });
 
