@@ -2,31 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/configuration_started.ts":
-/*!*********************************************!*\
-  !*** ./src/checks/configuration_started.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ensureProductConfigurationStarted = ensureProductConfigurationStarted;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-function ensureProductConfigurationStarted() {
-    (0, helpers_1.it)("should start configuring the product", async function () {
-        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
-    });
-    (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/first_user.ts":
 /*!**********************************!*\
   !*** ./src/checks/first_user.ts ***!
@@ -167,16 +142,27 @@ function logInWithIncorrectPassword() {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ensureConfigurationFinished = ensureConfigurationFinished;
 exports.productSelection = productSelection;
 exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+function ensureConfigurationFinished() {
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+    (0, helpers_1.it)("should not display spinner loading", async function () {
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).waitSpinnerHidden();
+    });
+}
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
         const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
+    ensureConfigurationFinished();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -194,6 +180,7 @@ function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
+    ensureConfigurationFinished();
 }
 
 
@@ -770,31 +757,6 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
-/***/ "./src/pages/configuring_product_page.ts":
-/*!***********************************************!*\
-  !*** ./src/pages/configuring_product_page.ts ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfiguringProductPage = void 0;
-class ConfiguringProductPage {
-    page;
-    configuringTheProductText = () => this.page.locator("::-p-text(Configuring the product)");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait() {
-        await this.configuringTheProductText().wait();
-    }
-}
-exports.ConfiguringProductPage = ConfiguringProductPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -1125,6 +1087,7 @@ class ProductSelectionPage {
     page;
     productText = (name) => this.page.locator(`::-p-text(${name})`);
     productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
+    spinnerProgressBar = () => this.page.locator('::-p-aria(Contents[role="progressbar"])');
     selectButton = () => this.page.locator("button[form='productSelectionForm']");
     constructor(page) {
         this.page = page;
@@ -1139,6 +1102,9 @@ class ProductSelectionPage {
     async selectByName(name) {
         await this.choose(name);
         await this.selectButton().click();
+    }
+    async waitSpinnerHidden() {
+        await this.spinnerProgressBar().setVisibility("hidden").wait();
     }
 }
 exports.ProductSelectionPage = ProductSelectionPage;
@@ -1524,7 +1490,6 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
-const configuration_started_1 = __webpack_require__(/*! ./checks/configuration_started */ "./src/checks/configuration_started.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
@@ -1548,7 +1513,6 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
-(0, configuration_started_1.ensureProductConfigurationStarted)();
 if (options.registrationCode)
     (0, registration_1.enterProductRegistration)({
         use_custom: options.useCustomRegistrationServer,

@@ -3,6 +3,17 @@ import {
   ProductSelectionPage,
   ProductSelectionWithRegistrationPage,
 } from "../pages/product_selection_page";
+import { OverviewPage } from "../pages/overview_page";
+
+export function ensureConfigurationFinished() {
+  it("should display Overview", async function () {
+    await new OverviewPage(page).waitVisible(40000);
+  });
+
+  it("should not display spinner loading", async function () {
+    await new ProductSelectionPage(page).waitSpinnerHidden();
+  });
+}
 
 export function productSelection(productId: string) {
   it(`should allow to select product ${productId}`, async function () {
@@ -10,6 +21,8 @@ export function productSelection(productId: string) {
     await productSelectionPage.choose(productId);
     await productSelectionPage.select();
   });
+
+  ensureConfigurationFinished();
 }
 
 export function productSelectionWithLicense(productId: string) {
@@ -28,4 +41,6 @@ export function productSelectionWithLicense(productId: string) {
   it(`should allow to select product`, async function () {
     await new ProductSelectionWithRegistrationPage(page).select();
   });
+
+  ensureConfigurationFinished();
 }

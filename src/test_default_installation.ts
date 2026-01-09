@@ -4,7 +4,6 @@ import { Option } from "commander";
 
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
-import { ensureProductConfigurationStarted } from "./checks/configuration_started";
 import { enterProductRegistration, enterExtensionRegistrationHA } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation, finishInstallation } from "./checks/installation";
@@ -39,7 +38,6 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-ensureProductConfigurationStarted();
 if (options.registrationCode)
   enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
