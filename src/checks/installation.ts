@@ -1,39 +1,38 @@
 import { it, page, getTextContent } from "../lib/helpers";
-import { ConfirmInstallationPage } from "../pages/confirm_installation_page";
 import { CongratulationPage } from "../pages/congratulation_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
-import { InstallationPage } from "../pages/installation_page";
 import assert from "node:assert/strict";
+import { StartInstallationPage } from "../pages/start_installation_page";
+import { SpinnerPage } from "../pages/spinner_page";
 
 export function performInstallation() {
   it("should start installation", async function () {
-    const confirmInstallation = new ConfirmInstallationPage(page);
     const overview = new OverviewPage(page);
+    const installation = new StartInstallationPage(page);
     const sidebar = new SidebarPage(page);
 
     await sidebar.goToOverview();
     await overview.install();
-    await confirmInstallation.continue();
+    await installation.startInstallation();
   });
 }
 
 export function checkInstallation() {
   it("should check installation progress", async function () {
-    const installation = new InstallationPage(page);
+    const installation = new StartInstallationPage(page);
+    const spinner = new SpinnerPage(page);
 
-    assert.deepEqual(await getTextContent(installation.prepareDisksText()), "Prepare disks");
+    spinner.spinnerProgressBar().click();
 
     assert.deepEqual(
-      await getTextContent(installation.installingSystemText()),
-      "Installing the system, please wait...",
+      await getTextContent(installation.installSoftwareText()),
+      "Install software (step 2 of 3)",
     );
-
-    assert.deepEqual(await getTextContent(installation.installSoftwareText()), "Install software");
 
     assert.deepEqual(
       await getTextContent(installation.configureTheSystemText()),
-      "Configure the system",
+      "Configure the system (step 3 of 3)",
     );
   });
 }

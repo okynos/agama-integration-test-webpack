@@ -78,29 +78,29 @@ exports.performInstallation = performInstallation;
 exports.checkInstallation = checkInstallation;
 exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const installation_page_1 = __webpack_require__(/*! ../pages/installation_page */ "./src/pages/installation_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const start_installation_page_1 = __webpack_require__(/*! ../pages/start_installation_page */ "./src/pages/start_installation_page.ts");
+const spinner_page_1 = __webpack_require__(/*! ../pages/spinner_page */ "./src/pages/spinner_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
-        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const installation = new start_installation_page_1.StartInstallationPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await overview.install();
-        await confirmInstallation.continue();
+        await installation.startInstallation();
     });
 }
 function checkInstallation() {
     (0, helpers_1.it)("should check installation progress", async function () {
-        const installation = new installation_page_1.InstallationPage(helpers_1.page);
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.prepareDisksText()), "Prepare disks");
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.installingSystemText()), "Installing the system, please wait...");
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.installSoftwareText()), "Install software");
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.configureTheSystemText()), "Configure the system");
+        const installation = new start_installation_page_1.StartInstallationPage(helpers_1.page);
+        const spinner = new spinner_page_1.SpinnerPage(helpers_1.page);
+        spinner.spinnerProgressBar().click();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.installSoftwareText()), "Install software (step 2 of 3)");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.configureTheSystemText()), "Configure the system (step 3 of 3)");
     });
 }
 function finishInstallation() {
@@ -174,12 +174,13 @@ exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const spinner_page_1 = __webpack_require__(/*! ../pages/spinner_page */ "./src/pages/spinner_page.ts");
 function ensureConfigurationFinished() {
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
     });
-    (0, helpers_1.it)("should not display spinner loading", async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).waitSpinnerHidden();
+    (0, helpers_1.it)("should not display the spinner loading", async function () {
+        await new spinner_page_1.SpinnerPage(helpers_1.page).waitSpinnerHidden();
     });
 }
 function productSelection(productId) {
@@ -229,7 +230,6 @@ exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const product_registration_page_1 = __webpack_require__(/*! ../pages/product_registration_page */ "./src/pages/product_registration_page.ts");
 const extension_registration_phub_page_1 = __webpack_require__(/*! ../pages/extension_registration_phub_page */ "./src/pages/extension_registration_phub_page.ts");
 const extension_registration_ha_page_1 = __webpack_require__(/*! ../pages/extension_registration_ha_page */ "./src/pages/extension_registration_ha_page.ts");
@@ -268,10 +268,7 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
         });
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(60000);
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
         await productRegistration.verifyCustomRegistration();
     });
 }
@@ -747,31 +744,6 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
-/***/ "./src/pages/confirm_installation_page.ts":
-/*!************************************************!*\
-  !*** ./src/pages/confirm_installation_page.ts ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfirmInstallationPage = void 0;
-class ConfirmInstallationPage {
-    page;
-    continueButton = () => this.page.locator("button::-p-text('Continue')");
-    constructor(page) {
-        this.page = page;
-    }
-    async continue() {
-        await this.continueButton().click();
-    }
-}
-exports.ConfirmInstallationPage = ConfirmInstallationPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/congratulation_page.ts":
 /*!******************************************!*\
   !*** ./src/pages/congratulation_page.ts ***!
@@ -922,31 +894,6 @@ class ExtensionRegistrationPHubPage {
     }
 }
 exports.ExtensionRegistrationPHubPage = ExtensionRegistrationPHubPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/installation_page.ts":
-/*!****************************************!*\
-  !*** ./src/pages/installation_page.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.InstallationPage = void 0;
-class InstallationPage {
-    page;
-    prepareDisksText = () => this.page.locator("::-p-text(Prepare disks)");
-    installingSystemText = () => this.page.locator(`::-p-text(Installing the system, please wait...)`);
-    installSoftwareText = () => this.page.locator(`::-p-text(Install software)`);
-    configureTheSystemText = () => this.page.locator(`::-p-text(Configure the system)`);
-    constructor(page) {
-        this.page = page;
-    }
-}
-exports.InstallationPage = InstallationPage;
 
 
 /***/ }),
@@ -1104,7 +1051,6 @@ class ProductSelectionPage {
     page;
     productText = (name) => this.page.locator(`::-p-text(${name})`);
     productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
-    spinnerProgressBar = () => this.page.locator('::-p-aria(Contents[role="progressbar"])');
     selectButton = () => this.page.locator("button[form='productSelectionForm']");
     constructor(page) {
         this.page = page;
@@ -1119,9 +1065,6 @@ class ProductSelectionPage {
     async selectByName(name) {
         await this.choose(name);
         await this.selectButton().click();
-    }
-    async waitSpinnerHidden() {
-        await this.spinnerProgressBar().setVisibility("hidden").wait();
     }
 }
 exports.ProductSelectionPage = ProductSelectionPage;
@@ -1255,6 +1198,61 @@ function RegistrationNavigable(Base) {
 class SidebarWithRegistrationPage extends RegistrationNavigable(SidebarPage) {
 }
 exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/spinner_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/spinner_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SpinnerPage = void 0;
+class SpinnerPage {
+    page;
+    spinnerProgressBar = () => this.page.locator('::-p-aria([role="progressbar"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async waitSpinnerHidden() {
+        await this.page.waitForSelector('::-p-aria(Contents[role="progressbar"])', {
+            hidden: true,
+        });
+        //await this.spinnerProgressBar().setVisibility("hidden").wait();
+    }
+}
+exports.SpinnerPage = SpinnerPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/start_installation_page.ts":
+/*!**********************************************!*\
+  !*** ./src/pages/start_installation_page.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StartInstallationPage = void 0;
+class StartInstallationPage {
+    page;
+    installWithPotentialDataLossButton = () => this.page.locator("::-p-text(Install now with potential data loss)");
+    installSoftwareText = () => this.page.locator(`::-p-text(Install software (step 2 of 3))`);
+    configureTheSystemText = () => this.page.locator(`::-p-text(Configure the system (step 3 of 3))`);
+    constructor(page) {
+        this.page = page;
+    }
+    async startInstallation() {
+        await this.installWithPotentialDataLossButton().click();
+    }
+}
+exports.StartInstallationPage = StartInstallationPage;
 
 
 /***/ }),

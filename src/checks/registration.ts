@@ -1,5 +1,4 @@
 import { it, page, getTextContent } from "../lib/helpers";
-import { OverviewPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
   CustomRegistrationPage,
@@ -66,11 +65,8 @@ export function enterProductRegistration({
   }
 
   it("should display product has been registered", async function () {
-    await new OverviewPage(page).waitVisible(60000);
-    const sidebar = new SidebarWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
 
-    await sidebar.goToRegistration();
     await productRegistration.verifyCustomRegistration();
   });
 }

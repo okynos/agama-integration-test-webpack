@@ -4,14 +4,15 @@ import {
   ProductSelectionWithRegistrationPage,
 } from "../pages/product_selection_page";
 import { OverviewPage } from "../pages/overview_page";
+import { SpinnerPage } from "../pages/spinner_page";
 
 export function ensureConfigurationFinished() {
   it("should display Overview", async function () {
     await new OverviewPage(page).waitVisible(40000);
   });
 
-  it("should not display spinner loading", async function () {
-    await new ProductSelectionPage(page).waitSpinnerHidden();
+  it("should not display the spinner loading", async function () {
+    await new SpinnerPage(page).waitSpinnerHidden();
   });
 }
 

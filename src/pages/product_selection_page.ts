@@ -7,9 +7,6 @@ export class ProductSelectionPage {
   protected readonly productId = (id: string) =>
     this.page.locator("input#" + id.replaceAll(".", "\\."));
 
-  private readonly spinnerProgressBar = () =>
-    this.page.locator('::-p-aria(Contents[role="progressbar"])');
-
   protected readonly selectButton = () => this.page.locator("button[form='productSelectionForm']");
 
   constructor(page: Page) {
@@ -28,10 +25,6 @@ export class ProductSelectionPage {
   async selectByName(name: string) {
     await this.choose(name);
     await this.selectButton().click();
-  }
-
-  async waitSpinnerHidden() {
-    await this.spinnerProgressBar().setVisibility("hidden").wait();
   }
 }
 

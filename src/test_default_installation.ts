@@ -43,6 +43,7 @@ if (options.registrationCode)
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
+    url: "http://all-12.10.proxy.scc.suse.de",
   });
 if (options.registrationCodeHa) enterExtensionRegistrationHA(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);
