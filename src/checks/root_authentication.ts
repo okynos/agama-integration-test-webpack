@@ -1,10 +1,31 @@
 import { it, page, sleep, getTextContent } from "../lib/helpers";
+import { HeaderPage } from "../pages/header_page";
+import { OverviewPage } from "../pages/overview_page";
 import { SetARootPasswordPage } from "../pages/root_authentication_methods";
 import { SidebarPage } from "../pages/sidebar_page";
 import { UsersPage } from "../pages/users_page";
 import assert from "node:assert/strict";
 
 export function editRootUser(password: string) {
+  it("should edit the root user", async function () {
+    const overview = new OverviewPage(page);
+    const header = new HeaderPage(page);
+    const users = new UsersPage(page);
+    const setARootPassword = new SetARootPasswordPage(page);
+
+    await overview.goToUsers();
+    await users.editRootUser();
+    await setARootPassword.usePassword();
+    await setARootPassword.fillPassword(password);
+    await setARootPassword.fillPasswordConfirmation(password);
+    await setARootPassword.accept();
+    // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+    await sleep(2000);
+    await header.goToOverview();
+  });
+}
+
+export function editRootUserWithSidebar(password: string) {
   it("should edit the root user", async function () {
     const sidebar = new SidebarPage(page);
     const users = new UsersPage(page);

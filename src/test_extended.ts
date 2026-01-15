@@ -1,15 +1,13 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
-import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "./checks/encryption";
 import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
 import { changeDiskToInstallTheSystem } from "./checks/storage_change_disk_to_install";
-import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
 import { logIn, logInWithIncorrectPassword } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
-import { setPermanentHostname } from "./checks/hostname";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { downloadLogs } from "./checks/download_logs";
 
@@ -30,25 +28,27 @@ const options = parse((cmd) =>
 
 test_init(options);
 
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+
 logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-if (options.staticHostname) setPermanentHostname(options.staticHostname);
-verifyRegistrationWarniningAlerts(
+if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
+testStrategy.verifyRegistrationWarniningAlerts(
   options.useCustomRegistrationServer,
   options.registrationServerUrl,
 );
 if (options.registrationCode)
-  enterProductRegistration({
+  testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-enableEncryption(options.password);
-verifyEncryptionEnabled();
-disableEncryption();
+testStrategy.enableEncryption(options.password);
+testStrategy.verifyEncryptionEnabled();
+testStrategy.disableEncryption();
 changeDiskToInstallTheSystem();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);

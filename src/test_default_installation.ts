@@ -1,13 +1,10 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
-import { createFirstUser } from "./checks/first_user";
-import { editRootUser } from "./checks/root_authentication";
-import { ensureProductConfigurationStarted } from "./checks/configuration_started";
-import { enterProductRegistration, enterExtensionRegistrationHA } from "./checks/registration";
 import { logIn } from "./checks/login";
-import { performInstallation, finishInstallation } from "./checks/installation";
+import { finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { selectPatterns } from "./checks/software_selection";
@@ -35,23 +32,26 @@ const options = parse((cmd) =>
 );
 
 test_init(options);
+
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-ensureProductConfigurationStarted();
 if (options.registrationCode)
-  enterProductRegistration({
+  testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-if (options.registrationCodeHa) enterExtensionRegistrationHA(options.registrationCodeHa);
+if (options.registrationCodeHa)
+  testStrategy.enterExtensionRegistrationHA(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);
-createFirstUser(options.password);
-editRootUser(options.rootPassword);
+testStrategy.createFirstUser(options.password);
+testStrategy.editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) {
-  performInstallation();
+  testStrategy.performInstallation();
   finishInstallation();
 }
