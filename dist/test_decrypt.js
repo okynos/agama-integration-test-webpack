@@ -38,11 +38,32 @@ function decryptDevice(password) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createFirstUser = createFirstUser;
+exports.createFirstUserWithSidebar = createFirstUserWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 function createFirstUser(password) {
+    (0, helpers_1.it)("should create first user", async function () {
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.defineAUserNow();
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
+        await createFirstUser.fillPassword(password);
+        await createFirstUser.fillPasswordConfirmation(password);
+        await createFirstUser.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await header.goToOverview();
+    });
+}
+function createFirstUserWithSidebar(password) {
     (0, helpers_1.it)("should create first user", async function () {
         const users = new users_page_1.UsersPage(helpers_1.page);
         const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
@@ -75,19 +96,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
+exports.performInstallationWithSidebar = performInstallationWithSidebar;
 exports.checkInstallation = checkInstallation;
 exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const installation_page_1 = __webpack_require__(/*! ../pages/installation_page */ "./src/pages/installation_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const confirm_installation_with_sidebar_page_1 = __webpack_require__(/*! ../pages/confirm_installation_with_sidebar_page */ "./src/pages/confirm_installation_with_sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.install();
+        await confirmInstallation.confirmAndInstall();
+    });
+}
+function performInstallationWithSidebar() {
+    (0, helpers_1.it)("should start installation", async function () {
+        const confirmInstallation = new confirm_installation_with_sidebar_page_1.ConfirmInstallationWithSidebarPage(helpers_1.page);
+        const overview = new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await overview.install();
@@ -171,13 +203,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.productSelection = productSelection;
 exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
+function ensureProductConfiguration() {
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+}
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
         const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
+    ensureProductConfiguration();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -195,6 +234,7 @@ function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
+    ensureProductConfiguration();
 }
 
 
@@ -213,9 +253,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterProductRegistration = enterProductRegistration;
+exports.enterProductRegistrationWithSidebar = enterProductRegistrationWithSidebar;
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
+exports.enterExtensionRegistrationHAWithSidebar = enterExtensionRegistrationHAWithSidebar;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
+exports.verifyRegistrationWarniningAlertsWithSidebar = verifyRegistrationWarniningAlertsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const product_registration_page_1 = __webpack_require__(/*! ../pages/product_registration_page */ "./src/pages/product_registration_page.ts");
@@ -224,7 +267,46 @@ const extension_registration_ha_page_1 = __webpack_require__(/*! ../pages/extens
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const trust_registration_certificate_page_1 = __webpack_require__(/*! ../pages/trust_registration_certificate_page */ "./src/pages/trust_registration_certificate_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 function enterProductRegistration({ use_custom, code, provide_code, url, }) {
+    (0, helpers_1.it)("should allow setting registration", async function () {
+        const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
+        const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
+        await overview.goToRegistration();
+        if (use_custom) {
+            if (url) {
+                const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+                await customRegistration.selectCustomRegistrationServer();
+                await customRegistration.fillServerUrl(url);
+            }
+            if (provide_code) {
+                await productRegistration.selectProvideRegistrationCode();
+                await productRegistration.fillCode(code);
+            }
+        }
+        else {
+            await productRegistration.fillCode(code);
+        }
+        await productRegistration.register();
+    });
+    if (url?.startsWith("https")) {
+        (0, helpers_1.it)("should handle HTTPS certificate trust for custom registration server", async function () {
+            const trustRegistration = new trust_registration_certificate_page_1.TrustRegistrationCertificatePage(helpers_1.page);
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.titleText()), "Registration certificate");
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.questionText()), "Trying to import a self signed certificate. Do you want to trust it and register the product?");
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.issuerText()), "RMT Certificate Authority");
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.urlText(url)), url);
+            await trustRegistration.trustCertificate();
+        });
+    }
+    (0, helpers_1.it)("should display product has been registered", async function () {
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
+        await productRegistration.verifyCustomRegistration();
+        await header.goToOverview();
+    });
+}
+function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
@@ -265,6 +347,18 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
 }
 function enterExtensionRegistrationHA(code) {
     (0, helpers_1.it)("should allow registering HA extension", async function () {
+        const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const extensionRegistrationHA = new extension_registration_ha_page_1.ExtensionRegistrationHAPage(helpers_1.page);
+        await overview.goToRegistration();
+        await extensionRegistrationHA.fillCode(code);
+        await extensionRegistrationHA.register();
+        strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationHA.extensionRegisteredText()), /The extension has been registered/);
+        await header.goToOverview();
+    });
+}
+function enterExtensionRegistrationHAWithSidebar(code) {
+    (0, helpers_1.it)("should allow registering HA extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistrationHA = new extension_registration_ha_page_1.ExtensionRegistrationHAPage(helpers_1.page);
         await sidebar.goToRegistration();
@@ -285,6 +379,41 @@ function enterExtensionRegistrationPHub() {
     });
 }
 function verifyRegistrationWarniningAlerts(use_custom, url) {
+    (0, helpers_1.it)("should show warning alert for missing registration code", async function () {
+        const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await overview.goToRegistration();
+        if (use_custom)
+            await customRegistration.selectProvideRegistrationCode();
+        await customRegistration.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
+    });
+    (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await customRegistration.fillCode("1234invalid4321");
+        await customRegistration.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), "Warning alert:Connection to registration server failed: Unknown Registration Code.");
+    });
+    (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await customRegistration.selectCustomRegistrationServer();
+        await customRegistration.selectProvideRegistrationCode();
+        await customRegistration.fillServerUrl("http://scc.example.net");
+        await customRegistration.register();
+        strict_1.default.match(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/);
+        if (use_custom) {
+            await customRegistration.fillServerUrl(url);
+        }
+        else {
+            await customRegistration.selectSCCRegistrationServer();
+            await customRegistration.fillCode("1234invalid4321");
+        }
+        await customRegistration.register();
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await header.goToOverview();
+    });
+}
+function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
     (0, helpers_1.it)("should show warning alert for missing registration code", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
@@ -334,13 +463,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
+exports.editRootUserWithSidebar = editRootUserWithSidebar;
 exports.verifyPasswordStrength = verifyPasswordStrength;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function editRootUser(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await header.goToOverview();
+    });
+}
+function editRootUserWithSidebar(password) {
     (0, helpers_1.it)("should edit the root user", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
@@ -747,6 +896,31 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfirmInstallationPage = void 0;
 class ConfirmInstallationPage {
     page;
+    continueButton = () => this.page.locator('::-p-aria([name="Confirm and install"][role="button"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async confirmAndInstall() {
+        await this.continueButton().click();
+    }
+}
+exports.ConfirmInstallationPage = ConfirmInstallationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/confirm_installation_with_sidebar_page.ts":
+/*!*************************************************************!*\
+  !*** ./src/pages/confirm_installation_with_sidebar_page.ts ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfirmInstallationWithSidebarPage = void 0;
+class ConfirmInstallationWithSidebarPage {
+    page;
     continueButton = () => this.page.locator("button::-p-text('Continue')");
     constructor(page) {
         this.page = page;
@@ -755,7 +929,7 @@ class ConfirmInstallationPage {
         await this.continueButton().click();
     }
 }
-exports.ConfirmInstallationPage = ConfirmInstallationPage;
+exports.ConfirmInstallationWithSidebarPage = ConfirmInstallationWithSidebarPage;
 
 
 /***/ }),
@@ -914,6 +1088,31 @@ exports.ExtensionRegistrationPHubPage = ExtensionRegistrationPHubPage;
 
 /***/ }),
 
+/***/ "./src/pages/header_page.ts":
+/*!**********************************!*\
+  !*** ./src/pages/header_page.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeaderPage = void 0;
+class HeaderPage {
+    page;
+    overviewLink = () => this.page.locator("a[href='#/overview']");
+    constructor(page) {
+        this.page = page;
+    }
+    async goToOverview() {
+        await this.overviewLink().click();
+    }
+}
+exports.HeaderPage = HeaderPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/installation_page.ts":
 /*!****************************************!*\
   !*** ./src/pages/installation_page.ts ***!
@@ -982,8 +1181,72 @@ exports.LoginAsRootPage = LoginAsRootPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OverviewPage = void 0;
+exports.OverviewWithRegistrationPage = exports.OverviewPage = void 0;
 class OverviewPage {
+    page;
+    hostnameLink = () => this.page.locator("a[href='#/hostname']");
+    localizationLink = () => this.page.locator("a[href='#/l10n']");
+    networkLink = () => this.page.locator("a[href='#/network']");
+    storageLink = () => this.page.locator("a[href='#/storage']");
+    softwareLink = () => this.page.locator("a[href='#/software']");
+    usersLink = () => this.page.locator("a[href='#/users']");
+    installButton = () => this.page.locator('::-p-aria([name="Install now with potential data loss"][role="button"])');
+    overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async waitVisible(timeout) {
+        await this.overviewHeading().setTimeout(timeout).wait();
+    }
+    async install() {
+        await this.installButton().click();
+    }
+    async goToHostname() {
+        await this.hostnameLink().click();
+    }
+    async goToLocalization() {
+        await this.localizationLink().click();
+    }
+    async goToNetwork() {
+        await this.networkLink().click();
+    }
+    async goToStorage() {
+        await this.storageLink().click();
+    }
+    async goToSoftware() {
+        await this.softwareLink().click();
+    }
+    async goToUsers() {
+        await this.usersLink().click();
+    }
+}
+exports.OverviewPage = OverviewPage;
+function RegistrationNavigable(Base) {
+    return class extends Base {
+        registrationLink = () => this.page.locator("a[href='#/registration']");
+        async goToRegistration() {
+            await this.registrationLink().click();
+        }
+    };
+}
+class OverviewWithRegistrationPage extends RegistrationNavigable(OverviewPage) {
+}
+exports.OverviewWithRegistrationPage = OverviewWithRegistrationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/overview_with_sidebar_page.ts":
+/*!*************************************************!*\
+  !*** ./src/pages/overview_with_sidebar_page.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OverviewWithSidebarPage = void 0;
+class OverviewWithSidebarPage {
     page;
     installButton = () => this.page.locator("button::-p-text(Install)");
     overviewHeading = () => this.page.locator('::-p-aria([name="Overview"][role="heading"])');
@@ -997,7 +1260,7 @@ class OverviewPage {
         await this.installButton().click();
     }
 }
-exports.OverviewPage = OverviewPage;
+exports.OverviewWithSidebarPage = OverviewWithSidebarPage;
 
 
 /***/ }),

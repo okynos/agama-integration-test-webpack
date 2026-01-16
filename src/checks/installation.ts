@@ -2,14 +2,26 @@ import { it, page, getTextContent } from "../lib/helpers";
 import { ConfirmInstallationPage } from "../pages/confirm_installation_page";
 import { CongratulationPage } from "../pages/congratulation_page";
 import { OverviewPage } from "../pages/overview_page";
+import { OverviewWithSidebarPage } from "../pages/overview_with_sidebar_page";
 import { SidebarPage } from "../pages/sidebar_page";
 import { InstallationPage } from "../pages/installation_page";
 import assert from "node:assert/strict";
+import { ConfirmInstallationWithSidebarPage } from "../pages/confirm_installation_with_sidebar_page";
 
 export function performInstallation() {
   it("should start installation", async function () {
     const confirmInstallation = new ConfirmInstallationPage(page);
     const overview = new OverviewPage(page);
+
+    await overview.install();
+    await confirmInstallation.confirmAndInstall();
+  });
+}
+
+export function performInstallationWithSidebar() {
+  it("should start installation", async function () {
+    const confirmInstallation = new ConfirmInstallationWithSidebarPage(page);
+    const overview = new OverviewWithSidebarPage(page);
     const sidebar = new SidebarPage(page);
 
     await sidebar.goToOverview();

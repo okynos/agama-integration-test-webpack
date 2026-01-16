@@ -1,5 +1,6 @@
 import { type Page } from "puppeteer-core";
 
+// ts-prune-ignore-next
 export class ConfiguringProductPage {
   private readonly page: Page;
   private readonly configuringTheProductText = () =>

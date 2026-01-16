@@ -1,8 +1,15 @@
 import { it, page } from "../lib/helpers";
+import { OverviewPage } from "../pages/overview_page";
 import {
   ProductSelectionPage,
   ProductSelectionWithRegistrationPage,
 } from "../pages/product_selection_page";
+
+function ensureProductConfiguration() {
+  it("should display Overview", async function () {
+    await new OverviewPage(page).waitVisible(40000);
+  });
+}
 
 export function productSelection(productId: string) {
   it(`should allow to select product ${productId}`, async function () {
@@ -10,6 +17,8 @@ export function productSelection(productId: string) {
     await productSelectionPage.choose(productId);
     await productSelectionPage.select();
   });
+
+  ensureProductConfiguration();
 }
 
 export function productSelectionWithLicense(productId: string) {
@@ -28,4 +37,6 @@ export function productSelectionWithLicense(productId: string) {
   it(`should allow to select product`, async function () {
     await new ProductSelectionWithRegistrationPage(page).select();
   });
+
+  ensureProductConfiguration();
 }

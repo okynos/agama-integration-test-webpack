@@ -15,19 +15,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
+exports.performInstallationWithSidebar = performInstallationWithSidebar;
 exports.checkInstallation = checkInstallation;
 exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const installation_page_1 = __webpack_require__(/*! ../pages/installation_page */ "./src/pages/installation_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const confirm_installation_with_sidebar_page_1 = __webpack_require__(/*! ../pages/confirm_installation_with_sidebar_page */ "./src/pages/confirm_installation_with_sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.install();
+        await confirmInstallation.confirmAndInstall();
+    });
+}
+function performInstallationWithSidebar() {
+    (0, helpers_1.it)("should start installation", async function () {
+        const confirmInstallation = new confirm_installation_with_sidebar_page_1.ConfirmInstallationWithSidebarPage(helpers_1.page);
+        const overview = new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await overview.install();
@@ -528,6 +539,31 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfirmInstallationPage = void 0;
 class ConfirmInstallationPage {
     page;
+    continueButton = () => this.page.locator('::-p-aria([name="Confirm and install"][role="button"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async confirmAndInstall() {
+        await this.continueButton().click();
+    }
+}
+exports.ConfirmInstallationPage = ConfirmInstallationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/confirm_installation_with_sidebar_page.ts":
+/*!*************************************************************!*\
+  !*** ./src/pages/confirm_installation_with_sidebar_page.ts ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfirmInstallationWithSidebarPage = void 0;
+class ConfirmInstallationWithSidebarPage {
+    page;
     continueButton = () => this.page.locator("button::-p-text('Continue')");
     constructor(page) {
         this.page = page;
@@ -536,7 +572,7 @@ class ConfirmInstallationPage {
         await this.continueButton().click();
     }
 }
-exports.ConfirmInstallationPage = ConfirmInstallationPage;
+exports.ConfirmInstallationWithSidebarPage = ConfirmInstallationWithSidebarPage;
 
 
 /***/ }),
@@ -669,8 +705,72 @@ exports.NetworkPage = NetworkPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OverviewPage = void 0;
+exports.OverviewWithRegistrationPage = exports.OverviewPage = void 0;
 class OverviewPage {
+    page;
+    hostnameLink = () => this.page.locator("a[href='#/hostname']");
+    localizationLink = () => this.page.locator("a[href='#/l10n']");
+    networkLink = () => this.page.locator("a[href='#/network']");
+    storageLink = () => this.page.locator("a[href='#/storage']");
+    softwareLink = () => this.page.locator("a[href='#/software']");
+    usersLink = () => this.page.locator("a[href='#/users']");
+    installButton = () => this.page.locator('::-p-aria([name="Install now with potential data loss"][role="button"])');
+    overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async waitVisible(timeout) {
+        await this.overviewHeading().setTimeout(timeout).wait();
+    }
+    async install() {
+        await this.installButton().click();
+    }
+    async goToHostname() {
+        await this.hostnameLink().click();
+    }
+    async goToLocalization() {
+        await this.localizationLink().click();
+    }
+    async goToNetwork() {
+        await this.networkLink().click();
+    }
+    async goToStorage() {
+        await this.storageLink().click();
+    }
+    async goToSoftware() {
+        await this.softwareLink().click();
+    }
+    async goToUsers() {
+        await this.usersLink().click();
+    }
+}
+exports.OverviewPage = OverviewPage;
+function RegistrationNavigable(Base) {
+    return class extends Base {
+        registrationLink = () => this.page.locator("a[href='#/registration']");
+        async goToRegistration() {
+            await this.registrationLink().click();
+        }
+    };
+}
+class OverviewWithRegistrationPage extends RegistrationNavigable(OverviewPage) {
+}
+exports.OverviewWithRegistrationPage = OverviewWithRegistrationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/overview_with_sidebar_page.ts":
+/*!*************************************************!*\
+  !*** ./src/pages/overview_with_sidebar_page.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OverviewWithSidebarPage = void 0;
+class OverviewWithSidebarPage {
     page;
     installButton = () => this.page.locator("button::-p-text(Install)");
     overviewHeading = () => this.page.locator('::-p-aria([name="Overview"][role="heading"])');
@@ -684,7 +784,7 @@ class OverviewPage {
         await this.installButton().click();
     }
 }
-exports.OverviewPage = OverviewPage;
+exports.OverviewWithSidebarPage = OverviewWithSidebarPage;
 
 
 /***/ }),
