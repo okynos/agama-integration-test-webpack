@@ -21,6 +21,8 @@ const options = parse((cmd) =>
     .option("--patterns <pattern>...", "comma-separated list of patterns", commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--use-custom-registration-server", "Enable custom registration server")
+    // Added registration server URL because not working kernel parameter, see bsc#1236907
+    .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "provide registration code for customer registration")
     .addOption(
       new Option(
@@ -44,6 +46,7 @@ if (options.registrationCode)
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
+    url: options.registrationServerUrl,
   });
 if (options.registrationCodeHa)
   testStrategy.enterExtensionRegistrationHA(options.registrationCodeHa);
