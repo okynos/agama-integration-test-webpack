@@ -7,6 +7,7 @@ import { SidebarPage } from "../pages/sidebar_page";
 import { InstallationPage } from "../pages/installation_page";
 import assert from "node:assert/strict";
 import { ConfirmInstallationWithSidebarPage } from "../pages/confirm_installation_with_sidebar_page";
+import { InstallationCompletePage } from "../pages/installation_complete_page";
 
 export function performInstallation() {
   it("should start installation", async function () {
@@ -51,6 +52,17 @@ export function checkInstallation() {
 }
 
 export function finishInstallation() {
+  it(
+    "should finish installation",
+    async function () {
+      const installationComplete = new InstallationCompletePage(page);
+      await installationComplete.wait(20 * 60 * 1000);
+    },
+    21 * 60 * 1000,
+  );
+}
+
+export function finishInstallationCongratulation() {
   it(
     "should finish installation",
     async function () {

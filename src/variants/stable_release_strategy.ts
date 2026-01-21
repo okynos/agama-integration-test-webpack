@@ -13,7 +13,10 @@ import {
 } from "../checks/encryption";
 import { createFirstUserWithSidebar } from "../checks/first_user";
 import { editRootUserWithSidebar } from "../checks/root_authentication";
-import { performInstallationWithSidebar } from "../checks/installation";
+import {
+  finishInstallationCongratulation,
+  performInstallationWithSidebar,
+} from "../checks/installation";
 import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
@@ -59,5 +62,9 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   logInWithIncorrectPassword() {
     logInWithIncorrectPasswordWithSidebar();
+  }
+
+  finishInstallation() {
+    finishInstallationCongratulation();
   }
 }

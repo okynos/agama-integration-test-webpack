@@ -228,6 +228,7 @@ exports.performInstallation = performInstallation;
 exports.performInstallationWithSidebar = performInstallationWithSidebar;
 exports.checkInstallation = checkInstallation;
 exports.finishInstallation = finishInstallation;
+exports.finishInstallationCongratulation = finishInstallationCongratulation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
@@ -237,6 +238,7 @@ const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/p
 const installation_page_1 = __webpack_require__(/*! ../pages/installation_page */ "./src/pages/installation_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const confirm_installation_with_sidebar_page_1 = __webpack_require__(/*! ../pages/confirm_installation_with_sidebar_page */ "./src/pages/confirm_installation_with_sidebar_page.ts");
+const installation_complete_page_1 = __webpack_require__(/*! ../pages/installation_complete_page */ "./src/pages/installation_complete_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
@@ -265,6 +267,12 @@ function checkInstallation() {
     });
 }
 function finishInstallation() {
+    (0, helpers_1.it)("should finish installation", async function () {
+        const installationComplete = new installation_complete_page_1.InstallationCompletePage(helpers_1.page);
+        await installationComplete.wait(20 * 60 * 1000);
+    }, 21 * 60 * 1000);
+}
+function finishInstallationCongratulation() {
     (0, helpers_1.it)("should finish installation", async function () {
         const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
         await congratulation.wait(20 * 60 * 1000);
@@ -1366,6 +1374,31 @@ exports.HostnamePage = HostnamePage;
 
 /***/ }),
 
+/***/ "./src/pages/installation_complete_page.ts":
+/*!*************************************************!*\
+  !*** ./src/pages/installation_complete_page.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InstallationCompletePage = void 0;
+class InstallationCompletePage {
+    page;
+    installationCompleteText = () => this.page.locator("::-p-aria('Installation complete')");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait(timeout) {
+        await this.installationCompleteText().setTimeout(timeout).wait();
+    }
+}
+exports.InstallationCompletePage = InstallationCompletePage;
+
+
+/***/ }),
+
 /***/ "./src/pages/installation_page.ts":
 /*!****************************************!*\
   !*** ./src/pages/installation_page.ts ***!
@@ -2007,7 +2040,6 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
@@ -2048,7 +2080,7 @@ if (options.prepareAdvancedStorage === "zfcp")
     (0, storage_zfcp_1.prepareZfcpStorage)();
 if (options.install) {
     testStrategy.performInstallation();
-    (0, installation_1.finishInstallation)();
+    testStrategy.finishInstallation();
 }
 
 
@@ -2104,6 +2136,9 @@ class ProductReleaseStrategy {
     }
     logInWithIncorrectPassword() {
         (0, login_1.logInWithIncorrectPassword)();
+    }
+    finishInstallation() {
+        (0, installation_1.finishInstallation)();
     }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
@@ -2161,6 +2196,9 @@ class StableReleaseStrategy {
     }
     logInWithIncorrectPassword() {
         (0, login_1.logInWithIncorrectPasswordWithSidebar)();
+    }
+    finishInstallation() {
+        (0, installation_1.finishInstallationCongratulation)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;

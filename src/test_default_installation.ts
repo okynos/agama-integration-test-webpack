@@ -4,7 +4,6 @@ import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
-import { finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { selectPatterns } from "./checks/software_selection";
@@ -56,5 +55,5 @@ testStrategy.editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) {
   testStrategy.performInstallation();
-  finishInstallation();
+  testStrategy.finishInstallation();
 }
