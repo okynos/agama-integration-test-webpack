@@ -5,7 +5,7 @@ import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
 import { changeDiskToInstallTheSystem } from "./checks/storage_change_disk_to_install";
-import { logIn, logInWithIncorrectPassword } from "./checks/login";
+import { logIn } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
@@ -30,7 +30,7 @@ test_init(options);
 
 const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 
-logInWithIncorrectPassword();
+testStrategy.logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);

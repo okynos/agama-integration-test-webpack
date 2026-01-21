@@ -10,6 +10,7 @@ import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "..
 import { createFirstUser } from "../checks/first_user";
 import { editRootUser } from "../checks/root_authentication";
 import { performInstallation } from "../checks/installation";
+import { logInWithIncorrectPassword } from "../checks/login";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -50,5 +51,9 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   performInstallation() {
     performInstallation();
+  }
+
+  logInWithIncorrectPassword() {
+    logInWithIncorrectPassword();
   }
 }

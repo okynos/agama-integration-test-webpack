@@ -28,6 +28,23 @@ export function logInWithIncorrectPassword() {
     await loginAsRoot.logIn();
     assert.deepEqual(
       await getTextContent(loginAsRoot.couldNotLoginText()),
+      "Danger alert:Could not log in",
+    );
+    await loginAsRoot.togglePasswordVisibility();
+    assert.deepEqual(await getValue(loginAsRoot.passwordInput()), invalidpassword);
+  });
+}
+
+export function logInWithIncorrectPasswordWithSidebar() {
+  verifyAgamaTitle();
+  it("should show warning alert for logging with wrong password", async function () {
+    const loginAsRoot = new LoginAsRootPage(page);
+    const invalidpassword = "invalid password";
+
+    await loginAsRoot.fillPassword(invalidpassword);
+    await loginAsRoot.logIn();
+    assert.deepEqual(
+      await getTextContent(loginAsRoot.couldNotLoginText()),
       "Danger alert:Could not log in. Please, make sure that the password is correct.",
     );
     await loginAsRoot.togglePasswordVisibility();

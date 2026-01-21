@@ -13,6 +13,7 @@ export interface IProductTestStrategy {
   createFirstUser(password: string);
   editRootUser(password: string);
   performInstallation();
+  logInWithIncorrectPassword();
 }
 
 // ts-prune-ignore-next
