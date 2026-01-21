@@ -14,6 +14,7 @@ export interface IProductTestStrategy {
   editRootUser(password: string);
   performInstallation();
   logInWithIncorrectPassword();
+  finishInstallation();
 }
 
 // ts-prune-ignore-next
