@@ -318,6 +318,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.logIn = logIn;
 exports.logInWithIncorrectPassword = logInWithIncorrectPassword;
+exports.logInWithIncorrectPasswordWithSidebar = logInWithIncorrectPasswordWithSidebar;
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
@@ -335,6 +336,18 @@ function logIn(password) {
     });
 }
 function logInWithIncorrectPassword() {
+    verifyAgamaTitle();
+    (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
+        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
+        const invalidpassword = "invalid password";
+        await loginAsRoot.fillPassword(invalidpassword);
+        await loginAsRoot.logIn();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText()), "Danger alert:Could not log in");
+        await loginAsRoot.togglePasswordVisibility();
+        strict_1.default.deepEqual(await (0, helpers_1.getValue)(loginAsRoot.passwordInput()), invalidpassword);
+    });
+}
+function logInWithIncorrectPasswordWithSidebar() {
     verifyAgamaTitle();
     (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
@@ -2153,7 +2166,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
-(0, login_1.logInWithIncorrectPassword)();
+testStrategy.logInWithIncorrectPassword();
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -2204,6 +2217,7 @@ const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/chec
 const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
+const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2235,6 +2249,9 @@ class ProductReleaseStrategy {
     performInstallation() {
         (0, installation_1.performInstallation)();
     }
+    logInWithIncorrectPassword() {
+        (0, login_1.logInWithIncorrectPassword)();
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2257,6 +2274,7 @@ const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/chec
 const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
+const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2287,6 +2305,9 @@ class StableReleaseStrategy {
     }
     performInstallation() {
         (0, installation_1.performInstallationWithSidebar)();
+    }
+    logInWithIncorrectPassword() {
+        (0, login_1.logInWithIncorrectPasswordWithSidebar)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;

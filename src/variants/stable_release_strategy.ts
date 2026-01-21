@@ -14,6 +14,7 @@ import {
 import { createFirstUserWithSidebar } from "../checks/first_user";
 import { editRootUserWithSidebar } from "../checks/root_authentication";
 import { performInstallationWithSidebar } from "../checks/installation";
+import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -54,5 +55,9 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   performInstallation() {
     performInstallationWithSidebar();
+  }
+
+  logInWithIncorrectPassword() {
+    logInWithIncorrectPasswordWithSidebar();
   }
 }

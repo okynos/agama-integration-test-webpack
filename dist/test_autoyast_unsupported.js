@@ -54,6 +54,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.logIn = logIn;
 exports.logInWithIncorrectPassword = logInWithIncorrectPassword;
+exports.logInWithIncorrectPasswordWithSidebar = logInWithIncorrectPasswordWithSidebar;
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
@@ -71,6 +72,18 @@ function logIn(password) {
     });
 }
 function logInWithIncorrectPassword() {
+    verifyAgamaTitle();
+    (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
+        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
+        const invalidpassword = "invalid password";
+        await loginAsRoot.fillPassword(invalidpassword);
+        await loginAsRoot.logIn();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText()), "Danger alert:Could not log in");
+        await loginAsRoot.togglePasswordVisibility();
+        strict_1.default.deepEqual(await (0, helpers_1.getValue)(loginAsRoot.passwordInput()), invalidpassword);
+    });
+}
+function logInWithIncorrectPasswordWithSidebar() {
     verifyAgamaTitle();
     (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
