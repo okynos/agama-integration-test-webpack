@@ -1,9 +1,34 @@
 import { it, page } from "../lib/helpers";
+import { HeaderPage } from "../pages/header_page";
+import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
 import { StorageSettingsPage } from "../pages/storage_settings_page";
 import { ZfcpPage } from "../pages/zfcp_page";
 
 export function prepareZfcpStorage() {
+  it(
+    "should prepare zFCP storage",
+    async function () {
+      const storage = new StorageSettingsPage(page);
+      const zfcp = new ZfcpPage(page);
+      const header = new HeaderPage(page);
+      const overview = new OverviewPage(page);
+
+      await overview.goToStorage();
+      await storage.activateZfcp();
+      await zfcp.activateDevice("0.0.fa00");
+      await zfcp.activateDevice("0.0.fc00");
+      await zfcp.back();
+      await zfcp.activateMultipath();
+      // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+      await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
+      await header.goToOverview();
+    },
+    3 * 60 * 1000,
+  );
+}
+
+export function prepareZfcpStorageWithSidebar() {
   it(
     "should prepare zFCP storage",
     async function () {

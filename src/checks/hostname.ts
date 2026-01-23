@@ -6,18 +6,6 @@ import { HeaderPage } from "../pages/header_page";
 
 export function setPermanentHostname(hostname: string) {
   it("should allow setting static hostname", async function () {
-    const sidebar = new SidebarPage(page);
-    const hostnamePage = new HostnamePage(page);
-
-    await sidebar.goToHostname();
-    await hostnamePage.useStaticHostname();
-    await hostnamePage.fill(hostname);
-    await hostnamePage.accept();
-  });
-}
-
-export function setPermanentHostnameWithSidebar(hostname: string) {
-  it("should allow setting static hostname", async function () {
     const overview = new OverviewPage(page);
     const header = new HeaderPage(page);
     const hostnamePage = new HostnamePage(page);
@@ -27,5 +15,17 @@ export function setPermanentHostnameWithSidebar(hostname: string) {
     await hostnamePage.fill(hostname);
     await hostnamePage.accept();
     await header.goToOverview();
+  });
+}
+
+export function setPermanentHostnameWithSidebar(hostname: string) {
+  it("should allow setting static hostname", async function () {
+    const sidebar = new SidebarPage(page);
+    const hostnamePage = new HostnamePage(page);
+
+    await sidebar.goToHostname();
+    await hostnamePage.useStaticHostname();
+    await hostnamePage.fill(hostname);
+    await hostnamePage.accept();
   });
 }

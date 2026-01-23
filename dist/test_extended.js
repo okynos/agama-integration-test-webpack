@@ -218,16 +218,6 @@ const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/p
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 function setPermanentHostname(hostname) {
     (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
-        await sidebar.goToHostname();
-        await hostnamePage.useStaticHostname();
-        await hostnamePage.fill(hostname);
-        await hostnamePage.accept();
-    });
-}
-function setPermanentHostnameWithSidebar(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
@@ -236,6 +226,16 @@ function setPermanentHostnameWithSidebar(hostname) {
         await hostnamePage.fill(hostname);
         await hostnamePage.accept();
         await header.goToOverview();
+    });
+}
+function setPermanentHostnameWithSidebar(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
+        await sidebar.goToHostname();
+        await hostnamePage.useStaticHostname();
+        await hostnamePage.fill(hostname);
+        await hostnamePage.accept();
     });
 }
 
@@ -563,8 +563,12 @@ function verifyRegistrationWarniningAlerts(use_custom, url) {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
-        if (use_custom)
+        if (use_custom) {
+            // Workaround for bsc#1236907
+            await customRegistration.selectCustomRegistrationServer();
+            await customRegistration.fillServerUrl(url);
             await customRegistration.selectProvideRegistrationCode();
+        }
         await customRegistration.register();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
     });
@@ -645,6 +649,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
 exports.editRootUserWithSidebar = editRootUserWithSidebar;
 exports.verifyPasswordStrength = verifyPasswordStrength;
+exports.verifyPasswordStrengthWithSidebar = verifyPasswordStrengthWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
@@ -686,6 +691,26 @@ function editRootUserWithSidebar(password) {
 }
 function verifyPasswordStrength() {
     (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+        header.goToOverview();
+    });
+}
+function verifyPasswordStrengthWithSidebar() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
         const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
@@ -719,13 +744,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.changeDiskToInstallTheSystem = changeDiskToInstallTheSystem;
+exports.changeDiskToInstallTheSystemWithSidebar = changeDiskToInstallTheSystemWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const table_1 = __webpack_require__(/*! ../lib/table */ "./src/lib/table.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_change_disk_page_1 = __webpack_require__(/*! ../pages/storage_settings_change_disk_page */ "./src/pages/storage_settings_change_disk_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function changeDiskToInstallTheSystem() {
+    (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.selectUsedDisk();
+        await storage.changeTheDiskToInstallTheSystem();
+        (await (0, table_1.getElementInCell)(helpers_1.page, storageSettingsChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
+        await storageSettingsChangeDisk.confirm();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
+        await storage.moreOptions();
+        await storage.resetToDefault();
+        await header.goToOverview();
+    });
+}
+function changeDiskToInstallTheSystemWithSidebar() {
     (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
@@ -744,6 +789,38 @@ function changeDiskToInstallTheSystem() {
 
 /***/ }),
 
+/***/ "./src/checks/storage_dasd.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_dasd.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareDasdStorage = prepareDasdStorage;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
+function prepareDasdStorage() {
+    (0, helpers_1.it)("should prepare DASD storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.manageDasd();
+        await dasd.activateDevice();
+        await dasd.formatDevice();
+        await dasd.waitFormattingDevice();
+        await dasd.back();
+        await storage.waitForElement("::-p-text(Installation devices)", 60000);
+    }, 6 * 60 * 1000);
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_zfcp.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_zfcp.ts ***!
@@ -754,11 +831,31 @@ function changeDiskToInstallTheSystem() {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
+exports.prepareZfcpStorageWithSidebar = prepareZfcpStorageWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.activateZfcp();
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
+        await zfcp.back();
+        await zfcp.activateMultipath();
+        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+        await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
+        await header.goToOverview();
+    }, 3 * 60 * 1000);
+}
+function prepareZfcpStorageWithSidebar() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
@@ -1358,6 +1455,61 @@ exports.CreateFirstUserPage = CreateFirstUserPage;
 
 /***/ }),
 
+/***/ "./src/pages/dasd_page.ts":
+/*!********************************!*\
+  !*** ./src/pages/dasd_page.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DasdPage = void 0;
+class DasdPage {
+    page;
+    selectRow = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    actionsForDisk = () => this.page.locator("xpath/descendant-or-self::button[starts-with(@aria-label, 'Actions for')]");
+    activateDisk = () => this.page
+        .locator('button[role="menuitem"]')
+        .filter((item) => item.getAttribute("tabindex") === "0");
+    checkActiveDisk = () => this.page.locator("table tbody tr:nth-child(1) td:nth-child(4)");
+    formatDiskButton = () => this.page.locator("button::-p-text(Format)");
+    formatNowDiskButton = () => this.page.locator("::-p-text(Format now)");
+    formattingDasdText = () => this.page.locator("::-p-text(Formatting DASD devices)");
+    backButton = () => this.page.locator("button::-p-text(Back)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateDevice() {
+        await this.actionsForDisk().click();
+        await this.activateDisk().click();
+        // Update this block of code to use table function, progress#193147
+        await this.page.waitForFunction((selector, text) => {
+            const element = document.querySelector(selector);
+            return element && element.textContent.trim() !== text;
+        }, { timeout: 5000 }, "table tbody tr:nth-child(1) td:nth-child(4)", "offline");
+    }
+    async formatDevice() {
+        await this.selectRow(0).click();
+        await this.formatDiskButton().click();
+        await this.formatNowDiskButton().click();
+    }
+    async waitFormattingDevice() {
+        await this.formattingDasdText().wait();
+        await this.page.waitForSelector('div[role="dialog"][aria-modal="true"]', {
+            hidden: true,
+            timeout: 5 * 60 * 1000,
+        });
+    }
+    async back() {
+        await this.backButton().click();
+    }
+}
+exports.DasdPage = DasdPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/encryption_settings_page.ts":
 /*!***********************************************!*\
   !*** ./src/pages/encryption_settings_page.ts ***!
@@ -1649,7 +1801,7 @@ class OverviewPage {
     storageLink = () => this.page.locator("a[href='#/storage']");
     softwareLink = () => this.page.locator("a[href='#/software']");
     usersLink = () => this.page.locator("a[href='#/users']");
-    installButton = () => this.page.locator('::-p-aria([name="Install now"][role="button"])');
+    installButton = () => this.page.locator("button::-p-aria(/Install now/i)");
     overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
     constructor(page) {
         this.page = page;
@@ -2180,13 +2332,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
-const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
-const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
-const storage_change_disk_to_install_1 = __webpack_require__(/*! ./checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
@@ -2214,21 +2362,22 @@ if (options.registrationCode)
         use_custom: options.useCustomRegistrationServer,
         code: options.registrationCode,
         provide_code: options.provideRegistrationCode,
+        url: options.registrationServerUrl,
     });
 testStrategy.enableEncryption(options.password);
 testStrategy.verifyEncryptionEnabled();
 testStrategy.disableEncryption();
-(0, storage_change_disk_to_install_1.changeDiskToInstallTheSystem)();
-(0, first_user_1.createFirstUser)(options.password);
-(0, root_authentication_1.editRootUser)(options.rootPassword);
-(0, root_authentication_1.verifyPasswordStrength)();
+testStrategy.changeDiskToInstallTheSystem();
+testStrategy.createFirstUser(options.password);
+testStrategy.editRootUser(options.rootPassword);
+testStrategy.verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp")
-    (0, storage_zfcp_1.prepareZfcpStorage)();
+    testStrategy.prepareZfcpStorage();
 (0, download_logs_1.downloadLogs)();
 if (options.install) {
-    (0, installation_1.performInstallation)();
+    testStrategy.performInstallation();
     (0, installation_1.checkInstallation)();
-    (0, installation_1.finishInstallation)();
+    testStrategy.finishInstallation();
 }
 
 
@@ -2251,6 +2400,8 @@ const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/chec
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
+const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2288,6 +2439,15 @@ class ProductReleaseStrategy {
     finishInstallation() {
         (0, installation_1.finishInstallation)();
     }
+    changeDiskToInstallTheSystem() {
+        (0, storage_change_disk_to_install_1.changeDiskToInstallTheSystem)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrength)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_dasd_1.prepareDasdStorage)();
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2311,6 +2471,8 @@ const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/chec
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
+const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2347,6 +2509,15 @@ class StableReleaseStrategy {
     }
     finishInstallation() {
         (0, installation_1.finishInstallationCongratulation)();
+    }
+    changeDiskToInstallTheSystem() {
+        (0, storage_change_disk_to_install_1.changeDiskToInstallTheSystemWithSidebar)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrengthWithSidebar)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorageWithSidebar)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;

@@ -15,6 +15,9 @@ export interface IProductTestStrategy {
   performInstallation();
   logInWithIncorrectPassword();
   finishInstallation();
+  changeDiskToInstallTheSystem();
+  verifyPasswordStrength();
+  prepareZfcpStorage();
 }
 
 // ts-prune-ignore-next
