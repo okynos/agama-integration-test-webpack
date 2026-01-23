@@ -12,12 +12,17 @@ import {
   verifyEncryptionEnabledWithSidebar,
 } from "../checks/encryption";
 import { createFirstUserWithSidebar } from "../checks/first_user";
-import { editRootUserWithSidebar } from "../checks/root_authentication";
+import {
+  editRootUserWithSidebar,
+  verifyPasswordStrengthWithSidebar,
+} from "../checks/root_authentication";
 import {
   finishInstallationCongratulation,
   performInstallationWithSidebar,
 } from "../checks/installation";
 import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
+import { changeDiskToInstallTheSystemWithSidebar } from "../checks/storage_change_disk_to_install";
+import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -66,5 +71,17 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   finishInstallation() {
     finishInstallationCongratulation();
+  }
+
+  changeDiskToInstallTheSystem() {
+    changeDiskToInstallTheSystemWithSidebar();
+  }
+
+  verifyPasswordStrength() {
+    verifyPasswordStrengthWithSidebar();
+  }
+
+  prepareZfcpStorage() {
+    prepareZfcpStorageWithSidebar();
   }
 }

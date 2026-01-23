@@ -8,9 +8,11 @@ import {
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
-import { editRootUser } from "../checks/root_authentication";
+import { editRootUser, verifyPasswordStrength } from "../checks/root_authentication";
 import { finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
+import { changeDiskToInstallTheSystem } from "../checks/storage_change_disk_to_install";
+import { prepareDasdStorage } from "../checks/storage_dasd";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -59,5 +61,17 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   finishInstallation() {
     finishInstallation();
+  }
+
+  changeDiskToInstallTheSystem() {
+    changeDiskToInstallTheSystem();
+  }
+
+  verifyPasswordStrength() {
+    verifyPasswordStrength();
+  }
+
+  prepareZfcpStorage() {
+    prepareDasdStorage();
   }
 }

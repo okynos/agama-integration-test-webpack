@@ -2,13 +2,9 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
-import { createFirstUser } from "./checks/first_user";
-import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
-import { changeDiskToInstallTheSystem } from "./checks/storage_change_disk_to_install";
 import { logIn } from "./checks/login";
-import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
+import { checkInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
-import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { downloadLogs } from "./checks/download_logs";
 
 const options = parse((cmd) =>
@@ -45,18 +41,19 @@ if (options.registrationCode)
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
+    url: options.registrationServerUrl,
   });
 testStrategy.enableEncryption(options.password);
 testStrategy.verifyEncryptionEnabled();
 testStrategy.disableEncryption();
-changeDiskToInstallTheSystem();
-createFirstUser(options.password);
-editRootUser(options.rootPassword);
-verifyPasswordStrength();
-if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
+testStrategy.changeDiskToInstallTheSystem();
+testStrategy.createFirstUser(options.password);
+testStrategy.editRootUser(options.rootPassword);
+testStrategy.verifyPasswordStrength();
+if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
 downloadLogs();
 if (options.install) {
-  performInstallation();
+  testStrategy.performInstallation();
   checkInstallation();
-  finishInstallation();
+  testStrategy.finishInstallation();
 }

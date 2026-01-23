@@ -274,8 +274,12 @@ function verifyRegistrationWarniningAlerts(use_custom, url) {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
-        if (use_custom)
+        if (use_custom) {
+            // Workaround for bsc#1236907
+            await customRegistration.selectCustomRegistrationServer();
+            await customRegistration.fillServerUrl(url);
             await customRegistration.selectProvideRegistrationCode();
+        }
         await customRegistration.register();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
     });
@@ -996,7 +1000,7 @@ class OverviewPage {
     storageLink = () => this.page.locator("a[href='#/storage']");
     softwareLink = () => this.page.locator("a[href='#/software']");
     usersLink = () => this.page.locator("a[href='#/users']");
-    installButton = () => this.page.locator('::-p-aria([name="Install now"][role="button"])');
+    installButton = () => this.page.locator("button::-p-aria(/Install now/i)");
     overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
     constructor(page) {
         this.page = page;

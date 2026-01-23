@@ -189,7 +189,12 @@ export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: str
     const customRegistration = new CustomRegistrationPage(page);
 
     await overview.goToRegistration();
-    if (use_custom) await customRegistration.selectProvideRegistrationCode();
+    if (use_custom) {
+      // Workaround for bsc#1236907
+      await customRegistration.selectCustomRegistrationServer();
+      await customRegistration.fillServerUrl(url);
+      await customRegistration.selectProvideRegistrationCode();
+    }
     await customRegistration.register();
     assert.deepEqual(
       await getTextContent(customRegistration.enterRegistrationCodeText()),

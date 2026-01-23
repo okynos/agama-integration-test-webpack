@@ -44,6 +44,40 @@ export function editRootUserWithSidebar(password: string) {
 
 export function verifyPasswordStrength() {
   it("should verify the strength of typed password", async function () {
+    const header = new HeaderPage(page);
+    const overview = new OverviewPage(page);
+    const users = new UsersPage(page);
+    const setARootPassword = new SetARootPasswordPage(page);
+
+    await overview.goToUsers();
+    await users.editRootUser();
+    await setARootPassword.fillPassword("a23b56c");
+    const elementTextPasswordLess8Characters = await getTextContent(
+      setARootPassword.alertPasswordLess8Characters(),
+    );
+    assert.deepEqual(
+      elementTextPasswordLess8Characters,
+      "The password is shorter than 8 characters",
+    );
+
+    await setARootPassword.fillPassword("a23b56ca");
+    const elementTextPasswordIsWeak = await getTextContent(setARootPassword.alertPasswordIsWeak());
+    assert.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+
+    await setARootPassword.fillPassword("a23b5678");
+    const elementTextPasswordFailDictionary = await getTextContent(
+      setARootPassword.alertPasswordFailDictionaryCheck(),
+    );
+    assert.deepEqual(
+      elementTextPasswordFailDictionary,
+      "The password fails the dictionary check - it is too simplistic/systematic",
+    );
+    header.goToOverview();
+  });
+}
+
+export function verifyPasswordStrengthWithSidebar() {
+  it("should verify the strength of typed password", async function () {
     const sidebar = new SidebarPage(page);
     const users = new UsersPage(page);
     const setARootPassword = new SetARootPasswordPage(page);

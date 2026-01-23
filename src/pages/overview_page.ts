@@ -10,8 +10,7 @@ export class OverviewPage {
   private readonly softwareLink = () => this.page.locator("a[href='#/software']");
   private readonly usersLink = () => this.page.locator("a[href='#/users']");
 
-  private readonly installButton = () =>
-    this.page.locator('::-p-aria([name="Install now"][role="button"])');
+  readonly installButton = () => this.page.locator("button::-p-aria(/Install now/i)");
 
   private readonly overviewHeading = () =>
     this.page.locator('::-p-aria([name="System Information"][role="heading"])');

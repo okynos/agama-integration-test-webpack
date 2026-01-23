@@ -404,8 +404,12 @@ function verifyRegistrationWarniningAlerts(use_custom, url) {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
-        if (use_custom)
+        if (use_custom) {
+            // Workaround for bsc#1236907
+            await customRegistration.selectCustomRegistrationServer();
+            await customRegistration.fillServerUrl(url);
             await customRegistration.selectProvideRegistrationCode();
+        }
         await customRegistration.register();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
     });
@@ -486,6 +490,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
 exports.editRootUserWithSidebar = editRootUserWithSidebar;
 exports.verifyPasswordStrength = verifyPasswordStrength;
+exports.verifyPasswordStrengthWithSidebar = verifyPasswordStrengthWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
@@ -526,6 +531,26 @@ function editRootUserWithSidebar(password) {
     });
 }
 function verifyPasswordStrength() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+        header.goToOverview();
+    });
+}
+function verifyPasswordStrengthWithSidebar() {
     (0, helpers_1.it)("should verify the strength of typed password", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
@@ -1236,7 +1261,7 @@ class OverviewPage {
     storageLink = () => this.page.locator("a[href='#/storage']");
     softwareLink = () => this.page.locator("a[href='#/software']");
     usersLink = () => this.page.locator("a[href='#/users']");
-    installButton = () => this.page.locator('::-p-aria([name="Install now"][role="button"])');
+    installButton = () => this.page.locator("button::-p-aria(/Install now/i)");
     overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
     constructor(page) {
         this.page = page;
