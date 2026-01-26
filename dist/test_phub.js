@@ -275,9 +275,6 @@ function verifyRegistrationWarniningAlerts(use_custom, url) {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
         if (use_custom) {
-            // Workaround for bsc#1236907
-            await customRegistration.selectCustomRegistrationServer();
-            await customRegistration.fillServerUrl(url);
             await customRegistration.selectProvideRegistrationCode();
         }
         await customRegistration.register();

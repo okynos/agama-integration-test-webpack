@@ -534,9 +534,6 @@ function verifyRegistrationWarniningAlerts(use_custom, url) {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
         if (use_custom) {
-            // Workaround for bsc#1236907
-            await customRegistration.selectCustomRegistrationServer();
-            await customRegistration.fillServerUrl(url);
             await customRegistration.selectProvideRegistrationCode();
         }
         await customRegistration.register();
@@ -2376,8 +2373,6 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--use-custom-registration-server", "Enable custom registration server")
-    // Added registration server URL because not working kernel parameter, see bsc#1236907
-    .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "provide registration code for customer registration")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
@@ -2393,7 +2388,6 @@ if (options.registrationCode)
         use_custom: options.useCustomRegistrationServer,
         code: options.registrationCode,
         provide_code: options.provideRegistrationCode,
-        url: options.registrationServerUrl,
     });
 if (options.registrationCodeHa)
     testStrategy.enterExtensionRegistrationHA(options.registrationCodeHa);
