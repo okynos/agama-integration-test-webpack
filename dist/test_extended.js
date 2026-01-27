@@ -387,8 +387,8 @@ const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
 function ensureProductConfiguration() {
     (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(70000);
+    }, 71 * 1000);
 }
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {

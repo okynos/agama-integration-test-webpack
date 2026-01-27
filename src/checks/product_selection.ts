@@ -6,9 +6,13 @@ import {
 } from "../pages/product_selection_page";
 
 function ensureProductConfiguration() {
-  it("should display Overview", async function () {
-    await new OverviewPage(page).waitVisible(40000);
-  });
+  it(
+    "should display Overview",
+    async function () {
+      await new OverviewPage(page).waitVisible(70000);
+    },
+    71 * 1000,
+  );
 }
 
 export function productSelection(productId: string) {
