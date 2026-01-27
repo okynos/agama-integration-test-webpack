@@ -728,6 +728,53 @@ function verifyPasswordStrengthWithSidebar() {
 
 /***/ }),
 
+/***/ "./src/checks/software_selection.ts":
+/*!******************************************!*\
+  !*** ./src/checks/software_selection.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectPatterns = selectPatterns;
+exports.selectPatternsWithSidebar = selectPatternsWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
+const software_selection_page_1 = __webpack_require__(/*! ../pages/software_selection_page */ "./src/pages/software_selection_page.ts");
+function selectPatterns(patterns) {
+    (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const software = new software_page_1.SoftwarePage(helpers_1.page);
+        const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
+        await overview.goToSoftware();
+        await software.changeSelection();
+        for (const pattern of patterns)
+            await softwareSelection.selectPattern(pattern);
+        await softwareSelection.close();
+        header.goToOverview();
+    });
+}
+function selectPatternsWithSidebar(patterns) {
+    (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const software = new software_page_1.SoftwarePage(helpers_1.page);
+        const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
+        await sidebar.goToSoftware();
+        await software.changeSelection();
+        for (const pattern of patterns)
+            await softwareSelection.selectPattern(pattern);
+        await softwareSelection.close();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_change_disk_to_install.ts":
 /*!******************************************************!*\
   !*** ./src/checks/storage_change_disk_to_install.ts ***!
@@ -2114,6 +2161,64 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
+/***/ "./src/pages/software_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/software_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwarePage = void 0;
+class SoftwarePage {
+    page;
+    changeSelectionButton = () => this.page.locator("::-p-text(Change selection)");
+    constructor(page) {
+        this.page = page;
+    }
+    async changeSelection() {
+        await this.changeSelectionButton().click();
+    }
+}
+exports.SoftwarePage = SoftwarePage;
+
+
+/***/ }),
+
+/***/ "./src/pages/software_selection_page.ts":
+/*!**********************************************!*\
+  !*** ./src/pages/software_selection_page.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwareSelectionPage = void 0;
+class SoftwareSelectionPage {
+    page;
+    patternCheckboxNotChecked = (pattern) => this.page.locator(`input[type=checkbox]:not(:checked)[aria-labelledby*=${pattern}-title]`);
+    patternCheckboxChecked = (pattern) => this.page.locator(`input[type=checkbox]:checked[aria-labelledby*=${pattern}-title]`);
+    closeButton = () => this.page.locator("::-p-text(Close)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectPattern(pattern) {
+        const checkbox = await this.patternCheckboxNotChecked(pattern).waitHandle();
+        await checkbox.scrollIntoView();
+        await this.patternCheckboxNotChecked(pattern).click();
+        await this.patternCheckboxChecked(pattern).wait();
+    }
+    async close() {
+        await this.closeButton().click();
+    }
+}
+exports.SoftwareSelectionPage = SoftwareSelectionPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_settings_change_disk_page.ts":
 /*!********************************************************!*\
   !*** ./src/pages/storage_settings_change_disk_page.ts ***!
@@ -2399,6 +2504,7 @@ const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2445,6 +2551,9 @@ class ProductReleaseStrategy {
     prepareZfcpStorage() {
         (0, storage_dasd_1.prepareDasdStorage)();
     }
+    selectPatterns(patterns) {
+        (0, software_selection_1.selectPatterns)(patterns);
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2470,6 +2579,7 @@ const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2515,6 +2625,9 @@ class StableReleaseStrategy {
     }
     prepareZfcpStorage() {
         (0, storage_zfcp_1.prepareZfcpStorageWithSidebar)();
+    }
+    selectPatterns(patterns) {
+        (0, software_selection_1.selectPatternsWithSidebar)(patterns);
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;
