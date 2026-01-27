@@ -13,6 +13,7 @@ import { finishInstallation, performInstallation } from "../checks/installation"
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDiskToInstallTheSystem } from "../checks/storage_change_disk_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
+import { selectPatterns } from "../checks/software_selection";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -73,5 +74,9 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   prepareZfcpStorage() {
     prepareDasdStorage();
+  }
+
+  selectPatterns(patterns: string[]) {
+    selectPatterns(patterns);
   }
 }

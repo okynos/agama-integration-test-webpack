@@ -23,6 +23,7 @@ import {
 import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
 import { changeDiskToInstallTheSystemWithSidebar } from "../checks/storage_change_disk_to_install";
 import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
+import { selectPatternsWithSidebar } from "../checks/software_selection";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -83,5 +84,9 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   prepareZfcpStorage() {
     prepareZfcpStorageWithSidebar();
+  }
+
+  selectPatterns(patterns: string[]) {
+    selectPatternsWithSidebar(patterns);
   }
 }

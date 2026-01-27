@@ -141,11 +141,28 @@ function logInWithIncorrectPasswordWithSidebar() {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.selectPatterns = selectPatterns;
+exports.selectPatternsWithSidebar = selectPatternsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
 const software_selection_page_1 = __webpack_require__(/*! ../pages/software_selection_page */ "./src/pages/software_selection_page.ts");
 function selectPatterns(patterns) {
+    (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const software = new software_page_1.SoftwarePage(helpers_1.page);
+        const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
+        await overview.goToSoftware();
+        await software.changeSelection();
+        for (const pattern of patterns)
+            await softwareSelection.selectPattern(pattern);
+        await softwareSelection.close();
+        header.goToOverview();
+    });
+}
+function selectPatternsWithSidebar(patterns) {
     (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const software = new software_page_1.SoftwarePage(helpers_1.page);
@@ -730,6 +747,31 @@ class DasdPage {
     }
 }
 exports.DasdPage = DasdPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/header_page.ts":
+/*!**********************************!*\
+  !*** ./src/pages/header_page.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeaderPage = void 0;
+class HeaderPage {
+    page;
+    overviewLink = () => this.page.locator("a[href='#/overview']");
+    constructor(page) {
+        this.page = page;
+    }
+    async goToOverview() {
+        await this.overviewLink().click();
+    }
+}
+exports.HeaderPage = HeaderPage;
 
 
 /***/ }),

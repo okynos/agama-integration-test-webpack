@@ -18,6 +18,7 @@ export interface IProductTestStrategy {
   changeDiskToInstallTheSystem();
   verifyPasswordStrength();
   prepareZfcpStorage();
+  selectPatterns(patterns: string[]);
 }
 
 // ts-prune-ignore-next
