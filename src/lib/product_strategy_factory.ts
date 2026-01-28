@@ -18,7 +18,9 @@ export interface IProductTestStrategy {
   changeDiskToInstallTheSystem();
   verifyPasswordStrength();
   prepareZfcpStorage();
+  prepareDasdStorage();
   selectPatterns(patterns: string[]);
+  changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
 }
 
 // ts-prune-ignore-next

@@ -3,10 +3,7 @@ import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
 import { logIn } from "./checks/login";
-import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "./checks/storage_change_root_partition";
-import { selectPatterns } from "./checks/software_selection";
-import { prepareDasdStorage } from "./checks/storage_dasd";
-import { performInstallation, finishInstallation } from "./checks/installation";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 const options = parse((cmd) =>
   cmd
@@ -22,11 +19,15 @@ const options = parse((cmd) =>
 );
 
 test_init(options);
+
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+
 logIn(options.password);
-if (options.btrfsWithoutSnapshots) changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
-if (options.patterns) selectPatterns(options.patterns);
-if (options.prepareAdvancedStorage === "dasd") prepareDasdStorage();
+if (options.btrfsWithoutSnapshots)
+  testStrategy.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
+if (options.patterns) testStrategy.selectPatterns(options.patterns);
+if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
 if (options.install) {
-  performInstallation();
-  finishInstallation();
+  testStrategy.performInstallation();
+  testStrategy.finishInstallation();
 }
