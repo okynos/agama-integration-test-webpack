@@ -16,6 +16,7 @@ import { prepareDasdStorage } from "../checks/storage_dasd";
 import { selectPatterns } from "../checks/software_selection";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
+import { productSelection, productSelectionWithLicense } from "../checks/product_selection";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -88,5 +89,13 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
+  }
+
+  productSelection(productId: string) {
+    productSelection(productId);
+  }
+
+  productSelectionWithLicense(productId: string) {
+    productSelectionWithLicense(productId);
   }
 }

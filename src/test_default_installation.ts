@@ -4,7 +4,6 @@ import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
-import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 
 const options = parse((cmd) =>
@@ -35,8 +34,8 @@ const testStrategy = ProductStrategyFactory.create(options.productVersion, optio
 
 logIn(options.password);
 if (options.productId !== "none")
-  if (options.acceptLicense) productSelectionWithLicense(options.productId);
-  else productSelection(options.productId);
+  if (options.acceptLicense) testStrategy.productSelectionWithLicense(options.productId);
+  else testStrategy.productSelection(options.productId);
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
