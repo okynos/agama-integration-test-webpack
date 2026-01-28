@@ -26,6 +26,10 @@ import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 import { selectPatternsWithSidebar } from "../checks/software_selection";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar } from "../checks/storage_change_root_partition";
 import { prepareDasdStorageWithSidebar } from "../checks/storage_dasd";
+import {
+  productSelectionWithLicenseWithSidebar,
+  productSelectionWithSidebar,
+} from "../checks/product_selection";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -98,5 +102,13 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar();
+  }
+
+  productSelection(productId: string) {
+    productSelectionWithSidebar(productId);
+  }
+
+  productSelectionWithLicense(productId: string) {
+    productSelectionWithLicenseWithSidebar(productId);
   }
 }

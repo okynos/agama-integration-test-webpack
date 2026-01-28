@@ -21,6 +21,8 @@ export interface IProductTestStrategy {
   prepareDasdStorage();
   selectPatterns(patterns: string[]);
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
+  productSelectionWithLicense(productId: string);
+  productSelection(productId: string);
 }
 
 // ts-prune-ignore-next

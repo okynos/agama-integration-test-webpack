@@ -381,13 +381,21 @@ function logInWithIncorrectPasswordWithSidebar() {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.productSelection = productSelection;
+exports.productSelectionWithSidebar = productSelectionWithSidebar;
 exports.productSelectionWithLicense = productSelectionWithLicense;
+exports.productSelectionWithLicenseWithSidebar = productSelectionWithLicenseWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
 function ensureProductConfiguration() {
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(70000);
+    }, 71 * 1000);
+}
+function ensureProductConfigurationWithSidebar() {
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(70000);
     }, 71 * 1000);
 }
 function productSelection(productId) {
@@ -397,6 +405,14 @@ function productSelection(productId) {
         await productSelectionPage.select();
     });
     ensureProductConfiguration();
+}
+function productSelectionWithSidebar(productId) {
+    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
+        const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
+        await productSelectionPage.choose(productId);
+        await productSelectionPage.select();
+    });
+    ensureProductConfigurationWithSidebar();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -415,6 +431,24 @@ function productSelectionWithLicense(productId) {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
     ensureProductConfiguration();
+}
+function productSelectionWithLicenseWithSidebar(productId) {
+    (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).choose(productId);
+    });
+    (0, helpers_1.it)(`should allow to review its license`, async function () {
+        const productSelectionWithRegistrationPage = new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page);
+        await productSelectionWithRegistrationPage.openLicense();
+        await productSelectionWithRegistrationPage.verifyLicense();
+        await productSelectionWithRegistrationPage.closeLicense();
+    });
+    (0, helpers_1.it)(`should allow to accept its license`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).acceptProductLicense();
+    });
+    (0, helpers_1.it)(`should allow to select product`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
+    });
+    ensureProductConfigurationWithSidebar();
 }
 
 
@@ -448,6 +482,7 @@ const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "
 const trust_registration_certificate_page_1 = __webpack_require__(/*! ../pages/trust_registration_certificate_page */ "./src/pages/trust_registration_certificate_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 function enterProductRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
@@ -518,7 +553,7 @@ function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, u
         });
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(60000);
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(60000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
@@ -2626,6 +2661,7 @@ const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2681,6 +2717,12 @@ class ProductReleaseStrategy {
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize)();
     }
+    productSelection(productId) {
+        (0, product_selection_1.productSelection)(productId);
+    }
+    productSelectionWithLicense(productId) {
+        (0, product_selection_1.productSelectionWithLicense)(productId);
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2709,6 +2751,7 @@ const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
 const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2763,6 +2806,12 @@ class StableReleaseStrategy {
     }
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar)();
+    }
+    productSelection(productId) {
+        (0, product_selection_1.productSelectionWithSidebar)(productId);
+    }
+    productSelectionWithLicense(productId) {
+        (0, product_selection_1.productSelectionWithLicenseWithSidebar)(productId);
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;
