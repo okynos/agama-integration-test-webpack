@@ -833,6 +833,59 @@ function changeDiskToInstallTheSystemWithSidebar() {
 
 /***/ }),
 
+/***/ "./src/checks/storage_change_root_partition.ts":
+/*!*****************************************************!*\
+  !*** ./src/checks/storage_change_root_partition.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize = changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize;
+exports.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar = changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const configure_partition_page_1 = __webpack_require__(/*! ../pages/configure_partition_page */ "./src/pages/configure_partition_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+    (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.editRootPartition();
+        await configRootPartition.changeFilesystemToBtrfs();
+        await configRootPartition.selectSizeMode();
+        await configRootPartition.changeSizeModeToManual();
+        await configRootPartition.inputPartitionSize("5 GiB");
+        await configRootPartition.disableAllowGrowing();
+        await configRootPartition.accept();
+        await header.goToOverview();
+    });
+}
+function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() {
+    (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editRootPartition();
+        await configRootPartition.changeFilesystemToBtrfs();
+        await configRootPartition.selectSizeMode();
+        await configRootPartition.changeSizeModeToManual();
+        await configRootPartition.inputPartitionSize("5 GiB");
+        await configRootPartition.disableAllowGrowing();
+        await configRootPartition.accept();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_dasd.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_dasd.ts ***!
@@ -843,11 +896,30 @@ function changeDiskToInstallTheSystemWithSidebar() {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareDasdStorage = prepareDasdStorage;
+exports.prepareDasdStorageWithSidebar = prepareDasdStorageWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 function prepareDasdStorage() {
+    (0, helpers_1.it)("should prepare DASD storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.manageDasd();
+        await dasd.activateDevice();
+        await dasd.formatDevice();
+        await dasd.waitFormattingDevice();
+        await dasd.back();
+        await storage.waitForElement("::-p-text(Installation devices)", 60000);
+        await header.goToOverview();
+    }, 6 * 60 * 1000);
+}
+function prepareDasdStorageWithSidebar() {
     (0, helpers_1.it)("should prepare DASD storage", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const dasd = new dasd_page_1.DasdPage(helpers_1.page);
@@ -1379,6 +1451,53 @@ async function getElementInCell(page, tableSelector, rowColumn, rowValue, elemen
     }
     return element;
 }
+
+
+/***/ }),
+
+/***/ "./src/pages/configure_partition_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/configure_partition_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigurePartitionPage = void 0;
+class ConfigurePartitionPage {
+    page;
+    fileSystemButton = () => this.page.locator("::-p-aria(File system)");
+    btrfsOption = () => this.page.locator('::-p-aria(Btrfs[role="option"])');
+    sizeModeToggleMenu = () => this.page.locator("::-p-aria(Size mode)");
+    manualMenuItem = () => this.page.locator("::-p-aria(Manual Define a custom size)");
+    sizeGiBTextbox = () => this.page.locator("::-p-aria(Size)[type='text']");
+    allowGrowingCheckBox = () => this.page.locator("::-p-aria(Allow growing)");
+    acceptButton = () => this.page.locator("::-p-aria(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async changeFilesystemToBtrfs() {
+        await this.fileSystemButton().click();
+        await this.btrfsOption().click();
+    }
+    async selectSizeMode() {
+        await this.sizeModeToggleMenu().click();
+    }
+    async changeSizeModeToManual() {
+        await this.manualMenuItem().click();
+    }
+    async inputPartitionSize(size) {
+        await this.sizeGiBTextbox().fill(size);
+    }
+    async disableAllowGrowing() {
+        await this.allowGrowingCheckBox().click();
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigurePartitionPage = ConfigurePartitionPage;
 
 
 /***/ }),
@@ -2505,6 +2624,8 @@ const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.t
 const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2549,10 +2670,16 @@ class ProductReleaseStrategy {
         (0, root_authentication_1.verifyPasswordStrength)();
     }
     prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorage)();
+    }
+    prepareDasdStorage() {
         (0, storage_dasd_1.prepareDasdStorage)();
     }
     selectPatterns(patterns) {
         (0, software_selection_1.selectPatterns)(patterns);
+    }
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+        (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize)();
     }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
@@ -2580,6 +2707,8 @@ const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.t
 const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
+const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2626,8 +2755,14 @@ class StableReleaseStrategy {
     prepareZfcpStorage() {
         (0, storage_zfcp_1.prepareZfcpStorageWithSidebar)();
     }
+    prepareDasdStorage() {
+        (0, storage_dasd_1.prepareDasdStorageWithSidebar)();
+    }
     selectPatterns(patterns) {
         (0, software_selection_1.selectPatternsWithSidebar)(patterns);
+    }
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+        (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;

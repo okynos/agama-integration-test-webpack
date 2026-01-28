@@ -14,6 +14,8 @@ import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDiskToInstallTheSystem } from "../checks/storage_change_disk_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
 import { selectPatterns } from "../checks/software_selection";
+import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
+import { prepareZfcpStorage } from "../checks/storage_zfcp";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -73,10 +75,18 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
   }
 
   prepareZfcpStorage() {
+    prepareZfcpStorage();
+  }
+
+  prepareDasdStorage() {
     prepareDasdStorage();
   }
 
   selectPatterns(patterns: string[]) {
     selectPatterns(patterns);
+  }
+
+  changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
   }
 }

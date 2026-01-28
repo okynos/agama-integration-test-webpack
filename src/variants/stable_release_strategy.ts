@@ -24,6 +24,8 @@ import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
 import { changeDiskToInstallTheSystemWithSidebar } from "../checks/storage_change_disk_to_install";
 import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 import { selectPatternsWithSidebar } from "../checks/software_selection";
+import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar } from "../checks/storage_change_root_partition";
+import { prepareDasdStorageWithSidebar } from "../checks/storage_dasd";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -86,7 +88,15 @@ export class StableReleaseStrategy implements IProductTestStrategy {
     prepareZfcpStorageWithSidebar();
   }
 
+  prepareDasdStorage() {
+    prepareDasdStorageWithSidebar();
+  }
+
   selectPatterns(patterns: string[]) {
     selectPatternsWithSidebar(patterns);
+  }
+
+  changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar();
   }
 }
