@@ -17,6 +17,8 @@ import { selectPatterns } from "../checks/software_selection";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
 import { productSelection, productSelectionWithLicense } from "../checks/product_selection";
+import { selectMoreDevices } from "../checks/storage_select_installation_device";
+import { setOnlyInstallationNetwork } from "../checks/network";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -97,5 +99,13 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   productSelectionWithLicense(productId: string) {
     productSelectionWithLicense(productId);
+  }
+
+  selectMoreDevices() {
+    selectMoreDevices();
+  }
+
+  setOnlyInstallationNetwork() {
+    setOnlyInstallationNetwork();
   }
 }

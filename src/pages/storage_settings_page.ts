@@ -7,6 +7,9 @@ export class StorageSettingsPage {
   private readonly selectDiskToInstallButton = () =>
     this.page.locator("::-p-text(Change the disk to install the system)");
 
+  private readonly editEncryptionButton = () =>
+    this.page.locator("a[href='#/storage/encryption/edit']");
+
   private readonly encryptionTab = () => this.page.locator("::-p-text(Encryption)");
   private readonly changeEncryptionLink = () =>
     this.page.locator('::-p-aria([name="Change"][role="link"])');
@@ -51,6 +54,10 @@ export class StorageSettingsPage {
 
   async selectMoreDevices() {
     await this.selectMoreDevicesButton().click();
+  }
+
+  async editEncryption() {
+    await this.editEncryptionButton().click();
   }
 
   async selectEncryption() {

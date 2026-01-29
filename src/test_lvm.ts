@@ -1,10 +1,8 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
-import { selectMoreDevices } from "./checks/storage_select_installation_device";
-import { setOnlyInstallationNetwork } from "./checks/network";
 import { logIn } from "./checks/login";
-import { performInstallation, finishInstallation } from "./checks/installation";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 const options = parse((cmd) =>
   cmd
@@ -16,10 +14,13 @@ const options = parse((cmd) =>
 );
 
 test_init(options);
+
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+
 logIn(options.password);
-selectMoreDevices();
-if (options.connectionsOnlyForInstallation) setOnlyInstallationNetwork();
+testStrategy.selectMoreDevices();
+if (options.connectionsOnlyForInstallation) testStrategy.setOnlyInstallationNetwork();
 if (options.install) {
-  performInstallation();
-  finishInstallation();
+  testStrategy.performInstallation();
+  testStrategy.finishInstallation();
 }
