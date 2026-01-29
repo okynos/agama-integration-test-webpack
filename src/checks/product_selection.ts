@@ -6,7 +6,7 @@ import {
   ProductSelectionWithRegistrationPage,
 } from "../pages/product_selection_page";
 
-function ensureProductConfiguration() {
+export function ensureLandingOnOverview() {
   it(
     "should display Overview",
     async function () {
@@ -16,7 +16,7 @@ function ensureProductConfiguration() {
   );
 }
 
-function ensureProductConfigurationWithSidebar() {
+export function ensureLandingOnOverviewWithSidebar() {
   it(
     "should display Overview",
     async function () {
@@ -32,8 +32,6 @@ export function productSelection(productId: string) {
     await productSelectionPage.choose(productId);
     await productSelectionPage.select();
   });
-
-  ensureProductConfiguration();
 }
 
 export function productSelectionWithSidebar(productId: string) {
@@ -42,8 +40,6 @@ export function productSelectionWithSidebar(productId: string) {
     await productSelectionPage.choose(productId);
     await productSelectionPage.select();
   });
-
-  ensureProductConfigurationWithSidebar();
 }
 
 export function productSelectionWithLicense(productId: string) {
@@ -62,8 +58,6 @@ export function productSelectionWithLicense(productId: string) {
   it(`should allow to select product`, async function () {
     await new ProductSelectionWithRegistrationPage(page).select();
   });
-
-  ensureProductConfiguration();
 }
 
 export function productSelectionWithLicenseWithSidebar(productId: string) {
@@ -82,6 +76,4 @@ export function productSelectionWithLicenseWithSidebar(productId: string) {
   it(`should allow to select product`, async function () {
     await new ProductSelectionWithRegistrationPage(page).select();
   });
-
-  ensureProductConfigurationWithSidebar();
 }

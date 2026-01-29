@@ -403,6 +403,8 @@ function setOnlyInstallationNetworkWithSidebar() {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ensureLandingOnOverview = ensureLandingOnOverview;
+exports.ensureLandingOnOverviewWithSidebar = ensureLandingOnOverviewWithSidebar;
 exports.productSelection = productSelection;
 exports.productSelectionWithSidebar = productSelectionWithSidebar;
 exports.productSelectionWithLicense = productSelectionWithLicense;
@@ -411,12 +413,12 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function ensureProductConfiguration() {
+function ensureLandingOnOverview() {
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(70000);
     }, 71 * 1000);
 }
-function ensureProductConfigurationWithSidebar() {
+function ensureLandingOnOverviewWithSidebar() {
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(70000);
     }, 71 * 1000);
@@ -427,7 +429,6 @@ function productSelection(productId) {
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
-    ensureProductConfiguration();
 }
 function productSelectionWithSidebar(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
@@ -435,7 +436,6 @@ function productSelectionWithSidebar(productId) {
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
-    ensureProductConfigurationWithSidebar();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -453,7 +453,6 @@ function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
-    ensureProductConfiguration();
 }
 function productSelectionWithLicenseWithSidebar(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -471,7 +470,6 @@ function productSelectionWithLicenseWithSidebar(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
-    ensureProductConfigurationWithSidebar();
 }
 
 
@@ -990,6 +988,47 @@ function prepareDasdStorageWithSidebar() {
         await dasd.back();
         await storage.waitForElement("::-p-text(Installation devices)", 60000);
     }, 6 * 60 * 1000);
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
+/*!******************************************************************!*\
+  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
+exports.verifyDecryptDestructiveActionsWithSidebar = verifyDecryptDestructiveActionsWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
+function verifyDecryptDestructiveActions(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).goToStorage();
+        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        await storage.scrollToDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+        await new header_page_1.HeaderPage(helpers_1.page).goToOverview();
+    });
+}
+function verifyDecryptDestructiveActionsWithSidebar(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        await storage.expandDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+    });
 }
 
 
@@ -2474,6 +2513,36 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_result_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/storage_result_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageResultPage = void 0;
+class StorageResultPage {
+    page;
+    destructiveActionsListWithSidebar = () => this.page.locator("::-p-text(Check)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
+    }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsListWithSidebar().click();
+    }
+}
+exports.StorageResultPage = StorageResultPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_settings_change_disk_page.ts":
 /*!********************************************************!*\
   !*** ./src/pages/storage_settings_change_disk_page.ts ***!
@@ -2742,6 +2811,7 @@ const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/
 const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2809,6 +2879,12 @@ class ProductReleaseStrategy {
     setOnlyInstallationNetwork() {
         (0, network_1.setOnlyInstallationNetwork)();
     }
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
+    }
+    ensureLandingOnOverview() {
+        (0, product_selection_1.ensureLandingOnOverview)();
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2840,6 +2916,7 @@ const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/
 const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2906,6 +2983,12 @@ class StableReleaseStrategy {
     }
     setOnlyInstallationNetwork() {
         (0, network_1.setOnlyInstallationNetworkWithSidebar)();
+    }
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithSidebar)(destructiveActions);
+    }
+    ensureLandingOnOverview() {
+        (0, product_selection_1.ensureLandingOnOverviewWithSidebar)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;

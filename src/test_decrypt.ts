@@ -1,14 +1,9 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
-import { createFirstUser } from "./checks/first_user";
 import { decryptDevice } from "./checks/decryption";
-import { editRootUser } from "./checks/root_authentication";
 import { logIn } from "./checks/login";
-import { enterProductRegistration } from "./checks/registration";
-import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
-import { performInstallation, finishInstallation } from "./checks/installation";
-import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 const options = parse((cmd) =>
   cmd
@@ -31,21 +26,24 @@ const options = parse((cmd) =>
 
 test_init(options);
 
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+
 logIn(options.password);
 if (options.productId !== "none")
-  if (options.acceptLicense) productSelectionWithLicense(options.productId);
-  else productSelection(options.productId);
+  if (options.acceptLicense) testStrategy.productSelectionWithLicense(options.productId);
+  else testStrategy.productSelection(options.productId);
 decryptDevice(options.decryptPassword);
-verifyDecryptDestructiveActions(options.destructiveActions);
+testStrategy.ensureLandingOnOverview();
+testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.registrationCode)
-  enterProductRegistration({
+  testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-createFirstUser(options.password);
-editRootUser(options.rootPassword);
+testStrategy.createFirstUser(options.password);
+testStrategy.editRootUser(options.rootPassword);
 if (options.install) {
-  performInstallation();
-  finishInstallation();
+  testStrategy.performInstallation();
+  testStrategy.finishInstallation();
 }

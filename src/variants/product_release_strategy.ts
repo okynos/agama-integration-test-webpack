@@ -16,9 +16,14 @@ import { prepareDasdStorage } from "../checks/storage_dasd";
 import { selectPatterns } from "../checks/software_selection";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
-import { productSelection, productSelectionWithLicense } from "../checks/product_selection";
+import {
+  ensureLandingOnOverview,
+  productSelection,
+  productSelectionWithLicense,
+} from "../checks/product_selection";
 import { selectMoreDevices } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetwork } from "../checks/network";
+import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -107,5 +112,13 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   setOnlyInstallationNetwork() {
     setOnlyInstallationNetwork();
+  }
+
+  verifyDecryptDestructiveActions(destructiveActions: string[]) {
+    verifyDecryptDestructiveActions(destructiveActions);
+  }
+
+  ensureLandingOnOverview() {
+    ensureLandingOnOverview();
   }
 }

@@ -36,6 +36,7 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) testStrategy.productSelectionWithLicense(options.productId);
   else testStrategy.productSelection(options.productId);
+testStrategy.ensureLandingOnOverview();
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,

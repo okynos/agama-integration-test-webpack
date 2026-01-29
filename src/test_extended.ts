@@ -4,7 +4,6 @@ import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
 import { checkInstallation } from "./checks/installation";
-import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { downloadLogs } from "./checks/download_logs";
 
 const options = parse((cmd) =>
@@ -29,8 +28,9 @@ const testStrategy = ProductStrategyFactory.create(options.productVersion, optio
 testStrategy.logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
-  if (options.acceptLicense) productSelectionWithLicense(options.productId);
-  else productSelection(options.productId);
+  if (options.acceptLicense) testStrategy.productSelectionWithLicense(options.productId);
+  else testStrategy.productSelection(options.productId);
+testStrategy.ensureLandingOnOverview();
 if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
 testStrategy.verifyRegistrationWarniningAlerts(
   options.useCustomRegistrationServer,
