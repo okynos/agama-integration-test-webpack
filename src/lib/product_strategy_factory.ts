@@ -25,6 +25,8 @@ export interface IProductTestStrategy {
   productSelection(productId: string);
   selectMoreDevices();
   setOnlyInstallationNetwork();
+  verifyDecryptDestructiveActions(destructiveActions: string[]);
+  ensureLandingOnOverview();
 }
 
 // ts-prune-ignore-next
