@@ -30,6 +30,8 @@ import {
   productSelectionWithLicenseWithSidebar,
   productSelectionWithSidebar,
 } from "../checks/product_selection";
+import { selectMoreDevicesWithSidebar } from "../checks/storage_select_installation_device";
+import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -110,5 +112,13 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   productSelectionWithLicense(productId: string) {
     productSelectionWithLicenseWithSidebar(productId);
+  }
+
+  selectMoreDevices() {
+    selectMoreDevicesWithSidebar();
+  }
+
+  setOnlyInstallationNetwork() {
+    setOnlyInstallationNetworkWithSidebar();
   }
 }

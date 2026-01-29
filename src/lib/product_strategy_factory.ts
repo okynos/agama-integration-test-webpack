@@ -23,6 +23,8 @@ export interface IProductTestStrategy {
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
   productSelectionWithLicense(productId: string);
   productSelection(productId: string);
+  selectMoreDevices();
+  setOnlyInstallationNetwork();
 }
 
 // ts-prune-ignore-next

@@ -50,8 +50,7 @@ function enableEncryptionWithSidebar(password) {
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storageSettings.selectEncryption();
-        await storageSettings.changeEncryption();
+        await storageSettings.editEncryption();
         await encryptionSettings.markEncryptTheSystem();
         await encryptionSettings.fillPassword(password);
         await encryptionSettings.fillPasswordConfirmation(password);
@@ -335,6 +334,60 @@ function logInWithIncorrectPasswordWithSidebar() {
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText()), "Danger alert:Could not log in. Please, make sure that the password is correct.");
         await loginAsRoot.togglePasswordVisibility();
         strict_1.default.deepEqual(await (0, helpers_1.getValue)(loginAsRoot.passwordInput()), invalidpassword);
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/network.ts":
+/*!*******************************!*\
+  !*** ./src/checks/network.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setOnlyInstallationNetwork = setOnlyInstallationNetwork;
+exports.setOnlyInstallationNetworkWithSidebar = setOnlyInstallationNetworkWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function setOnlyInstallationNetwork() {
+    (0, helpers_1.it)("should allow setting only installation network", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await overview.goToNetwork();
+        await networkPage.selectWiredConnection();
+        await networkPage.selectInstallationOnly();
+        await header.goToOverview();
+    });
+    (0, helpers_1.it)("should alert no network after installation", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await overview.goToNetwork();
+        await networkPage.verifyWarningAlert();
+        await header.goToOverview();
+    });
+}
+function setOnlyInstallationNetworkWithSidebar() {
+    (0, helpers_1.it)("should allow setting only installation network", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await sidebar.goToNetwork();
+        await networkPage.selectWiredConnection();
+        await networkPage.selectInstallationOnly();
+    });
+    (0, helpers_1.it)("should alert no network after installation", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await sidebar.goToNetwork();
+        await networkPage.verifyWarningAlert();
     });
 }
 
@@ -942,6 +995,51 @@ function prepareDasdStorageWithSidebar() {
 
 /***/ }),
 
+/***/ "./src/checks/storage_select_installation_device.ts":
+/*!**********************************************************!*\
+  !*** ./src/checks/storage_select_installation_device.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectMoreDevices = selectMoreDevices;
+exports.selectMoreDevicesWithSidebar = selectMoreDevicesWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const configure_lvm_volume_group_page_1 = __webpack_require__(/*! ../pages/configure_lvm_volume_group_page */ "./src/pages/configure_lvm_volume_group_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function selectMoreDevices() {
+    (0, helpers_1.it)("should add LVM volume group", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.selectMoreDevices();
+        await storage.addLvmVolumeGroup();
+        await lvm.accept();
+        await header.goToOverview();
+    });
+}
+function selectMoreDevicesWithSidebar() {
+    (0, helpers_1.it)("should add LVM volume group", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.selectMoreDevices();
+        await storage.addLvmVolumeGroup();
+        await lvm.accept();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_zfcp.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_zfcp.ts ***!
@@ -1460,6 +1558,31 @@ async function getElementInCell(page, tableSelector, rowColumn, rowValue, elemen
 
 /***/ }),
 
+/***/ "./src/pages/configure_lvm_volume_group_page.ts":
+/*!******************************************************!*\
+  !*** ./src/pages/configure_lvm_volume_group_page.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigureLvmVolumeGroupPage = void 0;
+class ConfigureLvmVolumeGroupPage {
+    page;
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/configure_partition_page.ts":
 /*!***********************************************!*\
   !*** ./src/pages/configure_partition_page.ts ***!
@@ -1924,6 +2047,41 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
+/***/ "./src/pages/network_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/network_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkPage = void 0;
+class NetworkPage {
+    page;
+    wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
+    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
+    installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
+    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
+    constructor(page) {
+        this.page = page;
+    }
+    async selectWiredConnection() {
+        await this.wiredConnection().click();
+    }
+    async selectInstallationOnly() {
+        await this.installationOnlyCheckboxNotChecked().click();
+        await this.installationOnlyCheckboxChecked().wait();
+    }
+    async verifyWarningAlert() {
+        await this.warningAlertHeading().wait();
+    }
+}
+exports.NetworkPage = NetworkPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/overview_page.ts":
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -2358,6 +2516,7 @@ class StorageSettingsPage {
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     useDiskButton = () => this.page.locator("::-p-text(Use disk)");
     selectDiskToInstallButton = () => this.page.locator("::-p-text(Change the disk to install the system)");
+    editEncryptionButton = () => this.page.locator("a[href='#/storage/encryption/edit']");
     encryptionTab = () => this.page.locator("::-p-text(Encryption)");
     changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
@@ -2382,6 +2541,9 @@ class StorageSettingsPage {
     }
     async selectMoreDevices() {
         await this.selectMoreDevicesButton().click();
+    }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
     }
     async selectEncryption() {
         await this.encryptionTab().click();
@@ -2597,6 +2759,8 @@ const software_selection_1 = __webpack_require__(/*! ../checks/software_selectio
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
+const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
+const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2658,6 +2822,12 @@ class ProductReleaseStrategy {
     productSelectionWithLicense(productId) {
         (0, product_selection_1.productSelectionWithLicense)(productId);
     }
+    selectMoreDevices() {
+        (0, storage_select_installation_device_1.selectMoreDevices)();
+    }
+    setOnlyInstallationNetwork() {
+        (0, network_1.setOnlyInstallationNetwork)();
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2687,6 +2857,8 @@ const software_selection_1 = __webpack_require__(/*! ../checks/software_selectio
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
 const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
+const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
+const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2747,6 +2919,12 @@ class StableReleaseStrategy {
     }
     productSelectionWithLicense(productId) {
         (0, product_selection_1.productSelectionWithLicenseWithSidebar)(productId);
+    }
+    selectMoreDevices() {
+        (0, storage_select_installation_device_1.selectMoreDevicesWithSidebar)();
+    }
+    setOnlyInstallationNetwork() {
+        (0, network_1.setOnlyInstallationNetworkWithSidebar)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;
