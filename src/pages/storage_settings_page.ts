@@ -85,9 +85,15 @@ export class StorageSettingsPage {
     await this.page.locator(element).setTimeout(timeout).wait();
   }
 
-  async editRootPartition() {
+  async expandPartitions() {
     await this.expandPartitionsButton().click();
+  }
+
+  async clickOptionForRoot() {
     await this.optionForRoot().click();
+  }
+
+  async editRootPartition() {
     await this.editRootPartitionMenu().click();
   }
 

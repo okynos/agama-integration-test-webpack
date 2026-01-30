@@ -15,6 +15,12 @@ export class StoragePage {
 
   private readonly resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
 
+  private readonly expandPartitionsButton = () =>
+    this.page.locator("::-p-text(New partitions will be created)");
+
+  private readonly editRootPartitionMenu = () =>
+    this.page.locator("button[aria-label='Edit /'][role='menuitem']");
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -33,5 +39,13 @@ export class StoragePage {
 
   async resetToDefault() {
     await this.resetToDefaultsButton().click();
+  }
+
+  async expandPartitions() {
+    await this.expandPartitionsButton().click();
+  }
+
+  async editRootPartition() {
+    await this.editRootPartitionMenu().click();
   }
 }
