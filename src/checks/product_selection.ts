@@ -30,6 +30,7 @@ export function productSelection(productId: string) {
   it(`should allow to select product ${productId}`, async function () {
     const productSelectionPage = new ProductSelectionPage(page);
     await productSelectionPage.choose(productId);
+    await productSelectionPage.selectStandard();
     await productSelectionPage.select();
   });
 }
@@ -56,7 +57,9 @@ export function productSelectionWithLicense(productId: string) {
     await new ProductSelectionWithRegistrationPage(page).acceptProductLicense();
   });
   it(`should allow to select product`, async function () {
-    await new ProductSelectionWithRegistrationPage(page).select();
+    const productSelectionWithRegistrationPage = new ProductSelectionWithRegistrationPage(page);
+    await productSelectionWithRegistrationPage.selectStandard();
+    await productSelectionWithRegistrationPage.select();
   });
 }
 

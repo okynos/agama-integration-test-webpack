@@ -448,6 +448,7 @@ function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
         const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
         await productSelectionPage.choose(productId);
+        await productSelectionPage.selectStandard();
         await productSelectionPage.select();
     });
 }
@@ -472,7 +473,9 @@ function productSelectionWithLicense(productId) {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).acceptProductLicense();
     });
     (0, helpers_1.it)(`should allow to select product`, async function () {
-        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
+        const productSelectionWithRegistrationPage = new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page);
+        await productSelectionWithRegistrationPage.selectStandard();
+        await productSelectionWithRegistrationPage.select();
     });
 }
 function productSelectionWithLicenseWithSidebar(productId) {
@@ -2372,6 +2375,8 @@ class ProductSelectionPage {
     page;
     productText = (name) => this.page.locator(`::-p-text(${name})`);
     productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
+    standardMode = () => this.page.locator('::-p-aria([name="Standard"])');
+    immutableMode = () => this.page.locator('::-p-aria([name="Immutable"])');
     selectButton = () => this.page.locator("button[form='productSelectionForm']");
     constructor(page) {
         this.page = page;
@@ -2382,6 +2387,12 @@ class ProductSelectionPage {
     }
     async select() {
         await this.selectButton().click();
+    }
+    async selectStandard() {
+        await this.standardMode().click();
+    }
+    async selectImmutable() {
+        await this.immutableMode().click();
     }
     async selectByName(name) {
         await this.choose(name);

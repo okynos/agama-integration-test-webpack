@@ -7,6 +7,9 @@ export class ProductSelectionPage {
   protected readonly productId = (id: string) =>
     this.page.locator("input#" + id.replaceAll(".", "\\."));
 
+  protected readonly standardMode = () => this.page.locator('::-p-aria([name="Standard"])');
+  protected readonly immutableMode = () => this.page.locator('::-p-aria([name="Immutable"])');
+
   protected readonly selectButton = () => this.page.locator("button[form='productSelectionForm']");
 
   constructor(page: Page) {
@@ -20,6 +23,14 @@ export class ProductSelectionPage {
 
   async select() {
     await this.selectButton().click();
+  }
+
+  async selectStandard() {
+    await this.standardMode().click();
+  }
+
+  async selectImmutable() {
+    await this.immutableMode().click();
   }
 
   async selectByName(name: string) {
