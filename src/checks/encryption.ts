@@ -93,8 +93,7 @@ export function disableEncryptionWithSidebar() {
     const sidebar = new SidebarPage(page);
 
     await sidebar.goToStorage();
-    await storageSettings.selectEncryption();
-    await storageSettings.changeEncryption();
+    await storageSettings.editEncryption();
     await encryptionSettings.unmarkEncryptTheSystem();
     await encryptionSettings.accept();
 

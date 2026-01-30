@@ -124,8 +124,7 @@ function disableEncryptionWithSidebar() {
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storageSettings.selectEncryption();
-        await storageSettings.changeEncryption();
+        await storageSettings.editEncryption();
         await encryptionSettings.unmarkEncryptTheSystem();
         await encryptionSettings.accept();
         const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
@@ -793,13 +792,13 @@ function verifyPasswordStrengthWithSidebar() {
         await users.editRootUser();
         await setARootPassword.fillPassword("a23b56c");
         const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
-        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "Warning alert:The password is shorter than 8 characters");
         await setARootPassword.fillPassword("a23b56ca");
         const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
-        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
         await setARootPassword.fillPassword("a23b5678");
         const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
-        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     });
 }
 
@@ -872,6 +871,8 @@ const table_1 = __webpack_require__(/*! ../lib/table */ "./src/lib/table.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_change_disk_page_1 = __webpack_require__(/*! ../pages/storage_change_disk_page */ "./src/pages/storage_change_disk_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 const storage_settings_change_disk_page_1 = __webpack_require__(/*! ../pages/storage_settings_change_disk_page */ "./src/pages/storage_settings_change_disk_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
@@ -894,16 +895,16 @@ function changeDiskToInstallTheSystem() {
 }
 function changeDiskToInstallTheSystemWithSidebar() {
     (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storageChangeDisk = new storage_change_disk_page_1.StorageChangeDiskPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.selectUsedDisk();
-        await storage.changeTheDiskToInstallTheSystem();
-        (await (0, table_1.getElementInCell)(helpers_1.page, storageSettingsChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
-        await storageSettingsChangeDisk.confirm();
+        await storage.selectChangeDisk();
+        await storage.selectADiskToInstallTheSystem();
+        (await (0, table_1.getElementInCell)(helpers_1.page, storageChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
+        await storageChangeDisk.confirm();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
-        await storage.moreOptions();
+        await storage.otherOptions();
         await storage.resetToDefault();
     });
 }
@@ -2558,6 +2559,71 @@ class SoftwareSelectionPage {
     }
 }
 exports.SoftwareSelectionPage = SoftwareSelectionPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_change_disk_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/storage_change_disk_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageChangeDiskPage = void 0;
+class StorageChangeDiskPage {
+    page;
+    confirmButton = () => this.page.locator("button::-p-text(Confirm)");
+    diskTableSelector;
+    constructor(page) {
+        this.page = page;
+        this.diskTableSelector = 'div[aria-modal="true"] table[data-type="agama/expandable-selector"]';
+    }
+    async confirm() {
+        await this.confirmButton().click();
+    }
+}
+exports.StorageChangeDiskPage = StorageChangeDiskPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/storage_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StoragePage = void 0;
+class StoragePage {
+    page;
+    changeDiskButton = () => this.page.locator('::-p-aria([name="Change"][role="button"])');
+    selectADiskToInstallTheSystemButton = () => this.page.locator("::-p-text(Select a disk to install the system)");
+    otherOptionsButton = () => this.page.locator("::-p-text(Other options)");
+    storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
+    resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectChangeDisk() {
+        await this.changeDiskButton().click();
+    }
+    async selectADiskToInstallTheSystem() {
+        await this.selectADiskToInstallTheSystemButton().click();
+    }
+    async otherOptions() {
+        await this.otherOptionsButton().click();
+    }
+    async resetToDefault() {
+        await this.resetToDefaultsButton().click();
+    }
+}
+exports.StoragePage = StoragePage;
 
 
 /***/ }),
