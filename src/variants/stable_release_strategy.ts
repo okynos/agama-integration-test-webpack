@@ -5,6 +5,7 @@ import {
   RegistrationOptions,
   enterProductRegistrationWithSidebar,
   enterExtensionRegistrationHAWithSidebar,
+  enterExtensionRegistrationPHubWithSidebar,
 } from "../checks/registration";
 import {
   disableEncryptionWithSidebar,
@@ -62,6 +63,10 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   enterExtensionRegistrationHA(code: string) {
     enterExtensionRegistrationHAWithSidebar(code);
+  }
+
+  enterExtensionRegistrationPHub() {
+    enterExtensionRegistrationPHubWithSidebar();
   }
 
   createFirstUser(password: string) {

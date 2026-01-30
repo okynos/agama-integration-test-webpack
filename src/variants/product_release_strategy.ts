@@ -5,6 +5,7 @@ import {
   RegistrationOptions,
   enterProductRegistration,
   enterExtensionRegistrationHA,
+  enterExtensionRegistrationPHub,
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
@@ -52,6 +53,10 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   enterExtensionRegistrationHA(code: string) {
     enterExtensionRegistrationHA(code);
+  }
+
+  enterExtensionRegistrationPHub() {
+    enterExtensionRegistrationPHub();
   }
 
   createFirstUser(password: string) {

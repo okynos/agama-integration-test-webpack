@@ -491,6 +491,7 @@ exports.enterProductRegistrationWithSidebar = enterProductRegistrationWithSideba
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationHAWithSidebar = enterExtensionRegistrationHAWithSidebar;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
+exports.enterExtensionRegistrationPHubWithSidebar = enterExtensionRegistrationPHubWithSidebar;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 exports.verifyRegistrationWarniningAlertsWithSidebar = verifyRegistrationWarniningAlertsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
@@ -603,6 +604,19 @@ function enterExtensionRegistrationHAWithSidebar(code) {
     });
 }
 function enterExtensionRegistrationPHub() {
+    (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
+        const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
+        await overview.goToRegistration();
+        await extensionRegistrationPHub.register();
+        strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.trustKeyText()), /is unknown. Do you want to trust this key?/);
+        await extensionRegistrationPHub.trustKey();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
+        header.goToOverview();
+    });
+}
+function enterExtensionRegistrationPHubWithSidebar() {
     (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
@@ -2936,6 +2950,9 @@ class ProductReleaseStrategy {
     enterExtensionRegistrationHA(code) {
         (0, registration_1.enterExtensionRegistrationHA)(code);
     }
+    enterExtensionRegistrationPHub() {
+        (0, registration_1.enterExtensionRegistrationPHub)();
+    }
     createFirstUser(password) {
         (0, first_user_1.createFirstUser)(password);
     }
@@ -3040,6 +3057,9 @@ class StableReleaseStrategy {
     }
     enterExtensionRegistrationHA(code) {
         (0, registration_1.enterExtensionRegistrationHAWithSidebar)(code);
+    }
+    enterExtensionRegistrationPHub() {
+        (0, registration_1.enterExtensionRegistrationPHubWithSidebar)();
     }
     createFirstUser(password) {
         (0, first_user_1.createFirstUserWithSidebar)(password);

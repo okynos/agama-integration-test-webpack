@@ -2,10 +2,8 @@ import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
+import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 import { verifyStorageOutOfSync } from "./checks/storage_out_of_sync";
-import { enterExtensionRegistrationPHub } from "./checks/registration";
-import { selectPatterns } from "./checks/software_selection";
-import { performInstallation, finishInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd
@@ -14,9 +12,12 @@ const options = parse((cmd) =>
 );
 
 test_init(options);
+
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+
 logIn(options.password);
-enterExtensionRegistrationPHub();
-selectPatterns(options.patterns);
+testStrategy.enterExtensionRegistrationPHub();
+testStrategy.selectPatterns(options.patterns);
 verifyStorageOutOfSync();
-performInstallation();
-finishInstallation();
+testStrategy.performInstallation();
+testStrategy.finishInstallation();
