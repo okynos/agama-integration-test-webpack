@@ -167,6 +167,27 @@ export function enterExtensionRegistrationHAWithSidebar(code: string) {
 
 export function enterExtensionRegistrationPHub() {
   it("should allow registering Package Hub extension", async function () {
+    const overview = new OverviewWithRegistrationPage(page);
+    const header = new HeaderPage(page);
+    const extensionRegistrationPHub = new ExtensionRegistrationPHubPage(page);
+
+    await overview.goToRegistration();
+    await extensionRegistrationPHub.register();
+    assert.match(
+      await getTextContent(extensionRegistrationPHub.trustKeyText()),
+      /is unknown. Do you want to trust this key?/,
+    );
+    await extensionRegistrationPHub.trustKey();
+    assert.deepEqual(
+      await getTextContent(extensionRegistrationPHub.registeredText()),
+      "The extension was registered without any registration code.",
+    );
+    header.goToOverview();
+  });
+}
+
+export function enterExtensionRegistrationPHubWithSidebar() {
+  it("should allow registering Package Hub extension", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
     const extensionRegistrationPHub = new ExtensionRegistrationPHubPage(page);
 
