@@ -907,6 +907,7 @@ const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_setting
 const configure_partition_page_1 = __webpack_require__(/*! ../pages/configure_partition_page */ "./src/pages/configure_partition_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
@@ -914,6 +915,8 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         await overview.goToStorage();
+        await storage.expandPartitions();
+        await storage.clickOptionForRoot();
         await storage.editRootPartition();
         await configRootPartition.changeFilesystemToBtrfs();
         await configRootPartition.selectSizeMode();
@@ -926,10 +929,11 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
 }
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() {
     (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
         const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
+        await storage.expandPartitions();
         await storage.editRootPartition();
         await configRootPartition.changeFilesystemToBtrfs();
         await configRootPartition.selectSizeMode();
@@ -2558,6 +2562,8 @@ class StoragePage {
     otherOptionsButton = () => this.page.locator("::-p-text(Other options)");
     storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+    expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
+    editRootPartitionMenu = () => this.page.locator("button[aria-label='Edit /'][role='menuitem']");
     constructor(page) {
         this.page = page;
     }
@@ -2572,6 +2578,12 @@ class StoragePage {
     }
     async resetToDefault() {
         await this.resetToDefaultsButton().click();
+    }
+    async expandPartitions() {
+        await this.expandPartitionsButton().click();
+    }
+    async editRootPartition() {
+        await this.editRootPartitionMenu().click();
     }
 }
 exports.StoragePage = StoragePage;
@@ -2698,9 +2710,13 @@ class StorageSettingsPage {
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
     }
-    async editRootPartition() {
+    async expandPartitions() {
         await this.expandPartitionsButton().click();
+    }
+    async clickOptionForRoot() {
         await this.optionForRoot().click();
+    }
+    async editRootPartition() {
         await this.editRootPartitionMenu().click();
     }
     async moreOptions() {
