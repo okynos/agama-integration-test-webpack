@@ -90,12 +90,12 @@ export function verifyPasswordStrengthWithSidebar() {
     );
     assert.deepEqual(
       elementTextPasswordLess8Characters,
-      "The password is shorter than 8 characters",
+      "Warning alert:The password is shorter than 8 characters",
     );
 
     await setARootPassword.fillPassword("a23b56ca");
     const elementTextPasswordIsWeak = await getTextContent(setARootPassword.alertPasswordIsWeak());
-    assert.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+    assert.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
 
     await setARootPassword.fillPassword("a23b5678");
     const elementTextPasswordFailDictionary = await getTextContent(
@@ -103,7 +103,7 @@ export function verifyPasswordStrengthWithSidebar() {
     );
     assert.deepEqual(
       elementTextPasswordFailDictionary,
-      "The password fails the dictionary check - it is too simplistic/systematic",
+      "Warning alert:The password fails the dictionary check - it is too simplistic/systematic",
     );
   });
 }

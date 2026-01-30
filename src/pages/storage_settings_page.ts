@@ -4,6 +4,7 @@ export class StorageSettingsPage {
   private readonly page: Page;
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
   private readonly useDiskButton = () => this.page.locator("::-p-text(Use disk)");
+
   private readonly selectDiskToInstallButton = () =>
     this.page.locator("::-p-text(Change the disk to install the system)");
 
