@@ -1356,7 +1356,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
     url = agamaServer;
     browser = await puppeteer.launch({
         // "webDriverBiDi" does not work with old FireFox, comment it out if needed
-        protocol: "webDriverBiDi",
+        //protocol: "webDriverBiDi",
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
