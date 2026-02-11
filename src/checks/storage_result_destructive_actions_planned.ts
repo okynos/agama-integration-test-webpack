@@ -2,6 +2,7 @@ import { it, page } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
+import { StoragePage } from "../pages/storage_page";
 import { StorageResultPage } from "../pages/storage_result_page";
 
 export function verifyDecryptDestructiveActions(destructiveActions: string[]) {
@@ -19,7 +20,7 @@ export function verifyDecryptDestructiveActions(destructiveActions: string[]) {
 export function verifyDecryptDestructiveActionsWithSidebar(destructiveActions: string[]) {
   it("should display a list of destructive actions", async function () {
     await new SidebarPage(page).goToStorage();
-    const storage = new StorageResultPage(page);
+    const storage = new StoragePage(page);
     await storage.expandDestructiveActionsList();
     for (const action of destructiveActions) {
       await storage.destructiveActionText(action).wait();

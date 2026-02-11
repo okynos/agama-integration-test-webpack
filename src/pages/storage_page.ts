@@ -21,6 +21,10 @@ export class StoragePage {
   private readonly editRootPartitionMenu = () =>
     this.page.locator("button[aria-label='Edit /'][role='menuitem']");
 
+  private readonly destructiveActionsListWithSidebar = () => this.page.locator("::-p-text(Check)");
+  public readonly destructiveActionText = (name: string) =>
+    this.page.locator(`::-p-text(Delete ${name})`);
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -47,5 +51,9 @@ export class StoragePage {
 
   async editRootPartition() {
     await this.editRootPartitionMenu().click();
+  }
+
+  async expandDestructiveActionsList() {
+    await this.destructiveActionsListWithSidebar().click();
   }
 }

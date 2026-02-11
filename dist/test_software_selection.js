@@ -974,6 +974,7 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
 function verifyDecryptDestructiveActions(destructiveActions) {
     (0, helpers_1.it)("should display a list of destructive actions", async function () {
@@ -989,7 +990,7 @@ function verifyDecryptDestructiveActions(destructiveActions) {
 function verifyDecryptDestructiveActionsWithSidebar(destructiveActions) {
     (0, helpers_1.it)("should display a list of destructive actions", async function () {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
-        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
         await storage.expandDestructiveActionsList();
         for (const action of destructiveActions) {
             await storage.destructiveActionText(action).wait();
@@ -2105,7 +2106,7 @@ class OverviewPage {
     storageLink = () => this.page.locator("a[href='#/storage']");
     softwareLink = () => this.page.locator("a[href='#/software']");
     usersLink = () => this.page.locator("a[href='#/users']");
-    installButton = () => this.page.locator('::-p-aria([name="Install now"][role="button"])');
+    installButton = () => this.page.locator('::-p-text("Install now")');
     overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
     constructor(page) {
         this.page = page;
@@ -2464,6 +2465,8 @@ class StoragePage {
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
     expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
     editRootPartitionMenu = () => this.page.locator("button[aria-label='Edit /'][role='menuitem']");
+    destructiveActionsListWithSidebar = () => this.page.locator("::-p-text(Check)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
@@ -2485,6 +2488,9 @@ class StoragePage {
     async editRootPartition() {
         await this.editRootPartitionMenu().click();
     }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsListWithSidebar().click();
+    }
 }
 exports.StoragePage = StoragePage;
 
@@ -2503,7 +2509,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StorageResultPage = void 0;
 class StorageResultPage {
     page;
-    destructiveActionsListWithSidebar = () => this.page.locator("::-p-text(Check)");
     destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
@@ -2511,9 +2516,6 @@ class StorageResultPage {
     }
     async scrollToDestructiveActionsList() {
         (await this.destructiveActionsList().waitHandle()).scrollIntoView();
-    }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsListWithSidebar().click();
     }
 }
 exports.StorageResultPage = StorageResultPage;
