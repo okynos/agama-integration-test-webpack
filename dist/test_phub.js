@@ -2437,7 +2437,7 @@ class SoftwareSelectionPage {
     async selectPattern(pattern) {
         const checkbox = await this.patternCheckboxNotChecked(pattern).waitHandle();
         await checkbox.scrollIntoView();
-        await this.patternCheckboxNotChecked(pattern).click();
+        await this.patternCheckboxNotChecked(pattern).click({ delay: 500 });
         await this.patternCheckboxChecked(pattern).wait();
     }
     async close() {
