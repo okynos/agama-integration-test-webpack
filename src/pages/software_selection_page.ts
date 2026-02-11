@@ -15,10 +15,10 @@ export class SoftwareSelectionPage {
   }
 
   async selectPattern(pattern: string) {
-    const checkbox = await this.patternCheckboxNotChecked(pattern).waitHandle();
+    const checkbox = await this.patternCheckboxNotChecked(pattern).setTimeout(40000).waitHandle();
     await checkbox.scrollIntoView();
 
-    await this.patternCheckboxNotChecked(pattern).click({ delay: 500 });
+    await this.patternCheckboxNotChecked(pattern).click();
     await this.patternCheckboxChecked(pattern).wait();
   }
 
