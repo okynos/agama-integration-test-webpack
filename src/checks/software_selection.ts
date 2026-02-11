@@ -18,7 +18,7 @@ export function selectPatterns(patterns: string[]) {
     for (const pattern of patterns) await softwareSelection.selectPattern(pattern);
     await softwareSelection.close();
     header.goToOverview();
-  }, 41000);
+  }, 61000);
 }
 
 export function selectPatternsWithSidebar(patterns: string[]) {

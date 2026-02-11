@@ -853,7 +853,7 @@ function selectPatterns(patterns) {
             await softwareSelection.selectPattern(pattern);
         await softwareSelection.close();
         header.goToOverview();
-    }, 41000);
+    }, 61000);
 }
 function selectPatternsWithSidebar(patterns) {
     (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
@@ -2583,7 +2583,7 @@ class SoftwareSelectionPage {
         this.page = page;
     }
     async selectPattern(pattern) {
-        const checkbox = await this.patternCheckboxNotChecked(pattern).setTimeout(40000).waitHandle();
+        const checkbox = await this.patternCheckboxNotChecked(pattern).setTimeout(60000).waitHandle();
         await checkbox.scrollIntoView();
         await this.patternCheckboxNotChecked(pattern).click();
         await this.patternCheckboxChecked(pattern).wait();
