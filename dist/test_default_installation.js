@@ -2164,7 +2164,7 @@ class OverviewPage {
         await this.overviewHeading().setTimeout(timeout).wait();
     }
     async install() {
-        await this.installButton().click();
+        await this.installButton().click({ delay: 5000 });
     }
     async goToHostname() {
         await this.hostnameLink().click();

@@ -24,7 +24,7 @@ export class OverviewPage {
   }
 
   async install() {
-    await this.installButton().click();
+    await this.installButton().click({ delay: 5000 });
   }
 
   async goToHostname() {
