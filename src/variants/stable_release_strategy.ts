@@ -31,6 +31,7 @@ import { ensureLandingOnOverviewWithSidebar } from "../checks/overview";
 import { selectMoreDevicesWithSidebar } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
 import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_result_destructive_actions_planned";
+import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -119,6 +120,10 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   verifyDecryptDestructiveActions(destructiveActions: string[]) {
     verifyDecryptDestructiveActionsWithSidebar(destructiveActions);
+  }
+
+  verifyStorageOutOfSync() {
+    verifyStorageOutOfSyncWithSidebar();
   }
 
   ensureLandingOnOverview() {

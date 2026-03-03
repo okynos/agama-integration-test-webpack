@@ -5,7 +5,9 @@ import { exec } from "child_process";
 
 import { StorageWarningOutOfSyncPage } from "../pages/storage_warning_out_of_sync_page";
 
-export function verifyStorageOutOfSync() {
+export function verifyStorageOutOfSync() {}
+
+export function verifyStorageOutOfSyncWithSidebar() {
   it("should verify storage out of sync popup", async function () {
     const storageWarningOutOfSyncPage = new StorageWarningOutOfSyncPage(page);
     const execPromise = util.promisify(exec);

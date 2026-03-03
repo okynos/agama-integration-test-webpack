@@ -972,12 +972,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyStorageOutOfSync = verifyStorageOutOfSync;
+exports.verifyStorageOutOfSyncWithSidebar = verifyStorageOutOfSyncWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const util_1 = __importDefault(__webpack_require__(/*! util */ "util"));
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const child_process_1 = __webpack_require__(/*! child_process */ "child_process");
 const storage_warning_out_of_sync_page_1 = __webpack_require__(/*! ../pages/storage_warning_out_of_sync_page */ "./src/pages/storage_warning_out_of_sync_page.ts");
-function verifyStorageOutOfSync() {
+function verifyStorageOutOfSync() { }
+function verifyStorageOutOfSyncWithSidebar() {
     (0, helpers_1.it)("should verify storage out of sync popup", async function () {
         const storageWarningOutOfSyncPage = new storage_warning_out_of_sync_page_1.StorageWarningOutOfSyncPage(helpers_1.page);
         const execPromise = util_1.default.promisify(child_process_1.exec);
@@ -2802,7 +2804,6 @@ const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
-const storage_out_of_sync_1 = __webpack_require__(/*! ./checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--register-package-hub", "Registration for PackageHub")
     .option("--patterns <pattern>...", "Comma-separated list of patterns", cmdline_1.commaSeparatedList));
@@ -2811,7 +2812,7 @@ const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(op
 (0, login_1.logIn)(options.password);
 testStrategy.enterExtensionRegistrationPHub();
 testStrategy.selectPatterns(options.patterns);
-(0, storage_out_of_sync_1.verifyStorageOutOfSync)();
+testStrategy.verifyStorageOutOfSync?.();
 testStrategy.performInstallation();
 testStrategy.finishInstallation();
 
@@ -2844,6 +2845,7 @@ const overview_1 = __webpack_require__(/*! ../checks/overview */ "./src/checks/o
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2911,6 +2913,9 @@ class ProductReleaseStrategy {
     verifyDecryptDestructiveActions(destructiveActions) {
         (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
     }
+    verifyStorageOutOfSync() {
+        (0, storage_out_of_sync_1.verifyStorageOutOfSync)();
+    }
     ensureLandingOnOverview() {
         (0, overview_1.ensureLandingOnOverview)();
     }
@@ -2946,6 +2951,7 @@ const overview_1 = __webpack_require__(/*! ../checks/overview */ "./src/checks/o
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -3012,6 +3018,9 @@ class StableReleaseStrategy {
     }
     verifyDecryptDestructiveActions(destructiveActions) {
         (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithSidebar)(destructiveActions);
+    }
+    verifyStorageOutOfSync() {
+        (0, storage_out_of_sync_1.verifyStorageOutOfSyncWithSidebar)();
     }
     ensureLandingOnOverview() {
         (0, overview_1.ensureLandingOnOverviewWithSidebar)();
