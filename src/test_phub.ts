@@ -3,7 +3,6 @@ import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
-import { verifyStorageOutOfSync } from "./checks/storage_out_of_sync";
 
 const options = parse((cmd) =>
   cmd
@@ -18,6 +17,6 @@ const testStrategy = ProductStrategyFactory.create(options.productVersion, optio
 logIn(options.password);
 testStrategy.enterExtensionRegistrationPHub();
 testStrategy.selectPatterns(options.patterns);
-verifyStorageOutOfSync();
+testStrategy.verifyStorageOutOfSync?.();
 testStrategy.performInstallation();
 testStrategy.finishInstallation();

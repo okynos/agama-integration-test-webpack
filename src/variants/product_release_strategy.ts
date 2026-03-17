@@ -21,6 +21,7 @@ import { ensureLandingOnOverview } from "../checks/overview";
 import { selectMoreDevices } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetwork } from "../checks/network";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
+import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -109,6 +110,10 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   verifyDecryptDestructiveActions(destructiveActions: string[]) {
     verifyDecryptDestructiveActions(destructiveActions);
+  }
+
+  verifyStorageOutOfSync() {
+    verifyStorageOutOfSync();
   }
 
   ensureLandingOnOverview() {

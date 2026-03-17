@@ -25,6 +25,7 @@ export interface IProductTestStrategy {
   selectMoreDevices(): void;
   setOnlyInstallationNetwork(): void;
   verifyDecryptDestructiveActions(destructiveActions: string[]): void;
+  verifyStorageOutOfSync?(): void;
   ensureLandingOnOverview(): void;
 }
 
