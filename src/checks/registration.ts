@@ -205,18 +205,16 @@ export function enterExtensionRegistrationPHubWithSidebar() {
   });
 }
 
-export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: string): void {
+export function verifyRegistrationWarniningAlerts(url: string): void {
   it("should show warning alert for missing registration code", async function () {
     const overview = new OverviewWithRegistrationPage(page);
     const customRegistration = new CustomRegistrationPage(page);
 
     await overview.goToRegistration();
-    if (use_custom) {
-      await customRegistration.selectProvideRegistrationCode();
-    }
+    await customRegistration.selectProvideRegistrationCode();
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.enterRegistrationCodeText()),
+      await getTextContent(customRegistration.alertWarningEnterARegistrationCodeText()),
       "Enter a registration code",
     );
   });
@@ -227,13 +225,14 @@ export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: str
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      "Warning alert:Connection to registration server failed: Unknown Registration Code.",
+      await getTextContent(customRegistration.alertWarningUnknownRegistrationCodeText()),
+      "Unknown Registration Code.",
     );
   });
 
   it("should show warning alert for invalid custom registration server", async function () {
     const customRegistration = new CustomRegistrationPage(page);
+    const header = new HeaderPage(page);
 
     await customRegistration.selectCustomRegistrationServer();
     await customRegistration.selectProvideRegistrationCode();
@@ -241,18 +240,12 @@ export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: str
     await customRegistration.register();
 
     assert.match(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
+      await getTextContent(customRegistration.alertWarningNetworkErrorNoSuchHost()),
+      /Network error: dial tcp: lookup .+ on .+: no such host/,
     );
 
-    if (use_custom) {
-      await customRegistration.fillServerUrl(url);
-    } else {
-      await customRegistration.selectSCCRegistrationServer();
-      await customRegistration.fillCode("1234invalid4321");
-    }
+    await customRegistration.fillServerUrl(url);
     await customRegistration.register();
-    const header = new HeaderPage(page);
     await header.goToOverview();
   });
 }
@@ -269,7 +262,7 @@ export function verifyRegistrationWarniningAlertsWithSidebar(
     if (use_custom) await customRegistration.selectProvideRegistrationCode();
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.enterRegistrationCodeText()),
+      await getTextContent(customRegistration.alertWarningEnterARegistrationCodeText()),
       "Enter a registration code",
     );
   });
