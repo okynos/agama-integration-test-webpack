@@ -16,7 +16,6 @@ export function selectPatterns(patterns: string[]) {
     await software.changeSelection();
 
     for (const pattern of patterns) await softwareSelection.selectPattern(pattern);
-    await softwareSelection.close();
     header.goToOverview();
   });
 }

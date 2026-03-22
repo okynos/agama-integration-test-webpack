@@ -646,39 +646,31 @@ function enterExtensionRegistrationPHubWithSidebar() {
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
     });
 }
-function verifyRegistrationWarniningAlerts(use_custom, url) {
+function verifyRegistrationWarniningAlerts(url) {
     (0, helpers_1.it)("should show warning alert for missing registration code", async function () {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
-        if (use_custom) {
-            await customRegistration.selectProvideRegistrationCode();
-        }
+        await customRegistration.selectProvideRegistrationCode();
         await customRegistration.register();
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.alertWarningEnterARegistrationCodeText()), "Enter a registration code");
     });
     (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await customRegistration.fillCode("1234invalid4321");
         await customRegistration.register();
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), "Warning alert:Connection to registration server failed: Unknown Registration Code.");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.alertWarningUnknownRegistrationCodeText()), "Unknown Registration Code.");
     });
     (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
         await customRegistration.selectCustomRegistrationServer();
         await customRegistration.selectProvideRegistrationCode();
         await customRegistration.fillServerUrl("http://scc.example.net");
         await customRegistration.register();
-        strict_1.default.match(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/);
-        if (use_custom) {
-            await customRegistration.fillServerUrl(url);
-        }
-        else {
-            await customRegistration.selectSCCRegistrationServer();
-            await customRegistration.fillCode("1234invalid4321");
-        }
+        strict_1.default.match(await (0, helpers_1.getTextContent)(customRegistration.alertWarningNetworkErrorNoSuchHost()), /Network error: dial tcp: lookup .+ on .+: no such host/);
+        await customRegistration.fillServerUrl(url);
         await customRegistration.register();
-        const header = new header_page_1.HeaderPage(helpers_1.page);
         await header.goToOverview();
     });
 }
@@ -690,7 +682,7 @@ function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
         if (use_custom)
             await customRegistration.selectProvideRegistrationCode();
         await customRegistration.register();
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.enterRegistrationCodeText()), "Enter a registration code");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.alertWarningEnterARegistrationCodeText()), "Enter a registration code");
     });
     (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
@@ -843,7 +835,6 @@ function selectPatterns(patterns) {
         await software.changeSelection();
         for (const pattern of patterns)
             await softwareSelection.selectPattern(pattern);
-        await softwareSelection.close();
         header.goToOverview();
     });
 }
@@ -2332,8 +2323,11 @@ class RegistrationBasePage {
     infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     registerButton = () => this.page.locator("::-p-aria(Register)");
     registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
+    // legacy alert warning for QU to be dropped
     connectionToRegistrationServerFailedText = () => this.page.locator("::-p-text(Connection to registration server failed:)");
-    enterRegistrationCodeText = () => this.page.locator("::-p-text(Enter a registration code)");
+    alertWarningUnknownRegistrationCodeText = () => this.page.locator("::-p-text(Unknown Registration Code.)");
+    alertWarningEnterARegistrationCodeText = () => this.page.locator("::-p-text(Enter a registration code)");
+    alertWarningNetworkErrorNoSuchHost = () => this.page.locator("::-p-text(no such host)");
     constructor(page) {
         this.page = page;
     }
@@ -2350,7 +2344,7 @@ class RegistrationBasePage {
         const elementText = await this.infoHasBeenRegisteredText()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
+        strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
     }
 }
 function CustomRegistrable(Base) {
@@ -3048,8 +3042,8 @@ class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
     }
-    verifyRegistrationWarniningAlerts(use_custom, url) {
-        (0, registration_1.verifyRegistrationWarniningAlerts)(use_custom, url);
+    verifyRegistrationWarniningAlerts(url) {
+        (0, registration_1.verifyRegistrationWarniningAlerts)(url);
     }
     enterProductRegistration({ use_custom, code, provide_code, url }) {
         (0, registration_1.enterProductRegistration)({ use_custom, code, provide_code, url });

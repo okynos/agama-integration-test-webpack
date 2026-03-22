@@ -28,8 +28,8 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
     setPermanentHostname(hostname);
   }
 
-  verifyRegistrationWarniningAlerts(use_custom?: string, url?: string) {
-    verifyRegistrationWarniningAlerts(use_custom, url);
+  verifyRegistrationWarniningAlerts(url?: string) {
+    verifyRegistrationWarniningAlerts(url);
   }
 
   enterProductRegistration({ use_custom, code, provide_code, url }: RegistrationOptions): void {
