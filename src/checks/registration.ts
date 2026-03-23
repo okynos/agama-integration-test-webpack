@@ -1,4 +1,4 @@
-import { it, page, getTextContent, sleep } from "../lib/helpers";
+import { it, page, getTextContent, waitUntilOverlaySettled } from "../lib/helpers";
 import { OverviewWithRegistrationPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
@@ -211,6 +211,8 @@ export function verifyRegistrationWarniningAlerts(): void {
     const customRegistration = new CustomRegistrationPage(page);
 
     await overview.goToRegistration();
+    await waitUntilOverlaySettled();
+
     await customRegistration.selectProvideRegistrationCode();
     await customRegistration.register();
     const warningText = await getTextContent(
@@ -224,7 +226,8 @@ export function verifyRegistrationWarniningAlerts(): void {
 
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
-    await sleep(2000);
+    await waitUntilOverlaySettled();
+
     const warningText = await getTextContent(
       customRegistration.alertWarningUnknownRegistrationCodeText(),
     );
@@ -239,12 +242,14 @@ export function verifyRegistrationWarniningAlerts(): void {
     await customRegistration.selectProvideRegistrationCode();
     await customRegistration.fillServerUrl("http://scc.example.net");
     await customRegistration.register();
-    await sleep(2000);
+    await waitUntilOverlaySettled();
+
     const warningText = await getTextContent(customRegistration.alertWarningNetworkErrorText());
     assert.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
 
     await customRegistration.doNotRegister();
-    await sleep(2000);
+    await waitUntilOverlaySettled();
+
     await header.goToOverview();
   });
 }

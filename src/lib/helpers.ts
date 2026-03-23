@@ -195,6 +195,16 @@ export function getTextContent(locator): Promise<string> {
     .wait();
 }
 
+export async function waitUntilOverlaySettled() {
+  const selector = '[role="alert"].agm-main-content-overlay';
+  const appeared = await page.waitForSelector(selector, { visible: true, timeout: 500 })
+    .catch(() => null);
+
+  if (appeared) {
+    await page.waitForSelector(selector, { hidden: true });
+  }
+}
+
 export function getValue(locator): Promise<string> {
   return locator.map((element) => element.value).wait();
 }
