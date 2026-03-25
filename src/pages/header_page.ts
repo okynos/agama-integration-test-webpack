@@ -3,6 +3,8 @@ import { type Page } from "puppeteer-core";
 export class HeaderPage {
   protected readonly page: Page;
   private readonly overviewLink = () => this.page.locator("a[href='#/overview']");
+  private readonly reviewAndInstallButton = () =>
+    this.page.locator("::-p-aria(Review and install)");
 
   constructor(page: Page) {
     this.page = page;
@@ -10,5 +12,9 @@ export class HeaderPage {
 
   async goToOverview() {
     await this.overviewLink().click();
+  }
+
+  async reviewAndInstall() {
+    await this.reviewAndInstallButton().click();
   }
 }

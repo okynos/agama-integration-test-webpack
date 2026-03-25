@@ -6,7 +6,7 @@ export function ensureLandingOnOverview() {
   it(
     "should display Overview",
     async function () {
-      await new OverviewPage(page).waitVisible(70000);
+      await new OverviewPage(page).ensureSystemInformationPresent(70000);
     },
     71 * 1000,
   );
