@@ -19,7 +19,7 @@ export class OverviewPage {
     this.page = page;
   }
 
-  async waitVisible(timeout: number) {
+  async ensureSystemInformationPresent(timeout: number = 20 * 1000) {
     await this.overviewHeading().setTimeout(timeout).wait();
   }
 

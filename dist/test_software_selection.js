@@ -411,7 +411,7 @@ const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src
 const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 function ensureLandingOnOverview() {
     (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(70000);
+        await new overview_page_1.OverviewPage(helpers_1.page).ensureSystemInformationPresent(70000);
     }, 71 * 1000);
 }
 function ensureLandingOnOverviewWithSidebar() {
@@ -1059,7 +1059,8 @@ function selectMoreDevices() {
         await storage.selectMoreDevices();
         await storage.addLvmVolumeGroup();
         await lvm.accept();
-        await header.goToOverview();
+        await header.reviewAndInstall();
+        await overview.ensureSystemInformationPresent();
     });
 }
 function selectMoreDevicesWithSidebar() {
@@ -1966,11 +1967,15 @@ exports.HeaderPage = void 0;
 class HeaderPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
+    reviewAndInstallButton = () => this.page.locator("::-p-aria(Review and install)");
     constructor(page) {
         this.page = page;
     }
     async goToOverview() {
         await this.overviewLink().click();
+    }
+    async reviewAndInstall() {
+        await this.reviewAndInstallButton().click();
     }
 }
 exports.HeaderPage = HeaderPage;
@@ -2153,7 +2158,7 @@ class OverviewPage {
     constructor(page) {
         this.page = page;
     }
-    async waitVisible(timeout) {
+    async ensureSystemInformationPresent(timeout = 20 * 1000) {
         await this.overviewHeading().setTimeout(timeout).wait();
     }
     async install() {
