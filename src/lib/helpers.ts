@@ -215,9 +215,9 @@ export type GConstructor<T = {}> = new (...args: any[]) => T;
 export async function waitOnFile(filePath: string): Promise<void> {
   const opts = {
     resources: [filePath],
-    interval: 100,
+    delay: 1000,
     timeout: 20000,
-    window: 1000,
+    window: 2000,
   };
 
   try {

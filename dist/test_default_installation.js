@@ -331,7 +331,7 @@ function logInWithIncorrectPasswordWithSidebar() {
         await loginAsRoot.fillPassword(invalidpassword);
         await loginAsRoot.logIn();
         const alertText = await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText());
-        strict_1.default.deepEqual(alertText, "Danger alert:Could not log in");
+        strict_1.default.deepEqual(alertText, "Danger alert:Could not log in. Please, make sure that the password is correct.");
         await loginAsRoot.togglePasswordVisibility();
         const passwordInputValue = await (0, helpers_1.getValue)(loginAsRoot.passwordInput());
         strict_1.default.deepEqual(passwordInputValue, invalidpassword);
@@ -1508,9 +1508,9 @@ function getValue(locator) {
 async function waitOnFile(filePath) {
     const opts = {
         resources: [filePath],
-        interval: 100,
+        delay: 1000,
         timeout: 20000,
-        window: 1000,
+        window: 2000,
     };
     try {
         await (0, wait_on_1.default)(opts);
