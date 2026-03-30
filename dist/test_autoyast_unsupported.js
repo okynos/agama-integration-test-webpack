@@ -1,14 +1,14 @@
 #! /usr/bin/env node
 /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/autoyast_unsupported.ts":
+/***/ "./src/checks/autoyast_unsupported.ts"
 /*!********************************************!*\
   !*** ./src/checks/autoyast_unsupported.ts ***!
   \********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyNotImplemented = verifyNotImplemented;
@@ -38,15 +38,14 @@ function abort() {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/checks/login.ts":
+/***/ "./src/checks/login.ts"
 /*!*****************************!*\
   !*** ./src/checks/login.ts ***!
   \*****************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -99,15 +98,14 @@ function logInWithIncorrectPasswordWithSidebar() {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/lib/cmdline.ts":
+/***/ "./src/lib/cmdline.ts"
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
   \****************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -193,15 +191,14 @@ function parse(callback) {
 }
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/lib/helpers.ts":
+/***/ "./src/lib/helpers.ts"
 /*!****************************!*\
   !*** ./src/lib/helpers.ts ***!
   \****************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -267,17 +264,17 @@ function browserSettings(name) {
     switch (name.toLowerCase()) {
         case "firefox":
             return {
-                product: "firefox",
+                browser: "firefox",
                 executablePath: "/usr/bin/firefox",
             };
         case "chrome":
             return {
-                product: "chrome",
+                browser: "chrome",
                 executablePath: "/usr/bin/google-chrome-stable",
             };
         case "chromium":
             return {
-                product: "chrome",
+                browser: "chrome",
                 executablePath: "/usr/bin/chromium",
             };
         default:
@@ -290,7 +287,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         // "webDriverBiDi" does not work with old FireFox, comment it out if needed
         protocol: "webDriverBiDi",
         headless,
-        ignoreHTTPSErrors: true,
+        acceptInsecureCerts: true,
         timeout: 30000,
         // This timeout is increased due to DASD format step review in future changes
         protocolTimeout: 360000,
@@ -442,15 +439,14 @@ async function waitOnFile(filePath) {
 ;
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/pages/autoyast_unsupported_page.ts":
+/***/ "./src/pages/autoyast_unsupported_page.ts"
 /*!************************************************!*\
   !*** ./src/pages/autoyast_unsupported_page.ts ***!
   \************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AutoyastUnsupportedPage = void 0;
@@ -480,15 +476,14 @@ class AutoyastUnsupportedPage {
 exports.AutoyastUnsupportedPage = AutoyastUnsupportedPage;
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/pages/login_as_root_page.ts":
+/***/ "./src/pages/login_as_root_page.ts"
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
   \*****************************************/
-/***/ ((__unused_webpack_module, exports) => {
+(__unused_webpack_module, exports) {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoginAsRootPage = void 0;
@@ -514,15 +509,14 @@ class LoginAsRootPage {
 exports.LoginAsRootPage = LoginAsRootPage;
 
 
-/***/ }),
+/***/ },
 
-/***/ "./src/test_autoyast_unsupported.ts":
+/***/ "./src/test_autoyast_unsupported.ts"
 /*!******************************************!*\
   !*** ./src/test_autoyast_unsupported.ts ***!
   \******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
@@ -540,351 +534,337 @@ if (options.notImplemented)
 (0, autoyast_unsupported_1.abort)();
 
 
-/***/ }),
+/***/ },
 
-/***/ "./node_modules/yargs-parser/build sync recursive":
-/*!***********************************************!*\
-  !*** ./node_modules/yargs-parser/build/ sync ***!
-  \***********************************************/
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = () => ([]);
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = "./node_modules/yargs-parser/build sync recursive";
-module.exports = webpackEmptyContext;
-
-/***/ }),
-
-/***/ "./node_modules/yargs/build sync recursive":
-/*!****************************************!*\
-  !*** ./node_modules/yargs/build/ sync ***!
-  \****************************************/
-/***/ ((module) => {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = () => ([]);
-webpackEmptyContext.resolve = webpackEmptyContext;
-webpackEmptyContext.id = "./node_modules/yargs/build sync recursive";
-module.exports = webpackEmptyContext;
-
-/***/ }),
-
-/***/ "assert":
+/***/ "assert"
 /*!*************************!*\
   !*** external "assert" ***!
   \*************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("assert");
 
-/***/ }),
+/***/ },
 
-/***/ "buffer":
+/***/ "buffer"
 /*!*************************!*\
   !*** external "buffer" ***!
   \*************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("buffer");
 
-/***/ }),
+/***/ },
 
-/***/ "child_process":
-/*!********************************!*\
-  !*** external "child_process" ***!
-  \********************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
-
-/***/ }),
-
-/***/ "crypto":
+/***/ "crypto"
 /*!*************************!*\
   !*** external "crypto" ***!
   \*************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("crypto");
 
-/***/ }),
+/***/ },
 
-/***/ "dns":
+/***/ "dns"
 /*!**********************!*\
   !*** external "dns" ***!
   \**********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("dns");
 
-/***/ }),
+/***/ },
 
-/***/ "events":
+/***/ "events"
 /*!*************************!*\
   !*** external "events" ***!
   \*************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("events");
 
-/***/ }),
+/***/ },
 
-/***/ "fs":
+/***/ "fs"
 /*!*********************!*\
   !*** external "fs" ***!
   \*********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("fs");
 
-/***/ }),
+/***/ },
 
-/***/ "fs/promises":
-/*!******************************!*\
-  !*** external "fs/promises" ***!
-  \******************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
-
-/***/ }),
-
-/***/ "http":
+/***/ "http"
 /*!***********************!*\
   !*** external "http" ***!
   \***********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("http");
 
-/***/ }),
+/***/ },
 
-/***/ "https":
+/***/ "http2"
+/*!************************!*\
+  !*** external "http2" ***!
+  \************************/
+(module) {
+
+module.exports = require("http2");
+
+/***/ },
+
+/***/ "https"
 /*!************************!*\
   !*** external "https" ***!
   \************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("https");
 
-/***/ }),
+/***/ },
 
-/***/ "net":
+/***/ "net"
 /*!**********************!*\
   !*** external "net" ***!
   \**********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("net");
 
-/***/ }),
+/***/ },
 
-/***/ "node:assert/strict":
+/***/ "node:assert"
+/*!******************************!*\
+  !*** external "node:assert" ***!
+  \******************************/
+(module) {
+
+module.exports = require("node:assert");
+
+/***/ },
+
+/***/ "node:assert/strict"
 /*!*************************************!*\
   !*** external "node:assert/strict" ***!
   \*************************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:assert/strict");
 
-/***/ }),
+/***/ },
 
-/***/ "node:child_process":
+/***/ "node:child_process"
 /*!*************************************!*\
   !*** external "node:child_process" ***!
   \*************************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:child_process");
 
-/***/ }),
+/***/ },
 
-/***/ "node:events":
+/***/ "node:events"
 /*!******************************!*\
   !*** external "node:events" ***!
   \******************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:events");
 
-/***/ }),
+/***/ },
 
-/***/ "node:fs":
+/***/ "node:fs"
 /*!**************************!*\
   !*** external "node:fs" ***!
   \**************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:fs");
 
-/***/ }),
+/***/ },
 
-/***/ "node:path":
+/***/ "node:fs/promises"
+/*!***********************************!*\
+  !*** external "node:fs/promises" ***!
+  \***********************************/
+(module) {
+
+module.exports = require("node:fs/promises");
+
+/***/ },
+
+/***/ "node:http"
+/*!****************************!*\
+  !*** external "node:http" ***!
+  \****************************/
+(module) {
+
+module.exports = require("node:http");
+
+/***/ },
+
+/***/ "node:https"
+/*!*****************************!*\
+  !*** external "node:https" ***!
+  \*****************************/
+(module) {
+
+module.exports = require("node:https");
+
+/***/ },
+
+/***/ "node:os"
+/*!**************************!*\
+  !*** external "node:os" ***!
+  \**************************/
+(module) {
+
+module.exports = require("node:os");
+
+/***/ },
+
+/***/ "node:path"
 /*!****************************!*\
   !*** external "node:path" ***!
   \****************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:path");
 
-/***/ }),
+/***/ },
 
-/***/ "node:process":
+/***/ "node:process"
 /*!*******************************!*\
   !*** external "node:process" ***!
   \*******************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:process");
 
-/***/ }),
+/***/ },
 
-/***/ "node:test":
+/***/ "node:readline"
+/*!********************************!*\
+  !*** external "node:readline" ***!
+  \********************************/
+(module) {
+
+module.exports = require("node:readline");
+
+/***/ },
+
+/***/ "node:stream"
+/*!******************************!*\
+  !*** external "node:stream" ***!
+  \******************************/
+(module) {
+
+module.exports = require("node:stream");
+
+/***/ },
+
+/***/ "node:test"
 /*!****************************!*\
   !*** external "node:test" ***!
   \****************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("node:test");
 
-/***/ }),
+/***/ },
 
-/***/ "os":
+/***/ "node:url"
+/*!***************************!*\
+  !*** external "node:url" ***!
+  \***************************/
+(module) {
+
+module.exports = require("node:url");
+
+/***/ },
+
+/***/ "os"
 /*!*********************!*\
   !*** external "os" ***!
   \*********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("os");
 
-/***/ }),
+/***/ },
 
-/***/ "path":
+/***/ "path"
 /*!***********************!*\
   !*** external "path" ***!
   \***********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("path");
 
-/***/ }),
+/***/ },
 
-/***/ "process":
-/*!**************************!*\
-  !*** external "process" ***!
-  \**************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("process");
-
-/***/ }),
-
-/***/ "readline":
-/*!***************************!*\
-  !*** external "readline" ***!
-  \***************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("readline");
-
-/***/ }),
-
-/***/ "stream":
+/***/ "stream"
 /*!*************************!*\
   !*** external "stream" ***!
   \*************************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("stream");
 
-/***/ }),
+/***/ },
 
-/***/ "tls":
+/***/ "tls"
 /*!**********************!*\
   !*** external "tls" ***!
   \**********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("tls");
 
-/***/ }),
+/***/ },
 
-/***/ "tty":
+/***/ "tty"
 /*!**********************!*\
   !*** external "tty" ***!
   \**********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("tty");
 
-/***/ }),
+/***/ },
 
-/***/ "url":
+/***/ "url"
 /*!**********************!*\
   !*** external "url" ***!
   \**********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("url");
 
-/***/ }),
+/***/ },
 
-/***/ "util":
+/***/ "util"
 /*!***********************!*\
   !*** external "util" ***!
   \***********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("util");
 
-/***/ }),
+/***/ },
 
-/***/ "zlib":
+/***/ "zlib"
 /*!***********************!*\
   !*** external "zlib" ***!
   \***********************/
-/***/ ((module) => {
+(module) {
 
-"use strict";
 module.exports = require("zlib");
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
@@ -906,6 +886,12 @@ module.exports = require("zlib");
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Flag the module as loaded
@@ -918,13 +904,11 @@ module.exports = require("zlib");
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = __webpack_modules__;
 /******/ 	
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = __webpack_module_cache__;
-/******/ 	
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_autoyast_unsupported.ts")))
+/******/ 		// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./src/test_autoyast_unsupported.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -974,6 +958,36 @@ module.exports = require("zlib");
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	(() => {
+/******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
+/******/ 		var leafPrototypes;
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 16: return value when it's Promise-like
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if(typeof value === 'object' && value) {
+/******/ 				if((mode & 4) && value.__esModule) return value;
+/******/ 				if((mode & 16) && typeof value.then === 'function') return value;
+/******/ 			}
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			var def = {};
+/******/ 			leafPrototypes = leafPrototypes || [null, getProto({}), getProto([]), getProto(getProto)];
+/******/ 			for(var current = mode & 2 && value; (typeof current == 'object' || typeof current == 'function') && !~leafPrototypes.indexOf(current); current = getProto(current)) {
+/******/ 				Object.getOwnPropertyNames(current).forEach((key) => (def[key] = () => (value[key])));
+/******/ 			}
+/******/ 			def['default'] = () => (value);
+/******/ 			__webpack_require__.d(ns, def);
+/******/ 			return ns;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -1001,7 +1015,7 @@ module.exports = require("zlib");
 /******/ 	
 /******/ 	/* webpack/runtime/get javascript chunk filename */
 /******/ 	(() => {
-/******/ 		// This function allow to reference async chunks and sibling chunks for the entrypoint
+/******/ 		// This function allow to reference async chunks and chunks that the entrypoint depends on
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
 /******/ 			return "" + chunkId + ".js";
@@ -1063,7 +1077,10 @@ module.exports = require("zlib");
 /******/ 			// "1" is the signal for "already loaded"
 /******/ 			if(!installedChunks[chunkId]) {
 /******/ 				if(true) { // all chunks have JS
-/******/ 					installChunk(require("./" + __webpack_require__.u(chunkId)));
+/******/ 					var installedChunk = require("./" + __webpack_require__.u(chunkId));
+/******/ 					if (!installedChunks[chunkId]) {
+/******/ 						installChunk(installedChunk);
+/******/ 					}
 /******/ 				} else installedChunks[chunkId] = 1;
 /******/ 			}
 /******/ 		};
@@ -1086,7 +1103,6 @@ module.exports = require("zlib");
 /******/ 	
 /************************************************************************/
 /******/ 	
-/******/ 	// module cache are used so entry inlining is disabled
 /******/ 	// run startup
 /******/ 	var __webpack_exports__ = __webpack_require__.x();
 /******/ 	

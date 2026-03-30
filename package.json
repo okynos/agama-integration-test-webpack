@@ -13,27 +13,27 @@
     "prune": "ts-prune --error"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.12.1",
-    "eslint": "^9.16.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import-x": "^4.5.0",
-    "eslint-plugin-n": "^17.15.0",
-    "eslint-plugin-prettier": "^5.2.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-n": "^17.24.0",
+    "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-promise": "^7.2.1",
-    "eslint-webpack-plugin": "^4.2.0",
-    "neostandard": "^0.12.0",
-    "prettier": "^3.4.2",
-    "ts-loader": "^9.5.1",
+    "eslint-webpack-plugin": "^5.0.3",
+    "neostandard": "^0.13.0",
+    "prettier": "^3.8.1",
+    "ts-loader": "^9.5.4",
     "ts-prune": "^0.10.3",
-    "typescript": "^5.5.4",
-    "webpack": "^5.93.0",
-    "webpack-cli": "^5.1.4"
+    "typescript": "^5.7.3",
+    "webpack": "^5.105.4",
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
-    "bufferutil": "^4.0.8",
-    "commander": "^12.1.0",
-    "puppeteer-core": "22.13.0",
-    "utf-8-validate": "^6.0.4",
-    "wait-on": "^9.0.1"
+    "bufferutil": "^4.1.0",
+    "commander": "^14.0.3",
+    "puppeteer-core": "24.40.0",
+    "utf-8-validate": "^6.0.6",
+    "wait-on": "^9.0.4"
   }
 }
