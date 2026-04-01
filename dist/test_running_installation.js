@@ -377,6 +377,8 @@ exports.setOnlyInstallationNetworkWithSidebar = setOnlyInstallationNetworkWithSi
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
+const network_wired_connection_page_1 = __webpack_require__(/*! ../pages/network_wired_connection_page */ "./src/pages/network_wired_connection_page.ts");
+const network_with_sidebar_page_1 = __webpack_require__(/*! ../pages/network_with_sidebar_page */ "./src/pages/network_with_sidebar_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function setOnlyInstallationNetwork() {
@@ -384,9 +386,10 @@ function setOnlyInstallationNetwork() {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        const networkWiredConnectionPage = new network_wired_connection_page_1.NetworkWiredConnectionPage(helpers_1.page);
         await overview.goToNetwork();
-        await networkPage.selectWiredConnection();
-        await networkPage.selectInstallationOnly();
+        await networkPage.selectConnectionDetails();
+        await networkWiredConnectionPage.selectInstallationOnly();
         await header.goToOverview();
     });
     (0, helpers_1.it)("should alert no network after installation", async function () {
@@ -401,14 +404,14 @@ function setOnlyInstallationNetwork() {
 function setOnlyInstallationNetworkWithSidebar() {
     (0, helpers_1.it)("should allow setting only installation network", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        const networkPage = new network_with_sidebar_page_1.NetworkWithSidebarPage(helpers_1.page);
         await sidebar.goToNetwork();
         await networkPage.selectWiredConnection();
         await networkPage.selectInstallationOnly();
     });
     (0, helpers_1.it)("should alert no network after installation", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        const networkPage = new network_with_sidebar_page_1.NetworkWithSidebarPage(helpers_1.page);
         await sidebar.goToNetwork();
         await networkPage.verifyWarningAlert();
     });
@@ -2128,6 +2131,62 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NetworkPage = void 0;
 class NetworkPage {
     page;
+    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
+    actionsForTheWiredConnectionButton = () => this.page.locator("::-p-aria(Actions for Wired Connection)");
+    detailsButton = () => this.page.locator("::-p-text(Details)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectConnectionDetails() {
+        await this.actionsForTheWiredConnectionButton().click();
+        await this.detailsButton().click();
+    }
+    async verifyWarningAlert() {
+        await this.warningAlertHeading().wait();
+    }
+}
+exports.NetworkPage = NetworkPage;
+
+
+/***/ },
+
+/***/ "./src/pages/network_wired_connection_page.ts"
+/*!****************************************************!*\
+  !*** ./src/pages/network_wired_connection_page.ts ***!
+  \****************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkWiredConnectionPage = void 0;
+class NetworkWiredConnectionPage {
+    page;
+    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type='checkbox']:not(:checked)[role='switch']`);
+    installationOnlyCheckboxChecked = () => this.page.locator(`input[type='checkbox']:checked[role='switch']`);
+    constructor(page) {
+        this.page = page;
+    }
+    async selectInstallationOnly() {
+        await this.installationOnlyCheckboxNotChecked().click();
+        await this.installationOnlyCheckboxChecked().wait();
+    }
+}
+exports.NetworkWiredConnectionPage = NetworkWiredConnectionPage;
+
+
+/***/ },
+
+/***/ "./src/pages/network_with_sidebar_page.ts"
+/*!************************************************!*\
+  !*** ./src/pages/network_with_sidebar_page.ts ***!
+  \************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkWithSidebarPage = void 0;
+class NetworkWithSidebarPage {
+    page;
     wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
     installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
     installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
@@ -2146,7 +2205,7 @@ class NetworkPage {
         await this.warningAlertHeading().wait();
     }
 }
-exports.NetworkPage = NetworkPage;
+exports.NetworkWithSidebarPage = NetworkWithSidebarPage;
 
 
 /***/ },
