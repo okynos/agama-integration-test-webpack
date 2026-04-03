@@ -954,7 +954,7 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         await configRootPartition.inputPartitionSize("5 GiB");
         await configRootPartition.disableAllowGrowing();
         await configRootPartition.accept();
-        await header.goToOverview();
+        await header.reviewAndInstall();
     });
 }
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() {
