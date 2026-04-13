@@ -12,7 +12,7 @@ export function createFirstUser(password: string) {
     const overview = new OverviewPage(page);
     const header = new HeaderPage(page);
 
-    await overview.goToUsers();
+    await overview.goToAuthentication();
 
     await users.defineAUserNow();
     await createFirstUser.fillFullName("Bernhard M. Wiedemann");

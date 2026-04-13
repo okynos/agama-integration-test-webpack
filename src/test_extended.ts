@@ -54,7 +54,7 @@ if (options.registrationCode)
 testStrategy.enableEncryption(options.password);
 testStrategy.verifyEncryptionEnabled();
 testStrategy.disableEncryption();
-testStrategy.changeDiskToInstallTheSystem();
+testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
 testStrategy.verifyPasswordStrength();

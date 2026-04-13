@@ -12,7 +12,7 @@ import { createFirstUser } from "../checks/first_user";
 import { editRootUser, verifyPasswordStrength } from "../checks/root_authentication";
 import { finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
-import { changeDiskToInstallTheSystem } from "../checks/storage_change_disk_to_install";
+import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
 import { selectPatterns } from "../checks/software_selection";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
@@ -76,8 +76,8 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
     finishInstallation();
   }
 
-  changeDiskToInstallTheSystem() {
-    changeDiskToInstallTheSystem();
+  changeDeviceToInstallTheSystem() {
+    changeDeviceToInstallTheSystem();
   }
 
   verifyPasswordStrength() {

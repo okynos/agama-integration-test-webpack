@@ -13,7 +13,7 @@ export function editRootUser(password: string) {
     const users = new UsersPage(page);
     const setARootPassword = new SetARootPasswordPage(page);
 
-    await overview.goToUsers();
+    await overview.goToAuthentication();
     await users.editRootUser();
     await setARootPassword.usePassword();
     await setARootPassword.fillPassword(password);
@@ -49,7 +49,7 @@ export function verifyPasswordStrength() {
     const users = new UsersPage(page);
     const setARootPassword = new SetARootPasswordPage(page);
 
-    await overview.goToUsers();
+    await overview.goToAuthentication();
     await users.editRootUser();
     await setARootPassword.fillPassword("a23b56c");
     const elementTextPasswordLess8Characters = await getTextContent(

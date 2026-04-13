@@ -22,7 +22,7 @@ import {
   performInstallationWithSidebar,
 } from "../checks/installation";
 import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
-import { changeDiskToInstallTheSystemWithSidebar } from "../checks/storage_change_disk_to_install";
+import { changeDeviceToInstallTheSystemWithSidebar } from "../checks/storage_change_device_to_install";
 import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 import { selectPatternsWithSidebar } from "../checks/software_selection";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar } from "../checks/storage_change_root_partition";
@@ -86,8 +86,8 @@ export class StableReleaseStrategy implements IProductTestStrategy {
     finishInstallationCongratulation();
   }
 
-  changeDiskToInstallTheSystem() {
-    changeDiskToInstallTheSystemWithSidebar();
+  changeDeviceToInstallTheSystem() {
+    changeDeviceToInstallTheSystemWithSidebar();
   }
 
   verifyPasswordStrength() {

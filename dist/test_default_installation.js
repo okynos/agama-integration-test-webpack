@@ -135,7 +135,7 @@ function createFirstUser(password) {
         const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
-        await overview.goToUsers();
+        await overview.goToAuthentication();
         await users.defineAUserNow();
         await createFirstUser.fillFullName("Bernhard M. Wiedemann");
         await createFirstUser.fillUserName("bernhard");
@@ -510,7 +510,7 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
                 await customRegistration.fillServerUrl(url);
             }
             if (provide_code) {
-                await productRegistration.selectProvideRegistrationCode();
+                await productRegistration.checkProvideRegistrationCode();
                 await productRegistration.fillCode(code);
             }
         }
@@ -531,7 +531,8 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should display product has been registered", async function () {
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
-        await productRegistration.verifyCustomRegistration();
+        const registeredText = await (0, helpers_1.getTextContent)(productRegistration.infoHasBeenRegisteredText());
+        strict_1.default.match(registeredText, /SUSE Linux Enterprise Server.*has been registered with below information/);
         await header.goToOverview();
     });
 }
@@ -547,7 +548,7 @@ function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, u
                 await customRegistration.fillServerUrl(url);
             }
             if (provide_code) {
-                await productRegistration.selectProvideRegistrationCode();
+                await productRegistration.checkProvideRegistrationCode();
                 await productRegistration.fillCode(code);
             }
         }
@@ -571,7 +572,8 @@ function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, u
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await productRegistration.verifyCustomRegistration();
+        const registeredText = await (0, helpers_1.getTextContent)(productRegistration.infoHasBeenRegisteredText());
+        strict_1.default.match(registeredText, /SUSE Linux Enterprise Server.*has been registered with below information/);
     });
 }
 function enterExtensionRegistrationHA(code) {
@@ -625,8 +627,7 @@ function verifyRegistrationWarniningAlerts() {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
-        await (0, helpers_1.waitUntilOverlaySettled)();
-        await customRegistration.selectProvideRegistrationCode();
+        await customRegistration.checkProvideRegistrationCode();
         await customRegistration.register();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningEnterARegistrationCodeText());
         strict_1.default.deepEqual(warningText, "Enter a registration code");
@@ -635,22 +636,18 @@ function verifyRegistrationWarniningAlerts() {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await customRegistration.fillCode("1234invalid4321");
         await customRegistration.register();
-        await (0, helpers_1.waitUntilOverlaySettled)();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningUnknownRegistrationCodeText());
         strict_1.default.deepEqual(warningText, "Unknown Registration Code.");
     });
     (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
-        await customRegistration.selectCustomRegistrationServer();
-        await customRegistration.selectProvideRegistrationCode();
         await customRegistration.fillServerUrl("http://scc.example.net");
         await customRegistration.register();
-        await (0, helpers_1.waitUntilOverlaySettled)();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningNetworkErrorText());
         strict_1.default.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
         await customRegistration.doNotRegister();
-        await (0, helpers_1.waitUntilOverlaySettled)();
+        await customRegistration.ensureProvideRegistrationCodeUnchecked();
         await header.goToOverview();
     });
 }
@@ -660,7 +657,7 @@ function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
         if (use_custom)
-            await customRegistration.selectProvideRegistrationCode();
+            await customRegistration.checkProvideRegistrationCode();
         await customRegistration.register();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.alertWarningEnterARegistrationCodeText()), "Enter a registration code");
     });
@@ -673,7 +670,7 @@ function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
     (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await customRegistration.selectCustomRegistrationServer();
-        await customRegistration.selectProvideRegistrationCode();
+        await customRegistration.uncheckProvideRegistrationCode();
         await customRegistration.fillServerUrl("http://scc.example.net");
         await customRegistration.register();
         strict_1.default.match(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/);
@@ -719,7 +716,7 @@ function editRootUser(password) {
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
         const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await overview.goToUsers();
+        await overview.goToAuthentication();
         await users.editRootUser();
         await setARootPassword.usePassword();
         await setARootPassword.fillPassword(password);
@@ -751,7 +748,7 @@ function verifyPasswordStrength() {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
         const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await overview.goToUsers();
+        await overview.goToAuthentication();
         await users.editRootUser();
         await setARootPassword.fillPassword("a23b56c");
         const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
@@ -832,10 +829,10 @@ function selectPatternsWithSidebar(patterns) {
 
 /***/ },
 
-/***/ "./src/checks/storage_change_disk_to_install.ts"
-/*!******************************************************!*\
-  !*** ./src/checks/storage_change_disk_to_install.ts ***!
-  \******************************************************/
+/***/ "./src/checks/storage_change_device_to_install.ts"
+/*!********************************************************!*\
+  !*** ./src/checks/storage_change_device_to_install.ts ***!
+  \********************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -843,8 +840,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.changeDiskToInstallTheSystem = changeDiskToInstallTheSystem;
-exports.changeDiskToInstallTheSystemWithSidebar = changeDiskToInstallTheSystemWithSidebar;
+exports.changeDeviceToInstallTheSystem = changeDeviceToInstallTheSystem;
+exports.changeDeviceToInstallTheSystemWithSidebar = changeDeviceToInstallTheSystemWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const table_1 = __webpack_require__(/*! ../lib/table */ "./src/lib/table.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
@@ -855,24 +852,29 @@ const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/p
 const storage_settings_change_disk_page_1 = __webpack_require__(/*! ../pages/storage_settings_change_disk_page */ "./src/pages/storage_settings_change_disk_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
-function changeDiskToInstallTheSystem() {
-    (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
+function changeDeviceToInstallTheSystem() {
+    (0, helpers_1.it)("should change the device to install the system to one which fails to calculate a storage layout", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         await overview.goToStorage();
+        await storage.selectInstallationDevices();
         await storage.selectUsedDisk();
-        await storage.changeTheDiskToInstallTheSystem();
+        await storage.changeTheDeviceToInstallTheSystem();
         (await (0, table_1.getElementInCell)(helpers_1.page, storageSettingsChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
-        await storageSettingsChangeDisk.confirm();
+        await storageSettingsChangeDisk.changeTo();
+        await storage.ensureStorageSettingsPresent();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
         await storage.moreOptions();
+        helpers_1.page.setDefaultTimeout(40000);
         await storage.resetToDefault();
+        helpers_1.page.setDefaultTimeout(30000);
+        await storage.ensureStorageSettingsPresent();
         await header.goToOverview();
     });
 }
-function changeDiskToInstallTheSystemWithSidebar() {
+function changeDeviceToInstallTheSystemWithSidebar() {
     (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
         const storageChangeDisk = new storage_change_disk_page_1.StorageChangeDiskPage(helpers_1.page);
@@ -1309,7 +1311,6 @@ exports.setContinueOnError = setContinueOnError;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
-exports.waitUntilOverlaySettled = waitUntilOverlaySettled;
 exports.getValue = getValue;
 exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
@@ -1365,7 +1366,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         ...browserSettings(agamaBrowser),
     });
     exports.page = await browser.newPage();
-    exports.page.setDefaultTimeout(20000);
+    exports.page.setDefaultTimeout(30000);
     await exports.page.goto(agamaServer, {
         timeout: 60000,
         waitUntil: "domcontentloaded",
@@ -1477,23 +1478,15 @@ function getTextContent(locator) {
         .map((element) => element.textContent)
         .wait();
 }
-async function waitUntilOverlaySettled() {
-    const selector = '[role="alert"].agm-main-content-overlay';
-    const appeared = await exports.page.waitForSelector(selector, { visible: true, timeout: 500 })
-        .catch(() => null);
-    if (appeared) {
-        await exports.page.waitForSelector(selector, { hidden: true });
-    }
-}
 function getValue(locator) {
     return locator.map((element) => element.value).wait();
 }
 async function waitOnFile(filePath) {
     const opts = {
         resources: [filePath],
-        delay: 1000,
-        timeout: 20000,
-        window: 2000,
+        delay: 3000,
+        timeout: 30000,
+        window: 4000,
     };
     try {
         await (0, wait_on_1.default)(opts);
@@ -2249,7 +2242,7 @@ class OverviewPage {
     async goToSoftware() {
         await this.softwareLink().click();
     }
-    async goToUsers() {
+    async goToAuthentication() {
         await this.usersLink().click();
     }
 }
@@ -2301,22 +2294,19 @@ exports.OverviewWithSidebarPage = OverviewWithSidebarPage;
 /*!************************************************!*\
   !*** ./src/pages/product_registration_page.ts ***!
   \************************************************/
-(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports) {
 
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CustomRegistrationPage = exports.ProductRegistrationPage = void 0;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class RegistrationBasePage {
     page;
     codeInput = () => this.page.locator("::-p-aria(Registration code)[type='password']");
-    infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     registerButton = () => this.page.locator("::-p-aria(Register)");
     doNotRegisterButton = () => this.page.locator("::-p-text(Do not register)");
-    registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
+    provideRegistrationCodeNotChecked = () => this.page.locator("input#provide-code:not(:checked)");
+    provideRegistrationCodeChecked = () => this.page.locator("input#provide-code:checked");
+    infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     // legacy alert warning for QU to be dropped
     connectionToRegistrationServerFailedText = () => this.page.locator("::-p-text(Connection to registration server failed:)");
     alertWarningUnknownRegistrationCodeText = () => this.page.locator("::-p-text(Unknown Registration Code.)");
@@ -2325,8 +2315,12 @@ class RegistrationBasePage {
     constructor(page) {
         this.page = page;
     }
-    async selectProvideRegistrationCode() {
-        await this.registrationOptionCheckbox().click();
+    async checkProvideRegistrationCode() {
+        await this.provideRegistrationCodeNotChecked().click();
+        await this.provideRegistrationCodeChecked().wait();
+    }
+    async uncheckProvideRegistrationCode() {
+        await this.provideRegistrationCodeChecked().click();
     }
     async fillCode(code) {
         await this.codeInput().fill(code);
@@ -2337,11 +2331,8 @@ class RegistrationBasePage {
     async doNotRegister() {
         await this.doNotRegisterButton().click();
     }
-    async verifyCustomRegistration() {
-        const elementText = await this.infoHasBeenRegisteredText()
-            .map((span) => span.textContent)
-            .wait();
-        strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
+    async ensureProvideRegistrationCodeUnchecked() {
+        await this.provideRegistrationCodeNotChecked().wait();
     }
 }
 function CustomRegistrable(Base) {
@@ -2718,14 +2709,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StorageSettingsChangeDiskPage = void 0;
 class StorageSettingsChangeDiskPage {
     page;
-    confirmButton = () => this.page.locator("button::-p-text(Confirm)");
+    changeToButton = () => this.page.locator("button::-p-text(Change to)");
     diskTableSelector;
     constructor(page) {
         this.page = page;
         this.diskTableSelector = 'div[aria-modal="true"] table[data-type="agama/expandable-selector"]';
     }
-    async confirm() {
-        await this.confirmButton().click();
+    async changeTo() {
+        await this.changeToButton().click();
     }
 }
 exports.StorageSettingsChangeDiskPage = StorageSettingsChangeDiskPage;
@@ -2746,8 +2737,11 @@ class StorageSettingsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     useDiskButton = () => this.page.locator("::-p-text(Use disk)");
+    settingsText = () => this.page.locator("::-p-text(Settings)");
+    selectDeviceToInstallButton = () => this.page.locator("::-p-text(Change the device to install the system)");
     selectDiskToInstallButton = () => this.page.locator("::-p-text(Change the disk to install the system)");
     editEncryptionButton = () => this.page.locator("a[href='#/storage/encryption/edit']");
+    installationDevicesTab = () => this.page.locator("::-p-text(Installation devices)");
     encryptionTab = () => this.page.locator("::-p-text(Encryption)");
     changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
@@ -2764,17 +2758,27 @@ class StorageSettingsPage {
     constructor(page) {
         this.page = page;
     }
+    async ensureStorageSettingsPresent() {
+        await this.settingsText().wait();
+    }
     async selectUsedDisk() {
         await this.useDiskButton().click();
     }
-    async changeTheDiskToInstallTheSystem() {
-        await this.selectDiskToInstallButton().click();
+    async changeTheDeviceToInstallTheSystem() {
+        const element = await Promise.any([
+            this.selectDeviceToInstallButton(),
+            this.selectDiskToInstallButton(),
+        ]);
+        await element.click();
     }
     async selectMoreDevices() {
         await this.selectMoreDevicesButton().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();
+    }
+    async selectInstallationDevices() {
+        await this.installationDevicesTab().click();
     }
     async selectEncryption() {
         await this.encryptionTab().click();
@@ -3013,7 +3017,7 @@ const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/chec
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
-const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const storage_change_device_to_install_1 = __webpack_require__(/*! ../checks/storage_change_device_to_install */ "./src/checks/storage_change_device_to_install.ts");
 const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
@@ -3063,8 +3067,8 @@ class ProductReleaseStrategy {
     finishInstallation() {
         (0, installation_1.finishInstallation)();
     }
-    changeDiskToInstallTheSystem() {
-        (0, storage_change_disk_to_install_1.changeDiskToInstallTheSystem)();
+    changeDeviceToInstallTheSystem() {
+        (0, storage_change_device_to_install_1.changeDeviceToInstallTheSystem)();
     }
     verifyPasswordStrength() {
         (0, root_authentication_1.verifyPasswordStrength)();
@@ -3118,7 +3122,7 @@ const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/chec
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
-const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const storage_change_device_to_install_1 = __webpack_require__(/*! ../checks/storage_change_device_to_install */ "./src/checks/storage_change_device_to_install.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
@@ -3168,8 +3172,8 @@ class StableReleaseStrategy {
     finishInstallation() {
         (0, installation_1.finishInstallationCongratulation)();
     }
-    changeDiskToInstallTheSystem() {
-        (0, storage_change_disk_to_install_1.changeDiskToInstallTheSystemWithSidebar)();
+    changeDeviceToInstallTheSystem() {
+        (0, storage_change_device_to_install_1.changeDeviceToInstallTheSystemWithSidebar)();
     }
     verifyPasswordStrength() {
         (0, root_authentication_1.verifyPasswordStrengthWithSidebar)();

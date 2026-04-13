@@ -243,7 +243,6 @@ exports.setContinueOnError = setContinueOnError;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
-exports.waitUntilOverlaySettled = waitUntilOverlaySettled;
 exports.getValue = getValue;
 exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
@@ -299,7 +298,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         ...browserSettings(agamaBrowser),
     });
     exports.page = await browser.newPage();
-    exports.page.setDefaultTimeout(20000);
+    exports.page.setDefaultTimeout(30000);
     await exports.page.goto(agamaServer, {
         timeout: 60000,
         waitUntil: "domcontentloaded",
@@ -411,23 +410,15 @@ function getTextContent(locator) {
         .map((element) => element.textContent)
         .wait();
 }
-async function waitUntilOverlaySettled() {
-    const selector = '[role="alert"].agm-main-content-overlay';
-    const appeared = await exports.page.waitForSelector(selector, { visible: true, timeout: 500 })
-        .catch(() => null);
-    if (appeared) {
-        await exports.page.waitForSelector(selector, { hidden: true });
-    }
-}
 function getValue(locator) {
     return locator.map((element) => element.value).wait();
 }
 async function waitOnFile(filePath) {
     const opts = {
         resources: [filePath],
-        delay: 1000,
-        timeout: 20000,
-        window: 2000,
+        delay: 3000,
+        timeout: 30000,
+        window: 4000,
     };
     try {
         await (0, wait_on_1.default)(opts);
