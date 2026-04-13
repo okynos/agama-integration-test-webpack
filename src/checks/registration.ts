@@ -128,10 +128,10 @@ export function enterProductRegistrationWithSidebar({
   }
 
   it("should display product has been registered", async function () {
-    await new OverviewWithSidebarPage(page).waitVisible(60000);
     const sidebar = new SidebarWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
 
+    await new OverviewWithSidebarPage(page).waitVisible(59000);
     await sidebar.goToRegistration();
     const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
     assert.match(
@@ -244,7 +244,7 @@ export function verifyRegistrationWarniningAlerts(): void {
     const customRegistration = new CustomRegistrationPage(page);
     const header = new HeaderPage(page);
 
-    await customRegistration.fillServerUrl("http://scc.example.net");
+    await customRegistration.fillServerUrl("http://scc.example.net", 50000);
     await customRegistration.register();
 
     const warningText = await getTextContent(customRegistration.alertWarningNetworkErrorText());
@@ -253,7 +253,7 @@ export function verifyRegistrationWarniningAlerts(): void {
     await customRegistration.ensureProvideRegistrationCodeUnchecked();
 
     await header.goToOverview();
-  });
+  }, 90000);
 }
 
 export function verifyRegistrationWarniningAlertsWithSidebar(

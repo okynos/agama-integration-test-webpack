@@ -405,9 +405,10 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-function getTextContent(locator) {
+function getTextContent(locator, timeout = 30000) {
     return locator
         .map((element) => element.textContent)
+        .setTimeout(timeout)
         .wait();
 }
 function getValue(locator) {

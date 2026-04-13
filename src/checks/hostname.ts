@@ -15,6 +15,8 @@ export function setPermanentHostname(hostname: string) {
     await hostnamePage.fill(hostname);
     await hostnamePage.accept();
     await header.goToOverview();
+    // prefer explicit wait over hard delay.
+    await overview.ensureSystemInformationPresent();
   });
 }
 

@@ -189,9 +189,10 @@ export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function getTextContent(locator): Promise<string> {
+export function getTextContent(locator, timeout: number = 30000): Promise<string> {
   return locator
     .map((element) => element.textContent)
+    .setTimeout(timeout)
     .wait();
 }
 

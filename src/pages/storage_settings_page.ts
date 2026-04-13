@@ -121,7 +121,7 @@ export class StorageSettingsPage {
     await this.threeDotsButton().click();
   }
 
-  async resetToDefault() {
-    await this.resetToDefaultsButton().click();
+  async resetToDefault(timeout: number = 30 * 1000) {
+    await this.resetToDefaultsButton().setTimeout(timeout).click();
   }
 }

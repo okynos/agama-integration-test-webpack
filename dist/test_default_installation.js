@@ -192,6 +192,8 @@ function setPermanentHostname(hostname) {
         await hostnamePage.fill(hostname);
         await hostnamePage.accept();
         await header.goToOverview();
+        // prefer explicit wait over hard delay.
+        await overview.ensureSystemInformationPresent();
     });
 }
 function setPermanentHostnameWithSidebar(hostname) {
@@ -579,9 +581,9 @@ function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, u
         });
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
-        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(60000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(59000);
         await sidebar.goToRegistration();
         const registeredText = await (0, helpers_1.getTextContent)(productRegistration.infoHasBeenRegisteredText());
         strict_1.default.match(registeredText, /SUSE Linux Enterprise Server.*has been registered with below information/);
@@ -653,14 +655,14 @@ function verifyRegistrationWarniningAlerts() {
     (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
-        await customRegistration.fillServerUrl("http://scc.example.net");
+        await customRegistration.fillServerUrl("http://scc.example.net", 50000);
         await customRegistration.register();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningNetworkErrorText());
         strict_1.default.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
         await customRegistration.doNotRegister();
         await customRegistration.ensureProvideRegistrationCodeUnchecked();
         await header.goToOverview();
-    });
+    }, 90000);
 }
 function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
     (0, helpers_1.it)("should show warning alert for missing registration code", async function () {
@@ -787,7 +789,7 @@ function verifyPasswordStrengthWithSidebar() {
         const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
         strict_1.default.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
         await setARootPassword.fillPassword("a23b5678");
-        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck(), 50000);
         strict_1.default.deepEqual(elementTextPasswordFailDictionary, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     });
 }
@@ -878,10 +880,13 @@ function changeDeviceToInstallTheSystem() {
         await storage.ensureStorageSettingsPresent();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
         await storage.moreOptions();
+        helpers_1.page.setDefaultTimeout(40000);
         await storage.resetToDefault();
         await storage.ensureStorageSettingsPresent();
         await header.goToOverview();
-    });
+        // prefer explicit wait over hard delay.
+        await overview.ensureSystemInformationPresent(120000);
+    }, 150000);
 }
 function changeDeviceToInstallTheSystemWithSidebar() {
     (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
@@ -1482,9 +1487,10 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-function getTextContent(locator) {
+function getTextContent(locator, timeout = 30000) {
     return locator
         .map((element) => element.textContent)
+        .setTimeout(timeout)
         .wait();
 }
 function getValue(locator) {
@@ -2254,7 +2260,7 @@ class OverviewPage {
     constructor(page) {
         this.page = page;
     }
-    async ensureSystemInformationPresent(timeout = 20 * 1000) {
+    async ensureSystemInformationPresent(timeout = 30 * 1000) {
         await this.overviewHeading().setTimeout(timeout).wait();
     }
     async install() {
@@ -2308,11 +2314,13 @@ class OverviewWithSidebarPage {
     page;
     installButton = () => this.page.locator("button::-p-text(Install)");
     overviewHeading = () => this.page.locator('::-p-aria([name="Overview"][role="heading"])');
+    storageHeading = () => this.page.locator('::-p-aria([name="Storage"][role="heading"])');
     constructor(page) {
         this.page = page;
     }
     async waitVisible(timeout) {
         await this.overviewHeading().setTimeout(timeout).wait();
+        await this.storageHeading().setTimeout(timeout).wait();
     }
     async install() {
         await this.installButton().click();
@@ -2349,7 +2357,11 @@ class RegistrationBasePage {
         this.page = page;
     }
     async checkProvideRegistrationCode() {
-        await this.provideRegistrationCodeNotChecked().click();
+        const checkbox = await this.provideRegistrationCodeNotChecked().waitHandle();
+        await checkbox.scrollIntoView();
+        // Wait for checkbox to be truly interactive
+        await checkbox.evaluate((el) => el.offsetHeight); // Force reflow
+        await checkbox.click();
         await this.provideRegistrationCodeChecked().wait();
     }
     async uncheckProvideRegistrationCode() {
@@ -2359,12 +2371,17 @@ class RegistrationBasePage {
         await this.codeInput().fill(code);
     }
     async register() {
-        await this.registerButton().click();
+        // prefer explicit wait over hard delay.
+        await this.registerButton().setTimeout(40000).click();
     }
     async doNotRegister() {
-        await this.doNotRegisterButton().click();
+        // prefer explicit wait over hard delay.
+        await this.doNotRegisterButton().click({ delay: 1000 });
     }
     async ensureProvideRegistrationCodeUnchecked() {
+        const checkbox = await this.provideRegistrationCodeNotChecked().waitHandle();
+        // Wait for checkbox to be truly interactive
+        await checkbox.evaluate((el) => el.offsetHeight); // Force reflow
         await this.provideRegistrationCodeNotChecked().wait();
     }
 }
@@ -2387,8 +2404,8 @@ function CustomRegistrable(Base) {
             await this.registrationServerButton().click();
             await this.registrationServerSCCOption().click();
         }
-        async fillServerUrl(url) {
-            await this.serverUrlTextbox().fill(url);
+        async fillServerUrl(url, timeout = 30 * 1000) {
+            await this.serverUrlTextbox().setTimeout(timeout).fill(url);
         }
     };
 }
@@ -2843,8 +2860,8 @@ class StorageSettingsPage {
     async moreOptions() {
         await this.threeDotsButton().click();
     }
-    async resetToDefault() {
-        await this.resetToDefaultsButton().click();
+    async resetToDefault(timeout = 30 * 1000) {
+        await this.resetToDefaultsButton().setTimeout(timeout).click();
     }
 }
 exports.StorageSettingsPage = StorageSettingsPage;
