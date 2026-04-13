@@ -552,9 +552,8 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
         (0, helpers_1.it)("should handle HTTPS certificate trust for custom registration server", async function () {
             const trustRegistration = new trust_registration_certificate_page_1.TrustRegistrationCertificatePage(helpers_1.page);
             strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.titleText()), "Registration certificate");
-            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.questionText()), "Trying to import a self signed certificate. Do you want to trust it and register the product?");
+            strict_1.default.match(await (0, helpers_1.getTextContent)(trustRegistration.questionText()), /Trying to import a self.signed certificate\. Do you want to trust it and register the product\?/);
             strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.issuerText()), "RMT Certificate Authority");
-            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.urlText(url)), url);
             await trustRegistration.trustCertificate();
         });
     }

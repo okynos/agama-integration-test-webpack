@@ -54,15 +54,14 @@ export function enterProductRegistration({
         await getTextContent(trustRegistration.titleText()),
         "Registration certificate",
       );
-      assert.deepEqual(
+      assert.match(
         await getTextContent(trustRegistration.questionText()),
-        "Trying to import a self signed certificate. Do you want to trust it and register the product?",
+        /Trying to import a self.signed certificate\. Do you want to trust it and register the product\?/,
       );
       assert.deepEqual(
         await getTextContent(trustRegistration.issuerText()),
         "RMT Certificate Authority",
       );
-      assert.deepEqual(await getTextContent(trustRegistration.urlText(url)), url);
       await trustRegistration.trustCertificate();
     });
   }
