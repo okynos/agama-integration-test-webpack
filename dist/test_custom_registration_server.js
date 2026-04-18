@@ -1472,7 +1472,7 @@ const product_release_strategy_1 = __webpack_require__(/*! ../variants/product_r
 const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
 class ProductStrategyFactory {
     static create(productVersion, agamaVersion) {
-        if (productVersion === "16.1" && agamaVersion.includes("19")) {
+        if (productVersion === "16.1" && agamaVersion.includes("20")) {
             return new product_release_strategy_1.ProductReleaseStrategy();
         }
         return new stable_release_strategy_1.StableReleaseStrategy();
