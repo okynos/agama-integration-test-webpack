@@ -31,7 +31,7 @@ export interface IProductTestStrategy {
 
 export class ProductStrategyFactory {
   public static create(productVersion: string, agamaVersion: string): IProductTestStrategy {
-    if (productVersion === "16.1" && agamaVersion.includes("19")) {
+    if (productVersion === "16.1" && agamaVersion.includes("20")) {
       return new ProductReleaseStrategy();
     }
     return new StableReleaseStrategy();
