@@ -47,7 +47,7 @@ export class OverviewPage {
     await this.softwareLink().click();
   }
 
-  async goToUsers() {
+  async goToAuthentication() {
     await this.usersLink().click();
   }
 }

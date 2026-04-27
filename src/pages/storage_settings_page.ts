@@ -5,11 +5,19 @@ export class StorageSettingsPage {
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
   private readonly useDiskButton = () => this.page.locator("::-p-text(Use disk)");
 
+  private readonly settingsText = () => this.page.locator("::-p-text(Settings)");
+
+  private readonly selectDeviceToInstallButton = () =>
+    this.page.locator("::-p-text(Change the device to install the system)");
+
   private readonly selectDiskToInstallButton = () =>
     this.page.locator("::-p-text(Change the disk to install the system)");
 
   private readonly editEncryptionButton = () =>
     this.page.locator("a[href='#/storage/encryption/edit']");
+
+  private readonly installationDevicesTab = () =>
+    this.page.locator("::-p-text(Installation devices)");
 
   private readonly encryptionTab = () => this.page.locator("::-p-text(Encryption)");
   private readonly changeEncryptionLink = () =>
@@ -45,12 +53,20 @@ export class StorageSettingsPage {
     this.page = page;
   }
 
+  async ensureStorageSettingsPresent() {
+    await this.settingsText().wait();
+  }
+
   async selectUsedDisk() {
     await this.useDiskButton().click();
   }
 
-  async changeTheDiskToInstallTheSystem() {
-    await this.selectDiskToInstallButton().click();
+  async changeTheDeviceToInstallTheSystem() {
+    const element = await Promise.any([
+      this.selectDeviceToInstallButton(),
+      this.selectDiskToInstallButton(),
+    ]);
+    await element.click();
   }
 
   async selectMoreDevices() {
@@ -59,6 +75,10 @@ export class StorageSettingsPage {
 
   async editEncryption() {
     await this.editEncryptionButton().click();
+  }
+
+  async selectInstallationDevices() {
+    await this.installationDevicesTab().click();
   }
 
   async selectEncryption() {

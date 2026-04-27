@@ -1,4 +1,4 @@
-import { it, page, getTextContent, waitUntilOverlaySettled } from "../lib/helpers";
+import { it, page, getTextContent } from "../lib/helpers";
 import { OverviewWithRegistrationPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
@@ -29,6 +29,7 @@ export function enterProductRegistration({
   it("should allow setting registration", async function () {
     const overview = new OverviewWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
+
     await overview.goToRegistration();
 
     if (use_custom) {
@@ -38,7 +39,7 @@ export function enterProductRegistration({
         await customRegistration.fillServerUrl(url);
       }
       if (provide_code) {
-        await productRegistration.selectProvideRegistrationCode();
+        await productRegistration.checkProvideRegistrationCode();
         await productRegistration.fillCode(code);
       }
     } else {
@@ -70,7 +71,11 @@ export function enterProductRegistration({
     const header = new HeaderPage(page);
     const productRegistration = new ProductRegistrationPage(page);
 
-    await productRegistration.verifyCustomRegistration();
+    const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
+    assert.match(
+      registeredText,
+      /SUSE Linux Enterprise Server.*has been registered with below information/,
+    );
     await header.goToOverview();
   });
 }
@@ -93,7 +98,7 @@ export function enterProductRegistrationWithSidebar({
         await customRegistration.fillServerUrl(url);
       }
       if (provide_code) {
-        await productRegistration.selectProvideRegistrationCode();
+        await productRegistration.checkProvideRegistrationCode();
         await productRegistration.fillCode(code);
       }
     } else {
@@ -128,7 +133,11 @@ export function enterProductRegistrationWithSidebar({
     const productRegistration = new ProductRegistrationPage(page);
 
     await sidebar.goToRegistration();
-    await productRegistration.verifyCustomRegistration();
+    const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
+    assert.match(
+      registeredText,
+      /SUSE Linux Enterprise Server.*has been registered with below information/,
+    );
   });
 }
 
@@ -210,10 +219,9 @@ export function verifyRegistrationWarniningAlerts(): void {
     const customRegistration = new CustomRegistrationPage(page);
 
     await overview.goToRegistration();
-    await waitUntilOverlaySettled();
-
-    await customRegistration.selectProvideRegistrationCode();
+    await customRegistration.checkProvideRegistrationCode();
     await customRegistration.register();
+
     const warningText = await getTextContent(
       customRegistration.alertWarningEnterARegistrationCodeText(),
     );
@@ -225,7 +233,6 @@ export function verifyRegistrationWarniningAlerts(): void {
 
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
-    await waitUntilOverlaySettled();
 
     const warningText = await getTextContent(
       customRegistration.alertWarningUnknownRegistrationCodeText(),
@@ -237,17 +244,13 @@ export function verifyRegistrationWarniningAlerts(): void {
     const customRegistration = new CustomRegistrationPage(page);
     const header = new HeaderPage(page);
 
-    await customRegistration.selectCustomRegistrationServer();
-    await customRegistration.selectProvideRegistrationCode();
     await customRegistration.fillServerUrl("http://scc.example.net");
     await customRegistration.register();
-    await waitUntilOverlaySettled();
 
     const warningText = await getTextContent(customRegistration.alertWarningNetworkErrorText());
     assert.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
-
     await customRegistration.doNotRegister();
-    await waitUntilOverlaySettled();
+    await customRegistration.ensureProvideRegistrationCodeUnchecked();
 
     await header.goToOverview();
   });
@@ -262,7 +265,7 @@ export function verifyRegistrationWarniningAlertsWithSidebar(
     const customRegistration = new CustomRegistrationPage(page);
 
     await sidebar.goToRegistration();
-    if (use_custom) await customRegistration.selectProvideRegistrationCode();
+    if (use_custom) await customRegistration.checkProvideRegistrationCode();
     await customRegistration.register();
     assert.deepEqual(
       await getTextContent(customRegistration.alertWarningEnterARegistrationCodeText()),
@@ -285,7 +288,7 @@ export function verifyRegistrationWarniningAlertsWithSidebar(
     const customRegistration = new CustomRegistrationPage(page);
 
     await customRegistration.selectCustomRegistrationServer();
-    await customRegistration.selectProvideRegistrationCode();
+    await customRegistration.uncheckProvideRegistrationCode();
     await customRegistration.fillServerUrl("http://scc.example.net");
     await customRegistration.register();
 

@@ -2,7 +2,7 @@ import { type Page } from "puppeteer-core";
 
 export class StorageSettingsChangeDiskPage {
   private readonly page: Page;
-  private readonly confirmButton = () => this.page.locator("button::-p-text(Confirm)");
+  private readonly changeToButton = () => this.page.locator("button::-p-text(Change to)");
   public readonly diskTableSelector: string;
 
   constructor(page: Page) {
@@ -11,7 +11,7 @@ export class StorageSettingsChangeDiskPage {
     this.diskTableSelector = 'div[aria-modal="true"] table[data-type="agama/expandable-selector"]';
   }
 
-  async confirm() {
-    await this.confirmButton().click();
+  async changeTo() {
+    await this.changeToButton().click();
   }
 }

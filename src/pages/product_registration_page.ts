@@ -1,20 +1,24 @@
 import { type Page } from "puppeteer-core";
 import { type GConstructor } from "../lib/helpers";
-import assert from "node:assert/strict";
 
 class RegistrationBasePage {
   protected readonly page: Page;
+
   protected readonly codeInput = () =>
     this.page.locator("::-p-aria(Registration code)[type='password']");
 
-  protected readonly infoHasBeenRegisteredText = () =>
-    this.page.locator("::-p-text(has been registered with below information)");
-
   protected readonly registerButton = () => this.page.locator("::-p-aria(Register)");
+
   protected readonly doNotRegisterButton = () => this.page.locator("::-p-text(Do not register)");
 
-  protected readonly registrationOptionCheckbox = () =>
-    this.page.locator("::-p-aria(Provide registration code)");
+  protected readonly provideRegistrationCodeNotChecked = () =>
+    this.page.locator("input#provide-code:not(:checked)");
+
+  protected readonly provideRegistrationCodeChecked = () =>
+    this.page.locator("input#provide-code:checked");
+
+  readonly infoHasBeenRegisteredText = () =>
+    this.page.locator("::-p-text(has been registered with below information)");
 
   // legacy alert warning for QU to be dropped
   readonly connectionToRegistrationServerFailedText = () =>
@@ -32,8 +36,13 @@ class RegistrationBasePage {
     this.page = page;
   }
 
-  async selectProvideRegistrationCode() {
-    await this.registrationOptionCheckbox().click();
+  async checkProvideRegistrationCode() {
+    await this.provideRegistrationCodeNotChecked().click();
+    await this.provideRegistrationCodeChecked().wait();
+  }
+
+  async uncheckProvideRegistrationCode() {
+    await this.provideRegistrationCodeChecked().click();
   }
 
   async fillCode(code: string) {
@@ -48,14 +57,8 @@ class RegistrationBasePage {
     await this.doNotRegisterButton().click();
   }
 
-  async verifyCustomRegistration() {
-    const elementText = await this.infoHasBeenRegisteredText()
-      .map((span) => span.textContent)
-      .wait();
-    assert.match(
-      elementText,
-      /SUSE Linux Enterprise Server.*has been registered with below information/,
-    );
+  async ensureProvideRegistrationCodeUnchecked() {
+    await this.provideRegistrationCodeNotChecked().wait();
   }
 }
 

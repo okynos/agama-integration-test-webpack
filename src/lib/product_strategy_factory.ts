@@ -16,7 +16,7 @@ export interface IProductTestStrategy {
   performInstallation(): void;
   logInWithIncorrectPassword(): void;
   finishInstallation(): void;
-  changeDiskToInstallTheSystem(): void;
+  changeDeviceToInstallTheSystem(): void;
   verifyPasswordStrength(): void;
   prepareZfcpStorage(): void;
   prepareDasdStorage(): void;
