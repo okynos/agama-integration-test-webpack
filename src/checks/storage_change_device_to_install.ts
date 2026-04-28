@@ -37,9 +37,7 @@ export function changeDeviceToInstallTheSystem() {
     );
 
     await storage.moreOptions();
-    page.setDefaultTimeout(40000);
     await storage.resetToDefault();
-    page.setDefaultTimeout(30000);
     await storage.ensureStorageSettingsPresent();
     await header.goToOverview();
   });
