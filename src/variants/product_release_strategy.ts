@@ -10,7 +10,7 @@ import {
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
 import { editRootUser, verifyPasswordStrength } from "../checks/root_authentication";
-import { finishInstallation, performInstallation } from "../checks/installation";
+import { checkInstallation, finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
@@ -70,6 +70,10 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   logInWithIncorrectPassword() {
     logInWithIncorrectPassword();
+  }
+
+  checkInstallation() {
+    checkInstallation();
   }
 
   finishInstallation() {
