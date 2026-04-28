@@ -899,9 +899,7 @@ function changeDeviceToInstallTheSystem() {
         await storage.ensureStorageSettingsPresent();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
         await storage.moreOptions();
-        helpers_1.page.setDefaultTimeout(40000);
         await storage.resetToDefault();
-        helpers_1.page.setDefaultTimeout(30000);
         await storage.ensureStorageSettingsPresent();
         await header.goToOverview();
     });
