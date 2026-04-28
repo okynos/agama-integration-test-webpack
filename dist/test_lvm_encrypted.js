@@ -2646,8 +2646,8 @@ class StorageSettingsPage {
     }
     async changeTheDeviceToInstallTheSystem() {
         const element = await Promise.any([
-            this.selectDeviceToInstallButton(),
-            this.selectDiskToInstallButton(),
+            this.selectDeviceToInstallButton().waitHandle(),
+            this.selectDiskToInstallButton().waitHandle(),
         ]);
         await element.click();
     }

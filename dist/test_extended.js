@@ -2239,13 +2239,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OptionsTogglePage = void 0;
 class OptionsTogglePage {
     page;
-    optionsToggle = () => this.page.locator("::-p-aria(More installer options)");
+    moreInstallerOptionsToggle = () => this.page.locator("::-p-aria(More installer options)");
+    optionsToggle = () => this.page.locator("::-p-aria(Options toggle)");
     downloadLogsMenuItem = () => this.page.locator("::-p-aria(Download logs)");
     constructor(page) {
         this.page = page;
     }
     async downloadLogs() {
-        await this.optionsToggle().click();
+        const toggle = await Promise.any([
+            this.moreInstallerOptionsToggle().waitHandle(),
+            this.optionsToggle().waitHandle(),
+        ]);
+        await toggle.click();
         await this.downloadLogsMenuItem().click();
     }
 }
@@ -2821,8 +2826,8 @@ class StorageSettingsPage {
     }
     async changeTheDeviceToInstallTheSystem() {
         const element = await Promise.any([
-            this.selectDeviceToInstallButton(),
-            this.selectDiskToInstallButton(),
+            this.selectDeviceToInstallButton().waitHandle(),
+            this.selectDiskToInstallButton().waitHandle(),
         ]);
         await element.click();
     }
