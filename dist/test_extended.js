@@ -251,6 +251,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
 exports.performInstallationWithSidebar = performInstallationWithSidebar;
 exports.checkInstallation = checkInstallation;
+exports.checkInstallationWithSidebar = checkInstallationWithSidebar;
 exports.finishInstallation = finishInstallation;
 exports.finishInstallationCongratulation = finishInstallationCongratulation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
@@ -263,6 +264,7 @@ const installation_page_1 = __webpack_require__(/*! ../pages/installation_page *
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const confirm_installation_with_sidebar_page_1 = __webpack_require__(/*! ../pages/confirm_installation_with_sidebar_page */ "./src/pages/confirm_installation_with_sidebar_page.ts");
 const installation_complete_page_1 = __webpack_require__(/*! ../pages/installation_complete_page */ "./src/pages/installation_complete_page.ts");
+const installation_in_progress_page_1 = __webpack_require__(/*! ../pages/installation_in_progress_page */ "./src/pages/installation_in_progress_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
@@ -282,6 +284,15 @@ function performInstallationWithSidebar() {
     });
 }
 function checkInstallation() {
+    (0, helpers_1.it)("should check installation progress", async function () {
+        const installationInProgress = new installation_in_progress_page_1.InstallationInProgressPage(helpers_1.page);
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installationInProgress.installationInProgressText()), "Installation in progress");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installationInProgress.prepareTheSystemText()), "Prepare the system");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installationInProgress.installSoftwareText()), "Install software");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installationInProgress.configureTheSystemText()), "Configure the system");
+    });
+}
+function checkInstallationWithSidebar() {
     (0, helpers_1.it)("should check installation progress", async function () {
         const installation = new installation_page_1.InstallationPage(helpers_1.page);
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.prepareDisksText()), "Prepare disks");
@@ -2081,6 +2092,30 @@ exports.InstallationCompletePage = InstallationCompletePage;
 
 /***/ },
 
+/***/ "./src/pages/installation_in_progress_page.ts"
+/*!****************************************************!*\
+  !*** ./src/pages/installation_in_progress_page.ts ***!
+  \****************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InstallationInProgressPage = void 0;
+class InstallationInProgressPage {
+    page;
+    installationInProgressText = () => this.page.locator("::-p-text(Installation in progress)");
+    prepareTheSystemText = () => this.page.locator("::-p-text(Prepare the system)");
+    installSoftwareText = () => this.page.locator("::-p-text(Install software)");
+    configureTheSystemText = () => this.page.locator("::-p-text(Configure the system)");
+    constructor(page) {
+        this.page = page;
+    }
+}
+exports.InstallationInProgressPage = InstallationInProgressPage;
+
+
+/***/ },
+
 /***/ "./src/pages/installation_page.ts"
 /*!****************************************!*\
   !*** ./src/pages/installation_page.ts ***!
@@ -3015,7 +3050,6 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
@@ -3062,7 +3096,7 @@ if (options.prepareAdvancedStorage === "zfcp")
 (0, download_logs_1.downloadLogs)();
 if (options.install) {
     testStrategy.performInstallation();
-    (0, installation_1.checkInstallation)();
+    testStrategy.checkInstallation();
     testStrategy.finishInstallation();
 }
 
@@ -3131,6 +3165,9 @@ class ProductReleaseStrategy {
     }
     logInWithIncorrectPassword() {
         (0, login_1.logInWithIncorrectPassword)();
+    }
+    checkInstallation() {
+        (0, installation_1.checkInstallation)();
     }
     finishInstallation() {
         (0, installation_1.finishInstallation)();
@@ -3230,6 +3267,9 @@ class StableReleaseStrategy {
     }
     editRootUser(password) {
         (0, root_authentication_1.editRootUserWithSidebar)(password);
+    }
+    checkInstallation() {
+        (0, installation_1.checkInstallationWithSidebar)();
     }
     performInstallation() {
         (0, installation_1.performInstallationWithSidebar)();

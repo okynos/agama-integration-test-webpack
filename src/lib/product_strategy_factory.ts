@@ -15,6 +15,7 @@ export interface IProductTestStrategy {
   editRootUser(password: string): void;
   performInstallation(): void;
   logInWithIncorrectPassword(): void;
+  checkInstallation(): void;
   finishInstallation(): void;
   changeDeviceToInstallTheSystem(): void;
   verifyPasswordStrength(): void;

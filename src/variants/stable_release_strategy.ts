@@ -18,6 +18,7 @@ import {
   verifyPasswordStrengthWithSidebar,
 } from "../checks/root_authentication";
 import {
+  checkInstallationWithSidebar,
   finishInstallationCongratulation,
   performInstallationWithSidebar,
 } from "../checks/installation";
@@ -72,6 +73,10 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   editRootUser(password: string) {
     editRootUserWithSidebar(password);
+  }
+
+  checkInstallation() {
+    checkInstallationWithSidebar();
   }
 
   performInstallation() {

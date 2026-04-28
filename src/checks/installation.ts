@@ -8,6 +8,7 @@ import { InstallationPage } from "../pages/installation_page";
 import assert from "node:assert/strict";
 import { ConfirmInstallationWithSidebarPage } from "../pages/confirm_installation_with_sidebar_page";
 import { InstallationCompletePage } from "../pages/installation_complete_page";
+import { InstallationInProgressPage } from "../pages/installation_in_progress_page";
 
 export function performInstallation() {
   it("should start installation", async function () {
@@ -32,6 +33,31 @@ export function performInstallationWithSidebar() {
 }
 
 export function checkInstallation() {
+  it("should check installation progress", async function () {
+    const installationInProgress = new InstallationInProgressPage(page);
+
+    assert.deepEqual(
+      await getTextContent(installationInProgress.installationInProgressText()),
+      "Installation in progress",
+    );
+    assert.deepEqual(
+      await getTextContent(installationInProgress.prepareTheSystemText()),
+      "Prepare the system",
+    );
+
+    assert.deepEqual(
+      await getTextContent(installationInProgress.installSoftwareText()),
+      "Install software",
+    );
+
+    assert.deepEqual(
+      await getTextContent(installationInProgress.configureTheSystemText()),
+      "Configure the system",
+    );
+  });
+}
+
+export function checkInstallationWithSidebar() {
   it("should check installation progress", async function () {
     const installation = new InstallationPage(page);
 

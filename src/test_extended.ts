@@ -4,7 +4,6 @@ import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
-import { checkInstallation } from "./checks/installation";
 import { downloadLogs } from "./checks/download_logs";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
 
@@ -62,6 +61,6 @@ if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage()
 downloadLogs();
 if (options.install) {
   testStrategy.performInstallation();
-  checkInstallation();
+  testStrategy.checkInstallation();
   testStrategy.finishInstallation();
 }
