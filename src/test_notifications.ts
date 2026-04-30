@@ -4,7 +4,6 @@ import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
-import { downloadLogs } from "./checks/download_logs";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
 
 const options = parse((cmd) =>
@@ -31,13 +30,17 @@ test_init(options);
 
 const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 
+testStrategy.logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
     productSelectionWithLicenseAndMode(options.productId, options.productMode);
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
-if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
+testStrategy.verifyRegistrationWarniningAlerts(
+  options.useCustomRegistrationServer,
+  options.registrationServerUrl,
+);
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
@@ -45,14 +48,9 @@ if (options.registrationCode)
     provide_code: options.provideRegistrationCode,
     url: options.registrationServerUrl,
   });
-testStrategy.enableEncryption(options.password);
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
-testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
-downloadLogs();
+testStrategy.verifyPasswordStrength();
 if (options.install) {
   testStrategy.performInstallation();
   testStrategy.checkInstallation();
