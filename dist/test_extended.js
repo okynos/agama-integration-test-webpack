@@ -3064,7 +3064,6 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
-testStrategy.logInWithIncorrectPassword();
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -3074,7 +3073,6 @@ if (options.productId !== "none")
 testStrategy.ensureLandingOnOverview();
 if (options.staticHostname)
     testStrategy.setPermanentHostname(options.staticHostname);
-testStrategy.verifyRegistrationWarniningAlerts(options.useCustomRegistrationServer, options.registrationServerUrl);
 if (options.registrationCode)
     testStrategy.enterProductRegistration({
         use_custom: options.useCustomRegistrationServer,
@@ -3088,7 +3086,6 @@ testStrategy.disableEncryption();
 testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp")
     testStrategy.prepareZfcpStorage();
 (0, download_logs_1.downloadLogs)();

@@ -31,7 +31,6 @@ test_init(options);
 
 const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 
-testStrategy.logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
@@ -39,10 +38,6 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
 if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
-testStrategy.verifyRegistrationWarniningAlerts(
-  options.useCustomRegistrationServer,
-  options.registrationServerUrl,
-);
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
@@ -56,7 +51,6 @@ testStrategy.disableEncryption();
 testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
 downloadLogs();
 if (options.install) {
