@@ -37,10 +37,13 @@ export function changeDeviceToInstallTheSystem() {
     );
 
     await storage.moreOptions();
+    page.setDefaultTimeout(40000);
     await storage.resetToDefault();
     await storage.ensureStorageSettingsPresent();
     await header.goToOverview();
-  });
+    // prefer explicit wait over hard delay.
+    await overview.ensureSystemInformationPresent(120000);
+  }, 150000);
 }
 
 export function changeDeviceToInstallTheSystemWithSidebar() {

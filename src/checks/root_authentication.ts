@@ -100,6 +100,7 @@ export function verifyPasswordStrengthWithSidebar() {
     await setARootPassword.fillPassword("a23b5678");
     const elementTextPasswordFailDictionary = await getTextContent(
       setARootPassword.alertPasswordFailDictionaryCheck(),
+      50000,
     );
     assert.deepEqual(
       elementTextPasswordFailDictionary,

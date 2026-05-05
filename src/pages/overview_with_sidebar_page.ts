@@ -6,12 +6,16 @@ export class OverviewWithSidebarPage {
   private readonly overviewHeading = () =>
     this.page.locator('::-p-aria([name="Overview"][role="heading"])');
 
+  private readonly storageHeading = () =>
+    this.page.locator('::-p-aria([name="Storage"][role="heading"])');
+
   constructor(page: Page) {
     this.page = page;
   }
 
   async waitVisible(timeout: number) {
     await this.overviewHeading().setTimeout(timeout).wait();
+    await this.storageHeading().setTimeout(timeout).wait();
   }
 
   async install() {

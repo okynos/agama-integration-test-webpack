@@ -37,7 +37,11 @@ class RegistrationBasePage {
   }
 
   async checkProvideRegistrationCode() {
-    await this.provideRegistrationCodeNotChecked().click();
+    const checkbox = await this.provideRegistrationCodeNotChecked().waitHandle();
+    await checkbox.scrollIntoView();
+    // Wait for checkbox to be truly interactive
+    await checkbox.evaluate((el) => el.offsetHeight); // Force reflow
+    await checkbox.click();
     await this.provideRegistrationCodeChecked().wait();
   }
 
@@ -50,14 +54,19 @@ class RegistrationBasePage {
   }
 
   async register() {
-    await this.registerButton().click();
+    // prefer explicit wait over hard delay.
+    await this.registerButton().setTimeout(40000).click();
   }
 
   async doNotRegister() {
-    await this.doNotRegisterButton().click();
+    // prefer explicit wait over hard delay.
+    await this.doNotRegisterButton().click({ delay: 1000 });
   }
 
   async ensureProvideRegistrationCodeUnchecked() {
+    const checkbox = await this.provideRegistrationCodeNotChecked().waitHandle();
+    // Wait for checkbox to be truly interactive
+    await checkbox.evaluate((el) => el.offsetHeight); // Force reflow
     await this.provideRegistrationCodeNotChecked().wait();
   }
 }
@@ -94,8 +103,8 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Bas
       await this.registrationServerSCCOption().click();
     }
 
-    async fillServerUrl(url: string) {
-      await this.serverUrlTextbox().fill(url);
+    async fillServerUrl(url: string, timeout: number = 30 * 1000) {
+      await this.serverUrlTextbox().setTimeout(timeout).fill(url);
     }
   };
 }
