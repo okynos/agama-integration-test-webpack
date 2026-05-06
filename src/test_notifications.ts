@@ -48,6 +48,10 @@ if (options.registrationCode)
     provide_code: options.provideRegistrationCode,
     url: options.registrationServerUrl,
   });
+testStrategy.enableEncryption(options.password);
+testStrategy.verifyEncryptionEnabled();
+testStrategy.disableEncryption();
+testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
 testStrategy.verifyPasswordStrength();
