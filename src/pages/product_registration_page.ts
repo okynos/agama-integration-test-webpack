@@ -5,17 +5,11 @@ class RegistrationBasePage {
   protected readonly page: Page;
 
   protected readonly codeInput = () =>
-    this.page.locator("::-p-aria(Registration code)[type='password']");
+    this.page.locator("::-p-aria('Registration code (optional)')[type='password']");
 
   protected readonly registerButton = () => this.page.locator("::-p-aria(Register)");
 
   protected readonly doNotRegisterButton = () => this.page.locator("::-p-text(Do not register)");
-
-  protected readonly provideRegistrationCodeNotChecked = () =>
-    this.page.locator("input#provide-code:not(:checked)");
-
-  protected readonly provideRegistrationCodeChecked = () =>
-    this.page.locator("input#provide-code:checked");
 
   readonly infoHasBeenRegisteredText = () =>
     this.page.locator("::-p-text(has been registered with below information)");
@@ -36,19 +30,6 @@ class RegistrationBasePage {
     this.page = page;
   }
 
-  async checkProvideRegistrationCode() {
-    const checkbox = await this.provideRegistrationCodeNotChecked().waitHandle();
-    await checkbox.scrollIntoView();
-    // Wait for checkbox to be truly interactive
-    await checkbox.evaluate((el) => el.offsetHeight); // Force reflow
-    await checkbox.click();
-    await this.provideRegistrationCodeChecked().wait();
-  }
-
-  async uncheckProvideRegistrationCode() {
-    await this.provideRegistrationCodeChecked().click();
-  }
-
   async fillCode(code: string) {
     await this.codeInput().fill(code);
   }
@@ -61,13 +42,6 @@ class RegistrationBasePage {
   async doNotRegister() {
     // prefer explicit wait over hard delay.
     await this.doNotRegisterButton().click({ delay: 1000 });
-  }
-
-  async ensureProvideRegistrationCodeUnchecked() {
-    const checkbox = await this.provideRegistrationCodeNotChecked().waitHandle();
-    // Wait for checkbox to be truly interactive
-    await checkbox.evaluate((el) => el.offsetHeight); // Force reflow
-    await this.provideRegistrationCodeNotChecked().wait();
   }
 }
 
@@ -84,13 +58,6 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Bas
 
     private readonly serverUrlTextbox = () =>
       this.page.locator("::-p-aria(Server URL)[type='text']");
-
-    protected readonly provideRegistrationCodeCheckbox = () =>
-      this.page.locator("::-p-aria(Provide registration code)");
-
-    async provideRegistrationCode() {
-      await this.provideRegistrationCodeCheckbox().click();
-    }
 
     async selectCustomRegistrationServer() {
       await this.registrationServerButton().click();

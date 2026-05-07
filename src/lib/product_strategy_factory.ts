@@ -1,4 +1,5 @@
-import { ProductReleaseStrategy } from "../variants/product_release_strategy";
+import { DevelReleaseStrategy } from "../variants/devel_release_strategy";
+import { TransientReleaseStrategy } from "../variants/transient_release_strategy";
 import { StableReleaseStrategy } from "../variants/stable_release_strategy";
 import { RegistrationOptions } from "../checks/registration";
 
@@ -21,7 +22,8 @@ export interface IProductTestStrategy {
   verifyPasswordStrength(): void;
   prepareZfcpStorage(): void;
   prepareDasdStorage(): void;
-  selectPatterns(patterns: string[]): void;
+  changePatterns(patterns: string[]): void;
+  selectDesktop?(desktop: string): void;
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize(): void;
   selectMoreDevices(): void;
   setOnlyInstallationNetwork(): void;
@@ -31,9 +33,11 @@ export interface IProductTestStrategy {
 }
 
 export class ProductStrategyFactory {
-  public static create(productVersion: string, agamaVersion: string): IProductTestStrategy {
-    if (productVersion === "16.1" && agamaVersion.includes("20")) {
-      return new ProductReleaseStrategy();
+  public static create(productVersion: string, agamaVersion: string, agamaWebUiPackageVersion: string): IProductTestStrategy {
+    if (productVersion === "16.1" && agamaVersion.includes("21") && agamaWebUiPackageVersion.includes("20")) {
+      return new DevelReleaseStrategy();
+    } else if (productVersion === "16.1" && agamaVersion.includes("20") && agamaWebUiPackageVersion.includes("19")) {
+      return new TransientReleaseStrategy();
     }
     return new StableReleaseStrategy();
   }
