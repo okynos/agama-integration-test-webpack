@@ -1,4 +1,4 @@
-import { parse, commaSeparatedList } from "./lib/cmdline";
+import { commaSeparatedList, parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
@@ -10,6 +10,7 @@ const options = parse((cmd) =>
     .option("--patterns <pattern>...", "Comma-separated list of patterns", commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--btrfs-without-snapshots", "Change the file system to Btrfs without snapshots")
+    .option("--desktop <desktop>", "Select desktop to install on the system")
     .addOption(
       new Option(
         "--prepare-advanced-storage <storage-type>",
@@ -20,12 +21,17 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(
+  options.productVersion,
+  options.agamaVersion,
+  options.agamaWebUiPackageVersion,
+);
 
 logIn(options.password);
 if (options.btrfsWithoutSnapshots)
   testStrategy.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
-if (options.patterns) testStrategy.selectPatterns(options.patterns);
+if (options.desktop) testStrategy.selectDesktop(options.desktop);
+if (options.patterns) testStrategy.changePatterns(options.patterns);
 if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
 if (options.install) {
   testStrategy.performInstallation();

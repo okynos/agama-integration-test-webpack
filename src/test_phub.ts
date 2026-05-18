@@ -12,11 +12,15 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(
+  options.productVersion,
+  options.agamaVersion,
+  options.agamaWebUiPackageVersion,
+);
 
 logIn(options.password);
 testStrategy.enterExtensionRegistrationPHub();
-testStrategy.selectPatterns(options.patterns);
+testStrategy.changePatterns(options.patterns);
 testStrategy.verifyStorageOutOfSync?.();
 testStrategy.performInstallation();
 testStrategy.finishInstallation();

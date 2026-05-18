@@ -12,7 +12,11 @@ const options = parse((cmd) => cmd.option("--activate-multipath", "Activate mult
 describe("Running installation", function () {
   test_init(options);
 
-  const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+  const testStrategy = ProductStrategyFactory.create(
+    options.productVersion,
+    options.agamaVersion,
+    options.agamaWebUiPackageVersion,
+  );
 
   logIn(options.password);
   if (options.activateMultipath) verifyActivateMultipath();

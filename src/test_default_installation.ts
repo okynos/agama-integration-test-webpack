@@ -36,7 +36,11 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(
+  options.productVersion,
+  options.agamaVersion,
+  options.agamaWebUiPackageVersion,
+);
 
 logIn(options.password);
 if (options.productId !== "none")
@@ -52,7 +56,7 @@ if (options.registrationCode)
   });
 if (options.registrationCodeHa)
   testStrategy.enterExtensionRegistrationHA(options.registrationCodeHa);
-if (options.patterns) testStrategy.selectPatterns(options.patterns);
+if (options.patterns) testStrategy.changePatterns(options.patterns);
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();

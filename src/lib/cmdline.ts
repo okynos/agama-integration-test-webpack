@@ -14,7 +14,7 @@ function getInt(value: string) {
 }
 
 export function commaSeparatedList(value: string) {
-  return value.split(',');
+  return value.includes(";") ? value.split(";") : value.split(",");
 }
 
 /**
@@ -30,7 +30,7 @@ export function parse(callback?: (cmd: commander.Command) => void) {
     .option("-u, --url <url>", "Agama server URL", "http://localhost")
     .option("-p, --password <password>", "Agama login password", "linux")
     .option("-a, --agama-version <version>", "Agama image version")
-    .option("-g, --agama-package-version <version>", "Agama package version")
+    .option("-w, --agama-web-ui-package-version <version>", "Agama Web UI package version")
     .option("-v, --product-version <version>", "Product version")
     .addOption(
       new Option("-b, --browser <browser>", "Browser used for running the test")

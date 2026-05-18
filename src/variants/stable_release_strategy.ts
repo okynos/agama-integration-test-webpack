@@ -25,7 +25,7 @@ import {
 import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
 import { changeDeviceToInstallTheSystemWithSidebar } from "../checks/storage_change_device_to_install";
 import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
-import { selectPatternsWithSidebar } from "../checks/software_selection";
+import { selectPatternsWithSidebar } from "../checks/software";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar } from "../checks/storage_change_root_partition";
 import { prepareDasdStorageWithSidebar } from "../checks/storage_dasd";
 import { ensureLandingOnOverviewWithSidebar } from "../checks/overview";
@@ -107,7 +107,7 @@ export class StableReleaseStrategy implements IProductTestStrategy {
     prepareDasdStorageWithSidebar();
   }
 
-  selectPatterns(patterns: string[]) {
+  changePatterns(patterns: string[]) {
     selectPatternsWithSidebar(patterns);
   }
 
