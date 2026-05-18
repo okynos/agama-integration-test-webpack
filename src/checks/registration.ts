@@ -5,9 +5,9 @@ import {
   CustomRegistrationPage,
 } from "../pages/product_registration_page";
 import {
-  ProductRegistrationTransientPage,
-  CustomRegistrationTransientPage,
-} from "../pages/product_registration_transient_page";
+  ProductRegistrationProductionPage,
+  CustomRegistrationProductionPage,
+} from "../pages/product_registration_production_page";
 import {
   ProductRegistrationLegacyPage,
   CustomRegistrationLegacyPage,
@@ -87,7 +87,7 @@ export function enterProductRegistration({
   });
 }
 
-export function enterProductRegistrationTransient({
+export function enterProductRegistrationProduction({
   use_custom,
   code,
   provide_code,
@@ -95,13 +95,13 @@ export function enterProductRegistrationTransient({
 }: RegistrationOptions): void {
   it("should allow setting registration", async function () {
     const overview = new OverviewWithRegistrationPage(page);
-    const productRegistration = new ProductRegistrationTransientPage(page);
+    const productRegistration = new ProductRegistrationProductionPage(page);
 
     await overview.goToRegistration();
 
     if (use_custom) {
       if (url) {
-        const customRegistration = new CustomRegistrationTransientPage(page);
+        const customRegistration = new CustomRegistrationProductionPage(page);
         await customRegistration.selectCustomRegistrationServer();
         await customRegistration.fillServerUrl(url);
       }
@@ -136,7 +136,7 @@ export function enterProductRegistrationTransient({
 
   it("should display product has been registered", async function () {
     const header = new HeaderPage(page);
-    const productRegistration = new ProductRegistrationTransientPage(page);
+    const productRegistration = new ProductRegistrationProductionPage(page);
 
     const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
     assert.match(
@@ -321,10 +321,10 @@ export function verifyRegistrationWarniningAlerts(): void {
   }, 90000);
 }
 
-export function verifyRegistrationWarniningAlertsTransient(): void {
+export function verifyRegistrationWarniningAlertsProduction(): void {
   it("should show warning alert for missing registration code", async function () {
     const overview = new OverviewWithRegistrationPage(page);
-    const customRegistration = new CustomRegistrationTransientPage(page);
+    const customRegistration = new CustomRegistrationProductionPage(page);
 
     await overview.goToRegistration();
     await customRegistration.checkProvideRegistrationCode();
@@ -337,7 +337,7 @@ export function verifyRegistrationWarniningAlertsTransient(): void {
   });
 
   it("should show warning alert for invalid registration code", async function () {
-    const customRegistration = new CustomRegistrationTransientPage(page);
+    const customRegistration = new CustomRegistrationProductionPage(page);
 
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
@@ -349,7 +349,7 @@ export function verifyRegistrationWarniningAlertsTransient(): void {
   });
 
   it("should show warning alert for invalid custom registration server", async function () {
-    const customRegistration = new CustomRegistrationTransientPage(page);
+    const customRegistration = new CustomRegistrationProductionPage(page);
     const header = new HeaderPage(page);
 
     await customRegistration.fillServerUrl("http://scc.example.net", 50000);

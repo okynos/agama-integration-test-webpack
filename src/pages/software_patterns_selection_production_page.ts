@@ -1,6 +1,6 @@
 import { type Page } from "puppeteer-core";
 
-export class SoftwarePatternsSelectionTransientPage {
+export class SoftwarePatternsSelectionProductionPage {
   private readonly page: Page;
   private readonly patternCheckboxNotChecked = (pattern: string) =>
     this.page.locator(`input[type=checkbox]:not(:checked)[aria-labelledby*=${pattern}-title]`);

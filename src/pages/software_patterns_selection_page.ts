@@ -12,7 +12,6 @@ export class SoftwarePatternsSelectionPage {
   }
 
   async select(pattern: string) {
-    console.log(pattern);
     await this.patternCheckbox(pattern).click();
   }
 

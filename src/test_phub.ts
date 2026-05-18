@@ -12,11 +12,7 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaVersion,
-  options.agamaWebUiPackageVersion,
-);
+const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 
 logIn(options.password);
 testStrategy.enterExtensionRegistrationPHub();

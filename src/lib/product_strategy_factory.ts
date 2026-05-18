@@ -1,6 +1,6 @@
 import { DevelReleaseStrategy } from "../variants/devel_release_strategy";
-import { TransientReleaseStrategy } from "../variants/transient_release_strategy";
-import { StableReleaseStrategy } from "../variants/stable_release_strategy";
+import { ProductionReleaseStrategy } from "../variants/production_release_strategy";
+import { MaintenanceReleaseStrategy } from "../variants/maintenance_release_strategy";
 import { RegistrationOptions } from "../checks/registration";
 
 export interface IProductTestStrategy {
@@ -33,12 +33,14 @@ export interface IProductTestStrategy {
 }
 
 export class ProductStrategyFactory {
-  public static create(productVersion: string, agamaVersion: string, agamaWebUiPackageVersion: string): IProductTestStrategy {
-    if (productVersion === "16.1" && agamaVersion.includes("21") && agamaWebUiPackageVersion.includes("20")) {
-      return new DevelReleaseStrategy();
-    } else if (productVersion === "16.1" && agamaVersion.includes("20") && agamaWebUiPackageVersion.includes("19")) {
-      return new TransientReleaseStrategy();
+  public static create(productVersion: string, agamaVersion: string): IProductTestStrategy {
+    if (productVersion === "16.1") {
+      if (agamaVersion.includes("21")) {
+        return new DevelReleaseStrategy();
+      } else {
+        return new ProductionReleaseStrategy();
+      }
     }
-    return new StableReleaseStrategy();
+    return new MaintenanceReleaseStrategy();
   }
 }

@@ -34,7 +34,7 @@ import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
 import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync";
 
-export class StableReleaseStrategy implements IProductTestStrategy {
+export class MaintenanceReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
     setPermanentHostnameWithSidebar(hostname);
   }
