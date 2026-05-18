@@ -4,8 +4,8 @@ import {
   RegistrationOptions,
   enterExtensionRegistrationHA,
   enterExtensionRegistrationPHub,
-  enterProductRegistrationTransient,
-  verifyRegistrationWarniningAlertsTransient,
+  enterProductRegistrationProduction,
+  verifyRegistrationWarniningAlertsProduction,
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
@@ -14,7 +14,7 @@ import { checkInstallation, finishInstallation, performInstallation } from "../c
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
-import { selectPatternsTransient } from "../checks/software";
+import { selectPatternsProduction } from "../checks/software";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
 import { ensureLandingOnOverview } from "../checks/overview";
@@ -23,17 +23,17 @@ import { setOnlyInstallationNetwork } from "../checks/network";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
 
-export class TransientReleaseStrategy implements IProductTestStrategy {
+export class ProductionReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
     setPermanentHostname(hostname);
   }
 
   verifyRegistrationWarniningAlerts() {
-    verifyRegistrationWarniningAlertsTransient();
+    verifyRegistrationWarniningAlertsProduction();
   }
 
   enterProductRegistration({ use_custom, code, provide_code, url }: RegistrationOptions): void {
-    enterProductRegistrationTransient({ use_custom, code, provide_code, url });
+    enterProductRegistrationProduction({ use_custom, code, provide_code, url });
   }
 
   enableEncryption(password: string) {
@@ -97,7 +97,7 @@ export class TransientReleaseStrategy implements IProductTestStrategy {
   }
 
   changePatterns(patterns: string[]) {
-    selectPatternsTransient(patterns);
+    selectPatternsProduction(patterns);
   }
 
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {

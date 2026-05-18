@@ -494,19 +494,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterProductRegistration = enterProductRegistration;
-exports.enterProductRegistrationTransient = enterProductRegistrationTransient;
+exports.enterProductRegistrationProduction = enterProductRegistrationProduction;
 exports.enterProductRegistrationWithSidebar = enterProductRegistrationWithSidebar;
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationHAWithSidebar = enterExtensionRegistrationHAWithSidebar;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
 exports.enterExtensionRegistrationPHubWithSidebar = enterExtensionRegistrationPHubWithSidebar;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
-exports.verifyRegistrationWarniningAlertsTransient = verifyRegistrationWarniningAlertsTransient;
+exports.verifyRegistrationWarniningAlertsProduction = verifyRegistrationWarniningAlertsProduction;
 exports.verifyRegistrationWarniningAlertsWithSidebar = verifyRegistrationWarniningAlertsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const product_registration_page_1 = __webpack_require__(/*! ../pages/product_registration_page */ "./src/pages/product_registration_page.ts");
-const product_registration_transient_page_1 = __webpack_require__(/*! ../pages/product_registration_transient_page */ "./src/pages/product_registration_transient_page.ts");
+const product_registration_production_page_1 = __webpack_require__(/*! ../pages/product_registration_production_page */ "./src/pages/product_registration_production_page.ts");
 const product_registration_legacy_page_1 = __webpack_require__(/*! ../pages/product_registration_legacy_page */ "./src/pages/product_registration_legacy_page.ts");
 const extension_registration_phub_page_1 = __webpack_require__(/*! ../pages/extension_registration_phub_page */ "./src/pages/extension_registration_phub_page.ts");
 const extension_registration_ha_page_1 = __webpack_require__(/*! ../pages/extension_registration_ha_page */ "./src/pages/extension_registration_ha_page.ts");
@@ -552,14 +552,14 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
         await header.goToOverview();
     });
 }
-function enterProductRegistrationTransient({ use_custom, code, provide_code, url, }) {
+function enterProductRegistrationProduction({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
-        const productRegistration = new product_registration_transient_page_1.ProductRegistrationTransientPage(helpers_1.page);
+        const productRegistration = new product_registration_production_page_1.ProductRegistrationProductionPage(helpers_1.page);
         await overview.goToRegistration();
         if (use_custom) {
             if (url) {
-                const customRegistration = new product_registration_transient_page_1.CustomRegistrationTransientPage(helpers_1.page);
+                const customRegistration = new product_registration_production_page_1.CustomRegistrationProductionPage(helpers_1.page);
                 await customRegistration.selectCustomRegistrationServer();
                 await customRegistration.fillServerUrl(url);
             }
@@ -584,7 +584,7 @@ function enterProductRegistrationTransient({ use_custom, code, provide_code, url
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
         const header = new header_page_1.HeaderPage(helpers_1.page);
-        const productRegistration = new product_registration_transient_page_1.ProductRegistrationTransientPage(helpers_1.page);
+        const productRegistration = new product_registration_production_page_1.ProductRegistrationProductionPage(helpers_1.page);
         const registeredText = await (0, helpers_1.getTextContent)(productRegistration.infoHasBeenRegisteredText());
         strict_1.default.match(registeredText, /SUSE Linux Enterprise Server.*has been registered with below information/);
         await header.goToOverview();
@@ -703,10 +703,10 @@ function verifyRegistrationWarniningAlerts() {
         await header.goToOverview();
     }, 90000);
 }
-function verifyRegistrationWarniningAlertsTransient() {
+function verifyRegistrationWarniningAlertsProduction() {
     (0, helpers_1.it)("should show warning alert for missing registration code", async function () {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
-        const customRegistration = new product_registration_transient_page_1.CustomRegistrationTransientPage(helpers_1.page);
+        const customRegistration = new product_registration_production_page_1.CustomRegistrationProductionPage(helpers_1.page);
         await overview.goToRegistration();
         await customRegistration.checkProvideRegistrationCode();
         await customRegistration.register();
@@ -714,14 +714,14 @@ function verifyRegistrationWarniningAlertsTransient() {
         strict_1.default.deepEqual(warningText, "Enter a registration code");
     });
     (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
-        const customRegistration = new product_registration_transient_page_1.CustomRegistrationTransientPage(helpers_1.page);
+        const customRegistration = new product_registration_production_page_1.CustomRegistrationProductionPage(helpers_1.page);
         await customRegistration.fillCode("1234invalid4321");
         await customRegistration.register();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningUnknownRegistrationCodeText());
         strict_1.default.deepEqual(warningText, "Unknown Registration Code.");
     });
     (0, helpers_1.it)("should show warning alert for invalid custom registration server", async function () {
-        const customRegistration = new product_registration_transient_page_1.CustomRegistrationTransientPage(helpers_1.page);
+        const customRegistration = new product_registration_production_page_1.CustomRegistrationProductionPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         await customRegistration.fillServerUrl("http://scc.example.net", 50000);
         await customRegistration.register();
@@ -874,7 +874,7 @@ function verifyPasswordStrengthWithSidebar() {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.selectADesktop = selectADesktop;
 exports.changePatterns = changePatterns;
-exports.selectPatternsTransient = selectPatternsTransient;
+exports.selectPatternsProduction = selectPatternsProduction;
 exports.selectPatternsWithSidebar = selectPatternsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
@@ -883,7 +883,7 @@ const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/p
 const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
 const software_legacy_page_1 = __webpack_require__(/*! ../pages/software_legacy_page */ "./src/pages/software_legacy_page.ts");
 const software_patterns_selection_page_1 = __webpack_require__(/*! ../pages/software_patterns_selection_page */ "./src/pages/software_patterns_selection_page.ts");
-const software_patterns_selection_transient_page_1 = __webpack_require__(/*! ../pages/software_patterns_selection_transient_page */ "./src/pages/software_patterns_selection_transient_page.ts");
+const software_patterns_selection_production_page_1 = __webpack_require__(/*! ../pages/software_patterns_selection_production_page */ "./src/pages/software_patterns_selection_production_page.ts");
 const software_patterns_selection_legacy_page_1 = __webpack_require__(/*! ../pages/software_patterns_selection_legacy_page */ "./src/pages/software_patterns_selection_legacy_page.ts");
 const software_desktop_selection_page_1 = __webpack_require__(/*! ../pages/software_desktop_selection_page */ "./src/pages/software_desktop_selection_page.ts");
 function selectADesktop(desktop) {
@@ -913,12 +913,12 @@ function changePatterns(patterns) {
         header.goToOverview();
     });
 }
-function selectPatternsTransient(patterns) {
+function selectPatternsProduction(patterns) {
     (0, helpers_1.it)(`should change patterns by selecting ${patterns.join(", ")}`, async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const software = new software_page_1.SoftwarePage(helpers_1.page);
-        const softwarePatternsSelection = new software_patterns_selection_transient_page_1.SoftwarePatternsSelectionTransientPage(helpers_1.page);
+        const softwarePatternsSelection = new software_patterns_selection_production_page_1.SoftwarePatternsSelectionProductionPage(helpers_1.page);
         await overview.goToSoftware();
         await software.changePatterns();
         for (const pattern of patterns)
@@ -1353,7 +1353,6 @@ function parse(callback) {
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
         .option("-a, --agama-version <version>", "Agama image version")
-        .option("-w, --agama-web-ui-package-version <version>", "Agama Web UI package version")
         .option("-v, --product-version <version>", "Product version")
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
@@ -1625,18 +1624,19 @@ async function waitOnFile(filePath) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductStrategyFactory = void 0;
 const devel_release_strategy_1 = __webpack_require__(/*! ../variants/devel_release_strategy */ "./src/variants/devel_release_strategy.ts");
-const transient_release_strategy_1 = __webpack_require__(/*! ../variants/transient_release_strategy */ "./src/variants/transient_release_strategy.ts");
-const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
+const production_release_strategy_1 = __webpack_require__(/*! ../variants/production_release_strategy */ "./src/variants/production_release_strategy.ts");
+const maintenance_release_strategy_1 = __webpack_require__(/*! ../variants/maintenance_release_strategy */ "./src/variants/maintenance_release_strategy.ts");
 class ProductStrategyFactory {
-    static create(productVersion, agamaVersion, webUiVersion) {
-        if (productVersion === "16.1" && agamaVersion.includes("20") && webUiVersion.includes("20")) {
-            return new devel_release_strategy_1.DevelReleaseStrategy();
+    static create(productVersion, agamaVersion) {
+        if (productVersion === "16.1") {
+            if (agamaVersion.includes("21")) {
+                return new devel_release_strategy_1.DevelReleaseStrategy();
+            }
+            else {
+                return new production_release_strategy_1.ProductionReleaseStrategy();
+            }
         }
-        else if (productVersion === "16.1" && webUiVersion.includes("19")) {
-            console.log("TEST");
-            return new transient_release_strategy_1.TransientReleaseStrategy();
-        }
-        return new stable_release_strategy_1.StableReleaseStrategy();
+        return new maintenance_release_strategy_1.MaintenanceReleaseStrategy();
     }
 }
 exports.ProductStrategyFactory = ProductStrategyFactory;
@@ -2589,16 +2589,16 @@ exports.CustomRegistrationPage = CustomRegistrationPage;
 
 /***/ },
 
-/***/ "./src/pages/product_registration_transient_page.ts"
-/*!**********************************************************!*\
-  !*** ./src/pages/product_registration_transient_page.ts ***!
-  \**********************************************************/
+/***/ "./src/pages/product_registration_production_page.ts"
+/*!***********************************************************!*\
+  !*** ./src/pages/product_registration_production_page.ts ***!
+  \***********************************************************/
 (__unused_webpack_module, exports) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomRegistrationTransientPage = exports.ProductRegistrationTransientPage = void 0;
-class RegistrationBaseTransientPage {
+exports.CustomRegistrationProductionPage = exports.ProductRegistrationProductionPage = void 0;
+class RegistrationBaseProductionPage {
     page;
     codeInput = () => this.page.locator("::-p-aria('Registration code')[type='password']");
     registerButton = () => this.page.locator("::-p-aria(Register)");
@@ -2667,12 +2667,12 @@ function CustomRegistrable(Base) {
         }
     };
 }
-class ProductRegistrationTransientPage extends RegistrationBaseTransientPage {
+class ProductRegistrationProductionPage extends RegistrationBaseProductionPage {
 }
-exports.ProductRegistrationTransientPage = ProductRegistrationTransientPage;
-class CustomRegistrationTransientPage extends CustomRegistrable(RegistrationBaseTransientPage) {
+exports.ProductRegistrationProductionPage = ProductRegistrationProductionPage;
+class CustomRegistrationProductionPage extends CustomRegistrable(RegistrationBaseProductionPage) {
 }
-exports.CustomRegistrationTransientPage = CustomRegistrationTransientPage;
+exports.CustomRegistrationProductionPage = CustomRegistrationProductionPage;
 
 
 /***/ },
@@ -2979,7 +2979,6 @@ class SoftwarePatternsSelectionPage {
         this.page = page;
     }
     async select(pattern) {
-        console.log(pattern);
         await this.patternCheckbox(pattern).click();
     }
     async accept() {
@@ -2991,16 +2990,16 @@ exports.SoftwarePatternsSelectionPage = SoftwarePatternsSelectionPage;
 
 /***/ },
 
-/***/ "./src/pages/software_patterns_selection_transient_page.ts"
-/*!*****************************************************************!*\
-  !*** ./src/pages/software_patterns_selection_transient_page.ts ***!
-  \*****************************************************************/
+/***/ "./src/pages/software_patterns_selection_production_page.ts"
+/*!******************************************************************!*\
+  !*** ./src/pages/software_patterns_selection_production_page.ts ***!
+  \******************************************************************/
 (__unused_webpack_module, exports) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SoftwarePatternsSelectionTransientPage = void 0;
-class SoftwarePatternsSelectionTransientPage {
+exports.SoftwarePatternsSelectionProductionPage = void 0;
+class SoftwarePatternsSelectionProductionPage {
     page;
     patternCheckboxNotChecked = (pattern) => this.page.locator(`input[type=checkbox]:not(:checked)[aria-labelledby*=${pattern}-title]`);
     patternCheckboxChecked = (pattern) => this.page.locator(`input[type=checkbox]:checked[aria-labelledby*=${pattern}-title]`);
@@ -3018,7 +3017,7 @@ class SoftwarePatternsSelectionTransientPage {
         await this.closeButton().click();
     }
 }
-exports.SoftwarePatternsSelectionTransientPage = SoftwarePatternsSelectionTransientPage;
+exports.SoftwarePatternsSelectionProductionPage = SoftwarePatternsSelectionProductionPage;
 
 
 /***/ },
@@ -3396,7 +3395,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--provide-registration-code", "Provide registration code for customer registration")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
-const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion, options.agamaWebUiPackageVersion);
+const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -3437,8 +3436,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevelReleaseStrategy = void 0;
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const software_1 = __webpack_require__(/*! ../checks/software */ "./src/checks/software.ts");
-const transient_release_strategy_1 = __webpack_require__(/*! ./transient_release_strategy */ "./src/variants/transient_release_strategy.ts");
-class DevelReleaseStrategy extends transient_release_strategy_1.TransientReleaseStrategy {
+const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
+class DevelReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
     verifyRegistrationWarniningAlerts() {
         (0, registration_1.verifyRegistrationWarniningAlerts)();
     }
@@ -3457,15 +3456,15 @@ exports.DevelReleaseStrategy = DevelReleaseStrategy;
 
 /***/ },
 
-/***/ "./src/variants/stable_release_strategy.ts"
-/*!*************************************************!*\
-  !*** ./src/variants/stable_release_strategy.ts ***!
-  \*************************************************/
+/***/ "./src/variants/maintenance_release_strategy.ts"
+/*!******************************************************!*\
+  !*** ./src/variants/maintenance_release_strategy.ts ***!
+  \******************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StableReleaseStrategy = void 0;
+exports.MaintenanceReleaseStrategy = void 0;
 const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
@@ -3483,7 +3482,7 @@ const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/s
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
-class StableReleaseStrategy {
+class MaintenanceReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
     }
@@ -3560,20 +3559,20 @@ class StableReleaseStrategy {
         (0, overview_1.ensureLandingOnOverviewWithSidebar)();
     }
 }
-exports.StableReleaseStrategy = StableReleaseStrategy;
+exports.MaintenanceReleaseStrategy = MaintenanceReleaseStrategy;
 
 
 /***/ },
 
-/***/ "./src/variants/transient_release_strategy.ts"
-/*!****************************************************!*\
-  !*** ./src/variants/transient_release_strategy.ts ***!
-  \****************************************************/
+/***/ "./src/variants/production_release_strategy.ts"
+/*!*****************************************************!*\
+  !*** ./src/variants/production_release_strategy.ts ***!
+  \*****************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TransientReleaseStrategy = void 0;
+exports.ProductionReleaseStrategy = void 0;
 const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
@@ -3591,15 +3590,15 @@ const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/s
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
-class TransientReleaseStrategy {
+class ProductionReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
     }
     verifyRegistrationWarniningAlerts() {
-        (0, registration_1.verifyRegistrationWarniningAlertsTransient)();
+        (0, registration_1.verifyRegistrationWarniningAlertsProduction)();
     }
     enterProductRegistration({ use_custom, code, provide_code, url }) {
-        (0, registration_1.enterProductRegistrationTransient)({ use_custom, code, provide_code, url });
+        (0, registration_1.enterProductRegistrationProduction)({ use_custom, code, provide_code, url });
     }
     enableEncryption(password) {
         (0, encryption_1.enableEncryption)(password);
@@ -3647,7 +3646,7 @@ class TransientReleaseStrategy {
         (0, storage_dasd_1.prepareDasdStorage)();
     }
     changePatterns(patterns) {
-        (0, software_1.selectPatternsTransient)(patterns);
+        (0, software_1.selectPatternsProduction)(patterns);
     }
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize)();
@@ -3668,7 +3667,7 @@ class TransientReleaseStrategy {
         (0, overview_1.ensureLandingOnOverview)();
     }
 }
-exports.TransientReleaseStrategy = TransientReleaseStrategy;
+exports.ProductionReleaseStrategy = ProductionReleaseStrategy;
 
 
 /***/ },

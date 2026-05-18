@@ -4,9 +4,9 @@ import {
   enterProductRegistration,
 } from "../checks/registration";
 import { changePatterns, selectADesktop } from "../checks/software";
-import { TransientReleaseStrategy } from "./transient_release_strategy";
+import { ProductionReleaseStrategy } from "./production_release_strategy";
 
-export class DevelReleaseStrategy extends TransientReleaseStrategy {
+export class DevelReleaseStrategy extends ProductionReleaseStrategy {
   verifyRegistrationWarniningAlerts() {
     verifyRegistrationWarniningAlerts();
   }

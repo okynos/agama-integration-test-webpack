@@ -1,7 +1,7 @@
 import { type Page } from "puppeteer-core";
 import { type GConstructor } from "../lib/helpers";
 
-class RegistrationBaseTransientPage {
+class RegistrationBaseProductionPage {
   protected readonly page: Page;
 
   protected readonly codeInput = () =>
@@ -71,7 +71,9 @@ class RegistrationBaseTransientPage {
   }
 }
 
-function CustomRegistrable<TBase extends GConstructor<RegistrationBaseTransientPage>>(Base: TBase) {
+function CustomRegistrable<TBase extends GConstructor<RegistrationBaseProductionPage>>(
+  Base: TBase,
+) {
   return class extends Base {
     private readonly registrationServerButton = () =>
       this.page.locator("::-p-aria(Registration server)");
@@ -109,7 +111,7 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBaseTransientP
   };
 }
 
-export class ProductRegistrationTransientPage extends RegistrationBaseTransientPage {}
-export class CustomRegistrationTransientPage extends CustomRegistrable(
-  RegistrationBaseTransientPage,
+export class ProductRegistrationProductionPage extends RegistrationBaseProductionPage {}
+export class CustomRegistrationProductionPage extends CustomRegistrable(
+  RegistrationBaseProductionPage,
 ) {}
