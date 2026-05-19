@@ -33,14 +33,20 @@ export interface IProductTestStrategy {
 }
 
 export class ProductStrategyFactory {
-  public static create(productVersion: string, agamaVersion: string): IProductTestStrategy {
+  public static create(productVersion: string, agamaWebUiPackageVersion: string): IProductTestStrategy {
     if (productVersion === "16.1") {
-      if (agamaVersion.includes("21")) {
+      const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
+      const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
+
+      if ((webUiVersion === 20 && webUiCommit > 300) || webUiVersion >= 21) {
         return new DevelReleaseStrategy();
       } else {
         return new ProductionReleaseStrategy();
       }
+    } else if (productVersion === "16.0") {
+      return new MaintenanceReleaseStrategy();
+    } else {
+      throw new Error(`Unsupported product version: ${productVersion}`);
     }
-    return new MaintenanceReleaseStrategy();
   }
 }

@@ -14,7 +14,10 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
+const testStrategy = ProductStrategyFactory.create(
+  options.productVersion,
+  options.agamaWebUiPackageVersion,
+);
 
 logIn(options.password);
 testStrategy.enterProductRegistration({
