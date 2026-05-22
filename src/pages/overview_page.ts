@@ -1,5 +1,4 @@
 import { type Page } from "puppeteer-core";
-import { type GConstructor } from "../lib/helpers";
 
 export class OverviewPage {
   protected readonly page: Page;
@@ -9,6 +8,7 @@ export class OverviewPage {
   private readonly storageLink = () => this.page.locator("a[href='#/storage']");
   private readonly softwareLink = () => this.page.locator("a[href='#/software']");
   private readonly usersLink = () => this.page.locator("a[href='#/users']");
+  private readonly registrationLink = () => this.page.locator("a[href='#/registration']");
 
   readonly installButton = () => this.page.locator("button::-p-text(Install now)");
 
@@ -50,16 +50,8 @@ export class OverviewPage {
   async goToAuthentication() {
     await this.usersLink().click();
   }
+
+  async goToRegistration() {
+    await this.registrationLink().click();
+  }
 }
-
-function RegistrationNavigable<TBase extends GConstructor<OverviewPage>>(Base: TBase) {
-  return class extends Base {
-    private readonly registrationLink = () => this.page.locator("a[href='#/registration']");
-
-    async goToRegistration() {
-      await this.registrationLink().click();
-    }
-  };
-}
-
-export class OverviewWithRegistrationPage extends RegistrationNavigable(OverviewPage) {}

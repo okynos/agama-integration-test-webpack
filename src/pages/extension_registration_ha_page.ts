@@ -3,12 +3,12 @@ import { type Page } from "puppeteer-core";
 export class ExtensionRegistrationHAPage {
   private readonly page: Page;
 
-  protected readonly codeInput = () =>
-    this.page.locator("::-p-aria(Registration code)[type='password']");
+  private readonly registerButtonHA = () => this.page.locator("[id*='register-button-sle-ha']");
 
-  protected readonly registerButton = () => this.page.locator("[id*='register-button-sle-ha']");
+  private readonly codeInput = () =>
+    this.page.locator("::-p-aria('Registration code')[type='password']");
 
-  readonly extensionRegisteredText = () =>
+  public readonly extensionRegisteredText = () =>
     this.page.locator("::-p-text(The extension has been registered)");
 
   constructor(page: Page) {
@@ -20,6 +20,6 @@ export class ExtensionRegistrationHAPage {
   }
 
   async register() {
-    await this.registerButton().click();
+    await this.registerButtonHA().click();
   }
 }

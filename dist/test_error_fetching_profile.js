@@ -151,10 +151,11 @@ function commaSeparatedList(value) {
 function parse(callback) {
     // define the command line arguments and parse them
     const prg = commander_1.program
-        .description("Run a simple Agama integration test")
+        .description("Run Agama integration test")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
-        .option("-a, --agama-version <version>", "Agama image version")
+        .option("-a, --agama-image-version <version>", "Agama image version")
+        .option("-w, --agama-web-ui-package-version <version>", "Agama Web UI package version")
         .option("-v, --product-version <version>", "Product version")
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
