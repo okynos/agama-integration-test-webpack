@@ -35,8 +35,7 @@ export interface IProductTestStrategy {
 export class ProductStrategyFactory {
   public static create(productVersion: string, agamaWebUiPackageVersion: string): IProductTestStrategy {
     if (productVersion === "16.1") {
-      const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
-      const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
+      const [webUiVersion, webUiCommit] = agamaWebUiPackageVersion.split(/[+.]/).map(Number);
 
       if ((webUiVersion === 20 && webUiCommit > 300) || webUiVersion >= 21) {
         return new DevelReleaseStrategy();

@@ -1630,8 +1630,7 @@ const maintenance_release_strategy_1 = __webpack_require__(/*! ../variants/maint
 class ProductStrategyFactory {
     static create(productVersion, agamaWebUiPackageVersion) {
         if (productVersion === "16.1") {
-            const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
-            const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
+            const [webUiVersion, webUiCommit] = agamaWebUiPackageVersion.split(/[+.]/).map(Number);
             if ((webUiVersion === 20 && webUiCommit > 300) || webUiVersion >= 21) {
                 return new devel_release_strategy_1.DevelReleaseStrategy();
             }
