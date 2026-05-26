@@ -888,7 +888,7 @@ function changePatterns(patterns) {
         for (const pattern of patterns)
             await softwarePatternsSelection.select(pattern);
         await softwarePatternsSelection.accept();
-        header.goToOverview();
+        header.reviewAndInstall();
     });
 }
 function selectPatternsProduction(patterns) {

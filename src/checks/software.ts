@@ -35,7 +35,7 @@ export function changePatterns(patterns: string[]) {
     await software.changePatterns();
     for (const pattern of patterns) await softwarePatternsSelection.select(pattern);
     await softwarePatternsSelection.accept();
-    header.goToOverview();
+    header.reviewAndInstall();
   });
 }
 
