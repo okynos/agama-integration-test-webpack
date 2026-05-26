@@ -82,6 +82,9 @@ async function finishBrowser() {
 }
 
 export function test_init(options) {
+  // Create log directory at the start of test suite
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
   before(async function () {
     ({ page } = await startBrowser(
       !options.headed,
@@ -151,7 +154,7 @@ async function dumpCSS() {
 }
 
 // dump the current page displayed in puppeteer
-async function dumpPage(label: string) {
+export async function dumpPage(label: string) {
   // base file name for the dumps
   const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
   await page.screenshot({ path: name + ".png" });
@@ -174,8 +177,6 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
         // remember the failure for the next tests
         if (!continueOnError) failed = true;
         if (page) {
-          // dump the current page
-          if (!fs.existsSync(dir)) fs.mkdirSync(dir);
           // dump the page and the CSS in parallel
           await Promise.allSettled([dumpPage(label), dumpCSS()]);
         }

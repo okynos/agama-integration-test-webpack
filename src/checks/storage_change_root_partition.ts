@@ -1,4 +1,4 @@
-import { it, page } from "../lib/helpers";
+import { dumpPage, it, page } from "../lib/helpers";
 import { SidebarPage } from "../pages/sidebar_page";
 import { StorageSettingsPage } from "../pages/storage_settings_page";
 import { ConfigurePartitionPage } from "../pages/configure_partition_page";
@@ -23,6 +23,7 @@ export function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     await configRootPartition.inputPartitionSize("5 GiB");
     await configRootPartition.disableAllowGrowing();
     await configRootPartition.accept();
+    await dumpPage("after-accept");
     await header.reviewAndInstall();
   });
 }

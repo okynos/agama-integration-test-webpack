@@ -1040,6 +1040,7 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         await configRootPartition.inputPartitionSize("5 GiB");
         await configRootPartition.disableAllowGrowing();
         await configRootPartition.accept();
+        await (0, helpers_1.dumpPage)("after-accept");
         await header.reviewAndInstall();
     });
 }
@@ -1422,6 +1423,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
+exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
@@ -1494,6 +1496,9 @@ async function finishBrowser() {
         await browser.close();
 }
 function test_init(options) {
+    // Create log directory at the start of test suite
+    if (!fs_1.default.existsSync(dir))
+        fs_1.default.mkdirSync(dir);
     (0, node_test_1.before)(async function () {
         ({ page: exports.page } = await startBrowser(!options.headed, options.delay, options.browser, options.url));
     });
@@ -1574,9 +1579,6 @@ async function it(label, test, timeout) {
             if (!continueOnError)
                 failed = true;
             if (exports.page) {
-                // dump the current page
-                if (!fs_1.default.existsSync(dir))
-                    fs_1.default.mkdirSync(dir);
                 // dump the page and the CSS in parallel
                 await Promise.allSettled([dumpPage(label), dumpCSS()]);
             }
