@@ -1,4 +1,4 @@
-import { it, page } from "../lib/helpers";
+import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
@@ -18,9 +18,9 @@ export function selectADesktop(desktop: string) {
 
     await overview.goToSoftware();
     await software.selectADesktop();
-    await softwareDesktopSelectionPage.select(desktop);
-    await softwareDesktopSelectionPage.accept();
-    await header.goToOverview();
+    await waitUntilOverlaySettled(() => softwareDesktopSelectionPage.select(desktop));
+    await waitUntilOverlaySettled(() => softwareDesktopSelectionPage.accept());
+    await header.reviewAndInstall();
   });
 }
 

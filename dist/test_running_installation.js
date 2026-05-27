@@ -872,9 +872,9 @@ function selectADesktop(desktop) {
         const softwareDesktopSelectionPage = new software_desktop_selection_page_1.SoftwareDesktopSelectionPage(helpers_1.page);
         await overview.goToSoftware();
         await software.selectADesktop();
-        await softwareDesktopSelectionPage.select(desktop);
-        await softwareDesktopSelectionPage.accept();
-        await header.goToOverview();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => softwareDesktopSelectionPage.select(desktop));
+        await (0, helpers_1.waitUntilOverlaySettled)(() => softwareDesktopSelectionPage.accept());
+        await header.reviewAndInstall();
     });
 }
 function changePatterns(patterns) {
@@ -1017,8 +1017,7 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         await configRootPartition.changeSizeModeToManual();
         await configRootPartition.inputPartitionSize("5 GiB");
         await configRootPartition.disableAllowGrowing();
-        await configRootPartition.accept();
-        await (0, helpers_1.dumpPage)("after-accept");
+        await (0, helpers_1.waitUntilOverlaySettled)(() => configRootPartition.accept());
         await header.reviewAndInstall();
     });
 }
@@ -1406,6 +1405,7 @@ exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
 exports.getValue = getValue;
+exports.waitUntilOverlaySettled = waitUntilOverlaySettled;
 exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
@@ -1420,6 +1420,21 @@ let browser;
 let url;
 // directory for storing the dumped data after a failure
 const dir = "log";
+/**
+ * Debug logging utility for development and troubleshooting.
+ *
+ * Set DEBUG_AGAMA=1 or DEBUG_AGAMA=true to enable debug output.
+ *
+ * Example:
+ *   DEBUG_AGAMA=1 ./dist/test_default_installation.js
+ *
+ * @param message - The debug message to log
+ */
+function debugLog(message) {
+    if (process.env.DEBUG_AGAMA === "1" || process.env.DEBUG_AGAMA === "true") {
+        console.log(`[Debug]: ${message}`);
+    }
+}
 // helper function for configuring the browser
 function browserSettings(name) {
     switch (name.toLowerCase()) {
@@ -1533,6 +1548,7 @@ async function dumpCSS() {
     });
 }
 // dump the current page displayed in puppeteer
+// ts-prune-ignore-next
 async function dumpPage(label) {
     // base file name for the dumps
     const name = path_1.default.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
@@ -1575,6 +1591,26 @@ function getTextContent(locator, timeout = 30000) {
 }
 function getValue(locator) {
     return locator.map((element) => element.value).wait();
+}
+async function waitUntilOverlaySettled(action) {
+    const selector = '[role="alert"].agm-main-content-overlay';
+    const start = Date.now();
+    // Start watching for overlay BEFORE executing the action
+    const appearancePromise = exports.page.waitForSelector(selector, { visible: true, timeout: 10000 })
+        .catch(() => {
+        debugLog("Overlay did not appear within 10000ms after action. Moving on...");
+        return null;
+    });
+    // Execute the action (e.g., clicking accept button)
+    await action();
+    // Wait for the overlay we started watching for
+    const appeared = await appearancePromise;
+    if (appeared) {
+        debugLog("Overlay detected. Waiting for it to disappear...");
+        await exports.page.waitForSelector(selector, { hidden: true });
+        const duration = Date.now() - start;
+        debugLog(`Overlay cleared after ${duration}ms`);
+    }
 }
 async function waitOnFile(filePath) {
     const opts = {
@@ -1810,6 +1846,8 @@ class ConfigurePartitionPage {
         this.page = page;
     }
     async changeFilesystemToBtrfs() {
+        // page is not ready until accept button is enabled
+        await this.acceptButton().wait();
         await this.fileSystemButton().click();
         await this.btrfsOption().click();
     }
