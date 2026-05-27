@@ -931,7 +931,7 @@ function changePatterns(patterns) {
         for (const pattern of patterns)
             await softwarePatternsSelection.select(pattern);
         await softwarePatternsSelection.accept();
-        header.goToOverview(3000);
+        header.goToOverview(5000);
     });
 }
 function selectPatternsProduction(patterns) {
