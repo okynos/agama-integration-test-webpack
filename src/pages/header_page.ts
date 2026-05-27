@@ -10,8 +10,8 @@ export class HeaderPage {
     this.page = page;
   }
 
-  async goToOverview() {
-    await this.overviewLink().click();
+  async goToOverview(delay: number = 0) {
+    await this.overviewLink().click({ delay });
   }
 
   async reviewAndInstall() {

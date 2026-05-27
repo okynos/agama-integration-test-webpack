@@ -910,7 +910,7 @@ function changePatterns(patterns) {
         for (const pattern of patterns)
             await softwarePatternsSelection.select(pattern);
         await softwarePatternsSelection.accept();
-        header.reviewAndInstall();
+        header.goToOverview(3000);
     });
 }
 function selectPatternsProduction(patterns) {
@@ -2112,8 +2112,8 @@ class HeaderPage {
     constructor(page) {
         this.page = page;
     }
-    async goToOverview() {
-        await this.overviewLink().click();
+    async goToOverview(delay = 0) {
+        await this.overviewLink().click({ delay });
     }
     async reviewAndInstall() {
         await this.reviewAndInstallButton().click();
