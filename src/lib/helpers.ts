@@ -16,6 +16,22 @@ let url: string;
 // directory for storing the dumped data after a failure
 const dir = "log";
 
+/**
+ * Debug logging utility for development and troubleshooting.
+ *
+ * Set DEBUG_AGAMA=1 or DEBUG_AGAMA=true to enable debug output.
+ *
+ * Example:
+ *   DEBUG_AGAMA=1 ./dist/test_default_installation.js
+ *
+ * @param message - The debug message to log
+ */
+function debugLog(message: string): void {
+  if (process.env.DEBUG_AGAMA === "1" || process.env.DEBUG_AGAMA === "true") {
+    console.log(`[Debug]: ${message}`);
+  }
+}
+
 interface BrowserSettings {
   browser: puppeteer.SupportedBrowser;
   executablePath: string;
@@ -154,6 +170,7 @@ async function dumpCSS() {
 }
 
 // dump the current page displayed in puppeteer
+// ts-prune-ignore-next
 export async function dumpPage(label: string) {
   // base file name for the dumps
   const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
@@ -199,6 +216,34 @@ export function getTextContent(locator, timeout: number = 30000): Promise<string
 
 export function getValue(locator): Promise<string> {
   return locator.map((element) => element.value).wait();
+}
+
+export async function waitUntilOverlaySettled(action: () => Promise<void>) {
+  const selector = '[role="alert"].agm-main-content-overlay';
+
+  const start = Date.now();
+
+  // Start watching for overlay BEFORE executing the action
+  const appearancePromise = page.waitForSelector(selector, { visible: true, timeout: 10000 })
+    .catch(() => {
+      debugLog("Overlay did not appear within 10000ms after action. Moving on...");
+      return null;
+    });
+
+  // Execute the action (e.g., clicking accept button)
+  await action();
+
+  // Wait for the overlay we started watching for
+  const appeared = await appearancePromise;
+
+  if (appeared) {
+    debugLog("Overlay detected. Waiting for it to disappear...");
+
+    await page.waitForSelector(selector, { hidden: true });
+
+    const duration = Date.now() - start;
+    debugLog(`Overlay cleared after ${duration}ms`);
+  }
 }
 
 // eslint-disable-next-line

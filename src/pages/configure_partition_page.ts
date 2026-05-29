@@ -18,6 +18,8 @@ export class ConfigurePartitionPage {
   }
 
   async changeFilesystemToBtrfs() {
+    // page is not ready until accept button is enabled
+    await this.acceptButton().wait();
     await this.fileSystemButton().click();
     await this.btrfsOption().click();
   }
