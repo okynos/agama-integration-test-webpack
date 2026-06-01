@@ -3,10 +3,6 @@ import { OverviewPage } from "../pages/overview_page";
 import { RegistrationSCCPage, RegistrationCustomPage } from "../pages/registration_page";
 import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
 import { ExtensionRegistrationHAPage } from "../pages/extension_registration_ha_page";
-import {
-  ProductRegistrationProductionPage,
-  CustomRegistrationProductionPage,
-} from "../pages/product_registration_production_page";
 import assert from "node:assert/strict";
 
 import { TrustRegistrationCertificatePage } from "../pages/trust_registration_certificate_page";
@@ -79,66 +75,6 @@ export function enterProductRegistration({
     const productRegistrationSCC = new RegistrationSCCPage(page);
 
     const registeredText = await getTextContent(productRegistrationSCC.infoHasBeenRegisteredText());
-    assert.match(
-      registeredText,
-      /SUSE Linux Enterprise Server.*has been registered with below information/,
-    );
-    await header.goToOverview();
-  });
-}
-
-export function enterProductRegistrationProduction({
-  use_custom,
-  code,
-  provide_code,
-  url,
-}: RegistrationOptions): void {
-  it("should allow setting registration", async function () {
-    const overview = new OverviewPage(page);
-    const productRegistration = new ProductRegistrationProductionPage(page);
-
-    await overview.goToRegistration();
-
-    if (use_custom) {
-      if (url) {
-        const customRegistration = new CustomRegistrationProductionPage(page);
-        await customRegistration.selectCustomRegistrationServer();
-        await customRegistration.fillServerUrl(url);
-      }
-      if (provide_code) {
-        await productRegistration.checkProvideRegistrationCode();
-        await productRegistration.fillCode(code);
-      }
-    } else {
-      await productRegistration.fillCode(code);
-    }
-    await productRegistration.register();
-  });
-
-  if (url?.startsWith("https")) {
-    it("should handle HTTPS certificate trust for custom registration server", async function () {
-      const trustRegistration = new TrustRegistrationCertificatePage(page);
-      assert.deepEqual(
-        await getTextContent(trustRegistration.titleText()),
-        "Registration certificate",
-      );
-      assert.match(
-        await getTextContent(trustRegistration.questionText()),
-        /Trying to import a self.signed certificate\. Do you want to trust it and register the product\?/,
-      );
-      assert.deepEqual(
-        await getTextContent(trustRegistration.issuerText()),
-        "RMT Certificate Authority",
-      );
-      await trustRegistration.trustCertificate();
-    });
-  }
-
-  it("should display product has been registered", async function () {
-    const header = new HeaderPage(page);
-    const productRegistration = new ProductRegistrationProductionPage(page);
-
-    const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
     assert.match(
       registeredText,
       /SUSE Linux Enterprise Server.*has been registered with below information/,
@@ -222,48 +158,6 @@ export function verifyRegistrationWarniningAlerts(): void {
       productRegistrationCustom.alertWarningNetworkErrorText(),
     );
     assert.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
-
-    await header.goToOverview();
-  }, 90000);
-}
-
-export function verifyRegistrationWarniningAlertsProduction(): void {
-  it("should show warning alert for missing registration code", async function () {
-    const overview = new OverviewPage(page);
-    const customRegistration = new CustomRegistrationProductionPage(page);
-
-    await overview.goToRegistration();
-    await customRegistration.checkProvideRegistrationCode();
-    await customRegistration.register();
-
-    const warningText = await getTextContent(
-      customRegistration.alertWarningEnterARegistrationCodeText(),
-    );
-    assert.deepEqual(warningText, "Enter a registration code");
-  });
-
-  it("should show warning alert for invalid registration code", async function () {
-    const customRegistration = new CustomRegistrationProductionPage(page);
-
-    await customRegistration.fillCode("1234invalid4321");
-    await customRegistration.register();
-
-    const warningText = await getTextContent(
-      customRegistration.alertWarningUnknownRegistrationCodeText(),
-    );
-    assert.deepEqual(warningText, "Unknown Registration Code.");
-  });
-
-  it("should show warning alert for invalid custom registration server", async function () {
-    const customRegistration = new CustomRegistrationProductionPage(page);
-    const header = new HeaderPage(page);
-
-    await customRegistration.fillServerUrl("http://scc.example.net", 50000);
-    await customRegistration.register();
-
-    const warningText = await getTextContent(customRegistration.alertWarningNetworkErrorText());
-    assert.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
-    await customRegistration.doNotRegister();
 
     await header.goToOverview();
   }, 90000);
