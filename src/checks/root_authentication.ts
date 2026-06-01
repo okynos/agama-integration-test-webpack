@@ -2,9 +2,26 @@ import { it, page, sleep, getTextContent } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SetARootPasswordPage } from "../pages/root_authentication_methods";
+import { RootLoginMethodPage } from "../pages/authentication_page";
 import { SidebarPage } from "../pages/sidebar_page";
 import { UsersPage } from "../pages/users_page";
 import assert from "node:assert/strict";
+
+export function editRootUserLoginMethod(password: string) {
+  it("should enable the root account", async function () {
+    const overview = new OverviewPage(page);
+    const header = new HeaderPage(page);
+    const setARootPassword = new RootLoginMethodPage(page);
+
+    await overview.goToAuthentication();
+    await setARootPassword.pressRootLoginButton();
+    await setARootPassword.selectRootLoginPasswordOption();
+    await setARootPassword.fillPassword(password);
+    await setARootPassword.fillPasswordConfirmation(password);
+    await setARootPassword.accept();
+    await header.goToOverview();
+  });
+}
 
 export function editRootUser(password: string) {
   it("should edit the root user", async function () {

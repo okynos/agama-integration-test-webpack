@@ -1,9 +1,28 @@
 import { it, page, sleep } from "../lib/helpers";
 import { CreateFirstUserPage } from "../pages/create_user_page";
+import { AuthenticationAdministratorAccountPage } from "../pages/authentication_page";
 import { UsersPage } from "../pages/users_page";
 import { SidebarPage } from "../pages/sidebar_page";
 import { OverviewPage } from "../pages/overview_page";
 import { HeaderPage } from "../pages/header_page";
+
+export function createAdministratorAccount(password: string) {
+  it("should define an administrator user", async function () {
+    const defineAdministratorUser = new AuthenticationAdministratorAccountPage(page);
+    const overview = new OverviewPage(page);
+    const header = new HeaderPage(page);
+
+    await overview.goToAuthentication();
+
+    await defineAdministratorUser.defineAnAdministratorUser();
+    await defineAdministratorUser.fillFullName("Bernhard M. Wiedemann");
+    await defineAdministratorUser.fillUserName("bernhard");
+    await defineAdministratorUser.fillPassword(password);
+    await defineAdministratorUser.fillPasswordConfirmation(password);
+    await defineAdministratorUser.accept();
+    await header.goToOverview();
+  });
+}
 
 export function createFirstUser(password: string) {
   it("should create first user", async function () {
