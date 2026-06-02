@@ -93,7 +93,7 @@ export class StorageSettingsPage {
     await this.manageDasdLink().click();
   }
 
-  async activateZfcp() {
+  async activateZfcpDisks() {
     await this.ActivateZfcpLink().click();
   }
 

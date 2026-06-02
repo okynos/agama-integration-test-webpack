@@ -38,7 +38,7 @@ export class ProductStrategyFactory {
       const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
       const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
 
-      if ((webUiVersion === 20 && webUiCommit > 300) || webUiVersion >= 21) {
+      if (webUiVersion >= 21 && webUiCommit >= 155) {
         return new DevelReleaseStrategy();
       } else {
         return new ProductionReleaseStrategy();

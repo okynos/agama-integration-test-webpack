@@ -5,7 +5,6 @@ import { SidebarPage } from "../pages/sidebar_page";
 import { SoftwarePage } from "../pages/software_page";
 import { SoftwareLegacyPage } from "../pages/software_legacy_page";
 import { SoftwarePatternsSelectionPage } from "../pages/software_patterns_selection_page";
-import { SoftwarePatternsSelectionProductionPage } from "../pages/software_patterns_selection_production_page";
 import { SoftwarePatternsSelectionLegacyPage } from "../pages/software_patterns_selection_legacy_page";
 import { SoftwareDesktopSelectionPage } from "../pages/software_desktop_selection_page";
 
@@ -35,20 +34,6 @@ export function changePatterns(patterns: string[]) {
     await software.changePatterns();
     for (const pattern of patterns) await softwarePatternsSelection.select(pattern);
     await softwarePatternsSelection.accept();
-    header.goToOverview();
-  });
-}
-
-export function selectPatternsProduction(patterns: string[]) {
-  it(`should change patterns by selecting ${patterns.join(", ")}`, async function () {
-    const overview = new OverviewPage(page);
-    const header = new HeaderPage(page);
-    const software = new SoftwarePage(page);
-    const softwarePatternsSelection = new SoftwarePatternsSelectionProductionPage(page);
-
-    await overview.goToSoftware();
-    await software.changePatterns();
-    for (const pattern of patterns) await softwarePatternsSelection.select(pattern);
     header.goToOverview();
   });
 }

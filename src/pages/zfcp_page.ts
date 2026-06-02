@@ -9,10 +9,10 @@ export class ZfcpPage {
   private readonly fcDisk = () =>
     this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
 
+  private readonly activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
+
   private readonly zfcpDisk = (channelId: string) =>
     this.page.locator(`xpath=//tr[contains(., "${channelId}")]`);
-
-  private readonly activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
 
   private readonly backButton = () => this.page.locator("button::-p-text(Back)");
 

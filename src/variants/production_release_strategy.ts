@@ -4,8 +4,8 @@ import {
   RegistrationOptions,
   enterExtensionRegistrationHA,
   enterExtensionRegistrationPHub,
-  enterProductRegistrationProduction,
-  verifyRegistrationWarniningAlertsProduction,
+  enterProductRegistration,
+  verifyRegistrationWarniningAlerts,
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
@@ -14,7 +14,7 @@ import { checkInstallation, finishInstallation, performInstallation } from "../c
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
-import { selectPatternsProduction } from "../checks/software";
+import { changePatterns, selectADesktop } from "../checks/software";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
 import { ensureLandingOnOverview } from "../checks/overview";
@@ -29,11 +29,11 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
   }
 
   verifyRegistrationWarniningAlerts() {
-    verifyRegistrationWarniningAlertsProduction();
+    verifyRegistrationWarniningAlerts();
   }
 
   enterProductRegistration({ use_custom, code, provide_code, url }: RegistrationOptions): void {
-    enterProductRegistrationProduction({ use_custom, code, provide_code, url });
+    enterProductRegistration({ use_custom, code, provide_code, url });
   }
 
   enableEncryption(password: string) {
@@ -97,7 +97,11 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
   }
 
   changePatterns(patterns: string[]) {
-    selectPatternsProduction(patterns);
+    changePatterns(patterns);
+  }
+
+  selectDesktop(desktop: string) {
+    selectADesktop(desktop);
   }
 
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
