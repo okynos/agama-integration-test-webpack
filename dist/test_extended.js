@@ -1215,31 +1215,37 @@ function selectMoreDevicesWithSidebar() {
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 exports.prepareZfcpStorageWithSidebar = prepareZfcpStorageWithSidebar;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const storage_zfcp_activate_controllers_page_1 = __webpack_require__(/*! ../pages/storage_zfcp_activate_controllers_page */ "./src/pages/storage_zfcp_activate_controllers_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
+const activate_controllers_page_1 = __webpack_require__(/*! ../pages/activate_controllers_page */ "./src/pages/activate_controllers_page.ts");
 function prepareZfcpStorage() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
+        const storageNoDeviceFound = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageZfcpControllersNotActivated = new activate_controllers_page_1.ActivateControllersPage(helpers_1.page);
+        const storageZfcpActivateControllers = new storage_zfcp_activate_controllers_page_1.StorageZfcpActivateControllersPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         await overview.goToStorage();
-        await storage.activateZfcp();
-        await zfcp.activateDevice("0.0.fa00");
-        await zfcp.activateDevice("0.0.fc00");
-        await zfcp.back();
-        await zfcp.activateMultipath();
-        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
-        await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
+        await storageNoDeviceFound.activateZfcpDisks();
+        await storageZfcpControllersNotActivated.activateControllers();
+        await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
+        await storageZfcpActivateControllers.accept();
+        const controllersText = await (0, helpers_1.getTextContent)(storageZfcpActivateControllers.allControllersActivatedText());
+        strict_1.default.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
         await header.goToOverview();
-    }, 3 * 60 * 1000);
+    });
 }
 function prepareZfcpStorageWithSidebar() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
@@ -1247,7 +1253,7 @@ function prepareZfcpStorageWithSidebar() {
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.activateZfcp();
+        await storage.activateZfcpDisks();
         await zfcp.activateDevice("0.0.fa00");
         await zfcp.activateDevice("0.0.fc00");
         await zfcp.back();
@@ -1771,6 +1777,30 @@ async function getElementInCell(page, tableSelector, rowColumn, rowValue, elemen
     }
     return element;
 }
+
+
+/***/ },
+
+/***/ "./src/pages/activate_controllers_page.ts"
+/*!************************************************!*\
+  !*** ./src/pages/activate_controllers_page.ts ***!
+  \************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ActivateControllersPage = void 0;
+class ActivateControllersPage {
+    page;
+    activateControllersLink = () => this.page.locator("::-p-aria(Activate controllers)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateControllers() {
+        await this.activateControllersLink().click();
+    }
+}
+exports.ActivateControllersPage = ActivateControllersPage;
 
 
 /***/ },
@@ -3218,7 +3248,7 @@ class StorageSettingsPage {
     async manageDasd() {
         await this.manageDasdLink().click();
     }
-    async activateZfcp() {
+    async activateZfcpDisks() {
         await this.ActivateZfcpLink().click();
     }
     async addLvmVolumeGroup() {
@@ -3269,6 +3299,38 @@ class StorageWarningOutOfSyncPage {
     }
 }
 exports.StorageWarningOutOfSyncPage = StorageWarningOutOfSyncPage;
+
+
+/***/ },
+
+/***/ "./src/pages/storage_zfcp_activate_controllers_page.ts"
+/*!*************************************************************!*\
+  !*** ./src/pages/storage_zfcp_activate_controllers_page.ts ***!
+  \*************************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageZfcpActivateControllersPage = void 0;
+class StorageZfcpActivateControllersPage {
+    page;
+    acceptButton = () => this.page.locator("::-p-aria('Accept')");
+    multipathText = () => this.page.locator("::-p-text(The system seems to have multipath hardware)");
+    controllerCheckbox = (controllerId) => this.page.locator(`::-p-aria(${controllerId})`);
+    allControllersActivatedText = () => this.page.locator("::-p-aria('All the available zFCP controllers are already activated.')");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+    async select(controllerIds) {
+        for (const controllerId of controllerIds) {
+            await this.controllerCheckbox(controllerId).click();
+        }
+    }
+}
+exports.StorageZfcpActivateControllersPage = StorageZfcpActivateControllersPage;
 
 
 /***/ },
@@ -3346,8 +3408,8 @@ class ZfcpPage {
     page;
     faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
     fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
-    zfcpDisk = (channelId) => this.page.locator(`xpath=//tr[contains(., "${channelId}")]`);
     activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
+    zfcpDisk = (channelId) => this.page.locator(`xpath=//tr[contains(., "${channelId}")]`);
     backButton = () => this.page.locator("button::-p-text(Back)");
     enableMultipath = () => this.page.locator("::-p-text('Yes')");
     constructor(page) {
