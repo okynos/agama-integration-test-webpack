@@ -12,7 +12,7 @@ export class StorageZfcpActivateControllersPage {
     this.page.locator(`::-p-aria(${controllerId})`);
 
   public readonly allControllersActivatedText = () =>
-    this.page.locator("::-p-aria('All the available zFCP controllers are already activated.')");
+    this.page.locator("::-p-text('All the available')");
 
   constructor(page: Page) {
     this.page = page;
