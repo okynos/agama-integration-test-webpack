@@ -121,14 +121,31 @@ function disableEncryptionWithSidebar() {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createAdministratorAccount = createAdministratorAccount;
 exports.createFirstUser = createFirstUser;
 exports.createFirstUserWithSidebar = createFirstUserWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
+const authentication_page_1 = __webpack_require__(/*! ../pages/authentication_page */ "./src/pages/authentication_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function createAdministratorAccount(password) {
+    (0, helpers_1.it)("should define an administrator user", async function () {
+        const defineAdministratorUser = new authentication_page_1.AuthenticationAdministratorAccountPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToAuthentication();
+        await defineAdministratorUser.defineAnAdministratorUser();
+        await defineAdministratorUser.fillFullName("Bernhard M. Wiedemann");
+        await defineAdministratorUser.fillUserName("bernhard");
+        await defineAdministratorUser.fillPassword(password);
+        await defineAdministratorUser.fillPasswordConfirmation(password);
+        await defineAdministratorUser.accept();
+        await header.goToOverview();
+    });
+}
 function createFirstUser(password) {
     (0, helpers_1.it)("should create first user", async function () {
         const users = new users_page_1.UsersPage(helpers_1.page);
@@ -661,6 +678,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.editRootUserLoginMethod = editRootUserLoginMethod;
 exports.editRootUser = editRootUser;
 exports.editRootUserWithSidebar = editRootUserWithSidebar;
 exports.verifyPasswordStrength = verifyPasswordStrength;
@@ -669,9 +687,24 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
+const authentication_page_1 = __webpack_require__(/*! ../pages/authentication_page */ "./src/pages/authentication_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+function editRootUserLoginMethod(password) {
+    (0, helpers_1.it)("should enable the root account", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const setARootPassword = new authentication_page_1.RootLoginMethodPage(helpers_1.page);
+        await overview.goToAuthentication();
+        await setARootPassword.pressRootLoginButton();
+        await setARootPassword.selectRootLoginPasswordOption();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        await header.goToOverview();
+    });
+}
 function editRootUser(password) {
     (0, helpers_1.it)("should edit the root user", async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
@@ -1690,6 +1723,81 @@ class ActivateControllersPage {
     }
 }
 exports.ActivateControllersPage = ActivateControllersPage;
+
+
+/***/ },
+
+/***/ "./src/pages/authentication_page.ts"
+/*!******************************************!*\
+  !*** ./src/pages/authentication_page.ts ***!
+  \******************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RootLoginMethodPage = exports.AuthenticationAdministratorAccountPage = void 0;
+class AuthenticationBasePage {
+    page;
+    defineAdminUserCheckbox = () => this.page.locator("::-p-aria(Define an administrator user[role='checkbox'])");
+    rootLoginMethodButton = () => this.page.locator("::-p-aria(Root login method[role='button'])");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async defineAnAdministratorUser() {
+        await this.defineAdminUserCheckbox().click();
+    }
+    async pressRootLoginButton() {
+        await this.rootLoginMethodButton().click();
+    }
+    async accept() {
+        const button = await this.acceptButton().waitHandle();
+        await button.scrollIntoView();
+        await this.acceptButton().click();
+    }
+}
+function AdminUserDefinable(Base) {
+    return class extends Base {
+        fullNameInput = () => this.page.locator("input#userFullName");
+        usernameInput = () => this.page.locator("input#userName");
+        userPasswordInput = () => this.page.locator("input#userPassword");
+        userPasswordConfirmationInput = () => this.page.locator("input#userPasswordConfirmation");
+        async fillFullName(fullName) {
+            await this.fullNameInput().fill(fullName);
+        }
+        async fillUserName(userName) {
+            await this.usernameInput().fill(userName);
+        }
+        async fillPassword(password) {
+            await this.userPasswordInput().fill(password);
+        }
+        async fillPasswordConfirmation(password) {
+            await this.userPasswordConfirmationInput().fill(password);
+        }
+    };
+}
+function RootLoginMethodPasswordDefinable(Base) {
+    return class extends Base {
+        rootPasswordOption = () => this.page.locator("::-p-aria(Password Log in using a password)");
+        rootPasswordInput = () => this.page.locator("input#rootPassword");
+        rootPasswordConfirmationInput = () => this.page.locator("input#rootPasswordConfirmation");
+        async selectRootLoginPasswordOption() {
+            await this.rootPasswordOption().click();
+        }
+        async fillPassword(password) {
+            await this.rootPasswordInput().fill(password);
+        }
+        async fillPasswordConfirmation(password) {
+            await this.rootPasswordConfirmationInput().fill(password);
+        }
+    };
+}
+class AuthenticationAdministratorAccountPage extends AdminUserDefinable(AuthenticationBasePage) {
+}
+exports.AuthenticationAdministratorAccountPage = AuthenticationAdministratorAccountPage;
+class RootLoginMethodPage extends RootLoginMethodPasswordDefinable(AuthenticationBasePage) {
+}
+exports.RootLoginMethodPage = RootLoginMethodPage;
 
 
 /***/ },
@@ -3180,7 +3288,15 @@ if (options.install) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevelReleaseStrategy = void 0;
 const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
+const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
 class DevelReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
+    createFirstUser(password) {
+        (0, first_user_1.createAdministratorAccount)(password);
+    }
+    editRootUser(password) {
+        (0, root_authentication_1.editRootUserLoginMethod)(password);
+    }
 }
 exports.DevelReleaseStrategy = DevelReleaseStrategy;
 
