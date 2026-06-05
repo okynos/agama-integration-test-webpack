@@ -3,6 +3,171 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/checks/authentication.ts"
+/*!**************************************!*\
+  !*** ./src/checks/authentication.ts ***!
+  \**************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createAdministratorAccount = createAdministratorAccount;
+exports.createFirstUser = createFirstUser;
+exports.createFirstUserWithSidebar = createFirstUserWithSidebar;
+exports.editRootUserLoginMethod = editRootUserLoginMethod;
+exports.editRootUser = editRootUser;
+exports.editRootUserWithSidebar = editRootUserWithSidebar;
+exports.verifyPasswordStrength = verifyPasswordStrength;
+exports.verifyPasswordStrengthWithSidebar = verifyPasswordStrengthWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
+const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
+const authentication_page_1 = __webpack_require__(/*! ../pages/authentication_page */ "./src/pages/authentication_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+function createAdministratorAccount(password) {
+    (0, helpers_1.it)("should define an administrator user", async function () {
+        const defineAdministratorUser = new authentication_page_1.AuthenticationWithRootLoginPassword(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToAuthentication();
+        await defineAdministratorUser.defineAnAdministratorUser();
+        await defineAdministratorUser.fillFullName("Bernhard M. Wiedemann");
+        await defineAdministratorUser.fillUserName("bernhard");
+        await defineAdministratorUser.fillPassword(password);
+        await defineAdministratorUser.fillPasswordConfirmation(password);
+        await defineAdministratorUser.accept();
+        await header.goToOverview();
+    });
+}
+function createFirstUser(password) {
+    (0, helpers_1.it)("should create first user", async function () {
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToAuthentication();
+        await users.defineAUserNow();
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
+        await createFirstUser.fillPassword(password);
+        await createFirstUser.fillPasswordConfirmation(password);
+        await createFirstUser.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await header.goToOverview();
+    });
+}
+function createFirstUserWithSidebar(password) {
+    (0, helpers_1.it)("should create first user", async function () {
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.defineAUserNow();
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
+        await createFirstUser.fillPassword(password);
+        await createFirstUser.fillPasswordConfirmation(password);
+        await createFirstUser.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+    });
+}
+function editRootUserLoginMethod(password) {
+    (0, helpers_1.it)("should enable the root account", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const setARootPassword = new authentication_page_1.AuthenticationWithRootLoginPassword(helpers_1.page);
+        await overview.goToAuthentication();
+        await setARootPassword.selectRootLoginMethod();
+        await setARootPassword.selectPasswordAsRootLoginMethod();
+        await setARootPassword.fillRootPassword(password);
+        await setARootPassword.fillRootPasswordConfirmation(password);
+        await setARootPassword.accept();
+        await header.goToOverview();
+    });
+}
+function editRootUser(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToAuthentication();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await header.goToOverview();
+    });
+}
+function editRootUserWithSidebar(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+    });
+}
+function verifyPasswordStrength() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToAuthentication();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+        await header.goToOverview();
+    });
+}
+function verifyPasswordStrengthWithSidebar() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "Warning alert:The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck(), 50000);
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
+    });
+}
+
+
+/***/ },
+
 /***/ "./src/checks/download_logs.ts"
 /*!*************************************!*\
   !*** ./src/checks/download_logs.ts ***!
@@ -136,77 +301,6 @@ function disableEncryptionWithSidebar() {
         await encryptionSettings.accept();
         const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
         strict_1.default.deepEqual(elementText, "Encryption is disabled");
-    });
-}
-
-
-/***/ },
-
-/***/ "./src/checks/first_user.ts"
-/*!**********************************!*\
-  !*** ./src/checks/first_user.ts ***!
-  \**********************************/
-(__unused_webpack_module, exports, __webpack_require__) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createAdministratorAccount = createAdministratorAccount;
-exports.createFirstUser = createFirstUser;
-exports.createFirstUserWithSidebar = createFirstUserWithSidebar;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
-const authentication_page_1 = __webpack_require__(/*! ../pages/authentication_page */ "./src/pages/authentication_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
-function createAdministratorAccount(password) {
-    (0, helpers_1.it)("should define an administrator user", async function () {
-        const defineAdministratorUser = new authentication_page_1.AuthenticationAdministratorAccountPage(helpers_1.page);
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await defineAdministratorUser.defineAnAdministratorUser();
-        await defineAdministratorUser.fillFullName("Bernhard M. Wiedemann");
-        await defineAdministratorUser.fillUserName("bernhard");
-        await defineAdministratorUser.fillPassword(password);
-        await defineAdministratorUser.fillPasswordConfirmation(password);
-        await defineAdministratorUser.accept();
-        await header.goToOverview();
-    });
-}
-function createFirstUser(password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
-        await createFirstUser.fillUserName("bernhard");
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-        await header.goToOverview();
-    });
-}
-function createFirstUserWithSidebar(password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
-        await createFirstUser.fillUserName("bernhard");
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
     });
 }
 
@@ -739,118 +833,6 @@ function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
             await customRegistration.fillCode("1234invalid4321");
         }
         await customRegistration.register();
-    });
-}
-
-
-/***/ },
-
-/***/ "./src/checks/root_authentication.ts"
-/*!*******************************************!*\
-  !*** ./src/checks/root_authentication.ts ***!
-  \*******************************************/
-(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.editRootUserLoginMethod = editRootUserLoginMethod;
-exports.editRootUser = editRootUser;
-exports.editRootUserWithSidebar = editRootUserWithSidebar;
-exports.verifyPasswordStrength = verifyPasswordStrength;
-exports.verifyPasswordStrengthWithSidebar = verifyPasswordStrengthWithSidebar;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
-const authentication_page_1 = __webpack_require__(/*! ../pages/authentication_page */ "./src/pages/authentication_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
-function editRootUserLoginMethod(password) {
-    (0, helpers_1.it)("should enable the root account", async function () {
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const setARootPassword = new authentication_page_1.RootLoginMethodPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await setARootPassword.pressRootLoginButton();
-        await setARootPassword.selectRootLoginPasswordOption();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.accept();
-        await header.goToOverview();
-    });
-}
-function editRootUser(password) {
-    (0, helpers_1.it)("should edit the root user", async function () {
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await users.editRootUser();
-        await setARootPassword.usePassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-        await header.goToOverview();
-    });
-}
-function editRootUserWithSidebar(password) {
-    (0, helpers_1.it)("should edit the root user", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.editRootUser();
-        await setARootPassword.usePassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
-}
-function verifyPasswordStrength() {
-    (0, helpers_1.it)("should verify the strength of typed password", async function () {
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await users.editRootUser();
-        await setARootPassword.fillPassword("a23b56c");
-        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
-        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
-        await setARootPassword.fillPassword("a23b56ca");
-        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
-        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
-        await setARootPassword.fillPassword("a23b5678");
-        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
-        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
-        header.goToOverview();
-    });
-}
-function verifyPasswordStrengthWithSidebar() {
-    (0, helpers_1.it)("should verify the strength of typed password", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.editRootUser();
-        await setARootPassword.fillPassword("a23b56c");
-        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
-        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "Warning alert:The password is shorter than 8 characters");
-        await setARootPassword.fillPassword("a23b56ca");
-        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
-        strict_1.default.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
-        await setARootPassword.fillPassword("a23b5678");
-        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck(), 50000);
-        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     });
 }
 
@@ -1651,7 +1633,7 @@ async function waitOnFile(filePath) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductStrategyFactory = void 0;
-const devel_release_strategy_1 = __webpack_require__(/*! ../variants/devel_release_strategy */ "./src/variants/devel_release_strategy.ts");
+const development_release_strategy_1 = __webpack_require__(/*! ../variants/development_release_strategy */ "./src/variants/development_release_strategy.ts");
 const production_release_strategy_1 = __webpack_require__(/*! ../variants/production_release_strategy */ "./src/variants/production_release_strategy.ts");
 const maintenance_release_strategy_1 = __webpack_require__(/*! ../variants/maintenance_release_strategy */ "./src/variants/maintenance_release_strategy.ts");
 class ProductStrategyFactory {
@@ -1660,7 +1642,7 @@ class ProductStrategyFactory {
             const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
             const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
             if (webUiVersion >= 21 && webUiCommit >= 155) {
-                return new devel_release_strategy_1.DevelReleaseStrategy();
+                return new development_release_strategy_1.DevelopmentReleaseStrategy();
             }
             else {
                 return new production_release_strategy_1.ProductionReleaseStrategy();
@@ -1843,69 +1825,60 @@ exports.ActivateMultipathPage = ActivateMultipathPage;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RootLoginMethodPage = exports.AuthenticationAdministratorAccountPage = void 0;
-class AuthenticationBasePage {
+exports.AuthenticationWithRootLoginPassword = void 0;
+class AuthenticationAdministratorAccountPage {
     page;
-    defineAdminUserCheckbox = () => this.page.locator("::-p-aria(Define an administrator user[role='checkbox'])");
+    defineAnAdministratorUserCheckbox = () => this.page.locator("::-p-aria(Define an administrator user[role='checkbox'])");
     rootLoginMethodButton = () => this.page.locator("::-p-aria(Root login method[role='button'])");
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    fullNameTextbox = () => this.page.locator("::-p-aria(Full name[role='textbox'])");
+    usernameCombobox = () => this.page.locator("::-p-aria(Username[role='combobox'])");
+    userPasswordInput = () => this.page.locator("input#userPassword");
+    userPasswordConfirmationInput = () => this.page.locator("input#userPasswordConfirmation");
+    acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
     constructor(page) {
         this.page = page;
     }
     async defineAnAdministratorUser() {
-        await this.defineAdminUserCheckbox().click();
+        await this.defineAnAdministratorUserCheckbox().click();
     }
-    async pressRootLoginButton() {
+    async selectRootLoginMethod() {
         await this.rootLoginMethodButton().click();
     }
+    async fillFullName(fullName) {
+        await this.fullNameTextbox().fill(fullName);
+    }
+    async fillUserName(userName) {
+        await this.usernameCombobox().fill(userName);
+    }
+    async fillPassword(password) {
+        await this.userPasswordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.userPasswordConfirmationInput().fill(password);
+    }
     async accept() {
-        const button = await this.acceptButton().waitHandle();
-        await button.scrollIntoView();
         await this.acceptButton().click();
     }
 }
-function AdminUserDefinable(Base) {
-    return class extends Base {
-        fullNameInput = () => this.page.locator("input#userFullName");
-        usernameInput = () => this.page.locator("input#userName");
-        userPasswordInput = () => this.page.locator("input#userPassword");
-        userPasswordConfirmationInput = () => this.page.locator("input#userPasswordConfirmation");
-        async fillFullName(fullName) {
-            await this.fullNameInput().fill(fullName);
-        }
-        async fillUserName(userName) {
-            await this.usernameInput().fill(userName);
-        }
-        async fillPassword(password) {
-            await this.userPasswordInput().fill(password);
-        }
-        async fillPasswordConfirmation(password) {
-            await this.userPasswordConfirmationInput().fill(password);
-        }
-    };
-}
 function RootLoginMethodPasswordDefinable(Base) {
     return class extends Base {
-        rootPasswordOption = () => this.page.locator("::-p-aria(Password Log in using a password)");
+        rootPasswordOption = () => this.page.locator("::-p-aria(Password Log in using a password[role='option'])");
         rootPasswordInput = () => this.page.locator("input#rootPassword");
         rootPasswordConfirmationInput = () => this.page.locator("input#rootPasswordConfirmation");
-        async selectRootLoginPasswordOption() {
+        async selectPasswordAsRootLoginMethod() {
             await this.rootPasswordOption().click();
         }
-        async fillPassword(password) {
+        async fillRootPassword(password) {
             await this.rootPasswordInput().fill(password);
         }
-        async fillPasswordConfirmation(password) {
+        async fillRootPasswordConfirmation(password) {
             await this.rootPasswordConfirmationInput().fill(password);
         }
     };
 }
-class AuthenticationAdministratorAccountPage extends AdminUserDefinable(AuthenticationBasePage) {
+class AuthenticationWithRootLoginPassword extends RootLoginMethodPasswordDefinable(AuthenticationAdministratorAccountPage) {
 }
-exports.AuthenticationAdministratorAccountPage = AuthenticationAdministratorAccountPage;
-class RootLoginMethodPage extends RootLoginMethodPasswordDefinable(AuthenticationBasePage) {
-}
-exports.RootLoginMethodPage = RootLoginMethodPage;
+exports.AuthenticationWithRootLoginPassword = AuthenticationWithRootLoginPassword;
 
 
 /***/ },
@@ -3529,27 +3502,26 @@ if (options.install) {
 
 /***/ },
 
-/***/ "./src/variants/devel_release_strategy.ts"
-/*!************************************************!*\
-  !*** ./src/variants/devel_release_strategy.ts ***!
-  \************************************************/
+/***/ "./src/variants/development_release_strategy.ts"
+/*!******************************************************!*\
+  !*** ./src/variants/development_release_strategy.ts ***!
+  \******************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DevelReleaseStrategy = void 0;
+exports.DevelopmentReleaseStrategy = void 0;
 const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
-const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
-const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
-class DevelReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
+const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
+class DevelopmentReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
     createFirstUser(password) {
-        (0, first_user_1.createAdministratorAccount)(password);
+        (0, authentication_1.createAdministratorAccount)(password);
     }
     editRootUser(password) {
-        (0, root_authentication_1.editRootUserLoginMethod)(password);
+        (0, authentication_1.editRootUserLoginMethod)(password);
     }
 }
-exports.DevelReleaseStrategy = DevelReleaseStrategy;
+exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;
 
 
 /***/ },
@@ -3566,8 +3538,7 @@ exports.MaintenanceReleaseStrategy = void 0;
 const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
-const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
-const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 const storage_change_device_to_install_1 = __webpack_require__(/*! ../checks/storage_change_device_to_install */ "./src/checks/storage_change_device_to_install.ts");
@@ -3606,10 +3577,10 @@ class MaintenanceReleaseStrategy {
         (0, registration_1.enterExtensionRegistrationPHubWithSidebar)();
     }
     createFirstUser(password) {
-        (0, first_user_1.createFirstUserWithSidebar)(password);
+        (0, authentication_1.createFirstUserWithSidebar)(password);
     }
     editRootUser(password) {
-        (0, root_authentication_1.editRootUserWithSidebar)(password);
+        (0, authentication_1.editRootUserWithSidebar)(password);
     }
     checkInstallation() {
         (0, installation_1.checkInstallationWithSidebar)();
@@ -3627,7 +3598,7 @@ class MaintenanceReleaseStrategy {
         (0, storage_change_device_to_install_1.changeDeviceToInstallTheSystemWithSidebar)();
     }
     verifyPasswordStrength() {
-        (0, root_authentication_1.verifyPasswordStrengthWithSidebar)();
+        (0, authentication_1.verifyPasswordStrengthWithSidebar)();
     }
     prepareZfcpStorage() {
         (0, storage_zfcp_1.prepareZfcpStorageWithSidebar)();
@@ -3674,8 +3645,7 @@ exports.ProductionReleaseStrategy = void 0;
 const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
-const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
-const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 const storage_change_device_to_install_1 = __webpack_require__(/*! ../checks/storage_change_device_to_install */ "./src/checks/storage_change_device_to_install.ts");
@@ -3714,10 +3684,10 @@ class ProductionReleaseStrategy {
         (0, registration_1.enterExtensionRegistrationPHub)();
     }
     createFirstUser(password) {
-        (0, first_user_1.createFirstUser)(password);
+        (0, authentication_1.createFirstUser)(password);
     }
     editRootUser(password) {
-        (0, root_authentication_1.editRootUser)(password);
+        (0, authentication_1.editRootUser)(password);
     }
     performInstallation() {
         (0, installation_1.performInstallation)();
@@ -3735,7 +3705,7 @@ class ProductionReleaseStrategy {
         (0, storage_change_device_to_install_1.changeDeviceToInstallTheSystem)();
     }
     verifyPasswordStrength() {
-        (0, root_authentication_1.verifyPasswordStrength)();
+        (0, authentication_1.verifyPasswordStrength)();
     }
     prepareZfcpStorage() {
         (0, storage_zfcp_1.prepareZfcpStorage)();
