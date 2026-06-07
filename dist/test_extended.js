@@ -1230,6 +1230,7 @@ const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_setting
 const storage_zfcp_activate_controllers_page_1 = __webpack_require__(/*! ../pages/storage_zfcp_activate_controllers_page */ "./src/pages/storage_zfcp_activate_controllers_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 const activate_controllers_page_1 = __webpack_require__(/*! ../pages/activate_controllers_page */ "./src/pages/activate_controllers_page.ts");
+const activate_multipath_page_1 = __webpack_require__(/*! ../pages/activate_multipath_page */ "./src/pages/activate_multipath_page.ts");
 function prepareZfcpStorage() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
         const storageNoDeviceFound = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
@@ -1237,11 +1238,15 @@ function prepareZfcpStorage() {
         const storageZfcpActivateControllers = new storage_zfcp_activate_controllers_page_1.StorageZfcpActivateControllersPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const multipath = new activate_multipath_page_1.ActivateMultipathPage(helpers_1.page);
         await overview.goToStorage();
         await storageNoDeviceFound.activateZfcpDisks();
         await storageZfcpControllersNotActivated.activateControllers();
         await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
         await storageZfcpActivateControllers.accept();
+        const elementText = await (0, helpers_1.getTextContent)(multipath.multipathText());
+        strict_1.default.deepEqual(elementText, "The system seems to have multipath hardware. Do you want to activate multipath?");
+        await multipath.activate();
         const controllersText = await (0, helpers_1.getTextContent)(storageZfcpActivateControllers.allControllersActivatedText());
         strict_1.default.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
         await header.goToOverview();
@@ -1801,6 +1806,31 @@ class ActivateControllersPage {
     }
 }
 exports.ActivateControllersPage = ActivateControllersPage;
+
+
+/***/ },
+
+/***/ "./src/pages/activate_multipath_page.ts"
+/*!**********************************************!*\
+  !*** ./src/pages/activate_multipath_page.ts ***!
+  \**********************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ActivateMultipathPage = void 0;
+class ActivateMultipathPage {
+    page;
+    multipathText = () => this.page.locator("::-p-text(The system seems to have multipath hardware)");
+    activateButton = () => this.page.locator("::-p-text(Yes)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activate() {
+        await this.activateButton().click();
+    }
+}
+exports.ActivateMultipathPage = ActivateMultipathPage;
 
 
 /***/ },
@@ -3317,7 +3347,7 @@ class StorageZfcpActivateControllersPage {
     acceptButton = () => this.page.locator("::-p-aria('Accept')");
     multipathText = () => this.page.locator("::-p-text(The system seems to have multipath hardware)");
     controllerCheckbox = (controllerId) => this.page.locator(`::-p-aria(${controllerId})`);
-    allControllersActivatedText = () => this.page.locator("::-p-aria('All the available zFCP controllers are already activated.')");
+    allControllersActivatedText = () => this.page.locator("::-p-text('All the available')");
     constructor(page) {
         this.page = page;
     }
