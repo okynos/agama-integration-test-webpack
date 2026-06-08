@@ -93,7 +93,9 @@ export class StorageSettingsPage {
     await this.manageDasdLink().click();
   }
 
-  async activateZfcpDisks() {
+  async activateZfcpDisks(timeout: number = 30 * 1000) {
+    await this.page.waitForSelector("::-p-aria(More storage options)", { visible: true });
+    await this.ActivateZfcpLink().setTimeout(timeout).hover();
     await this.ActivateZfcpLink().click();
   }
 

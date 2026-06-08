@@ -1,0 +1,49 @@
+Updating start installation test
+
+Updating start installation test
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Author:    Julian <1849915+hadeskun@users.noreply.github.com>
+# Date:      Mon Jun 8 16:01:18 2026 +0200
+#
+# On branch zFCPdisk
+# Your branch and 'origin/zFCPdisk' have diverged,
+# and have 1 and 1 different commits each, respectively.
+#
+# Changes to be committed:
+#	modified:   dist/test_custom_registration_server.js
+#	modified:   dist/test_custom_registration_server.js.map
+#	modified:   dist/test_decrypt.js
+#	modified:   dist/test_decrypt.js.map
+#	modified:   dist/test_default_installation.js
+#	modified:   dist/test_default_installation.js.map
+#	modified:   dist/test_encrypted.js
+#	modified:   dist/test_encrypted.js.map
+#	modified:   dist/test_extended.js
+#	modified:   dist/test_extended.js.map
+#	modified:   dist/test_lvm.js
+#	modified:   dist/test_lvm.js.map
+#	modified:   dist/test_lvm_encrypted.js
+#	modified:   dist/test_lvm_encrypted.js.map
+#	modified:   dist/test_phub.js
+#	modified:   dist/test_phub.js.map
+#	modified:   dist/test_running_installation.js
+#	modified:   dist/test_running_installation.js.map
+#	modified:   dist/test_software_selection.js
+#	modified:   dist/test_software_selection.js.map
+#	modified:   dist/vendor.js
+#	renamed:    src/checks/root_authentication.ts -> src/checks/authentication.ts
+#	deleted:    src/checks/first_user.ts
+#	modified:   src/checks/storage_zfcp.ts
+#	modified:   src/lib/product_strategy_factory.ts
+#	modified:   src/pages/activate_multipath_page.ts
+#	modified:   src/pages/authentication_page.ts
+#	renamed:    src/variants/devel_release_strategy.ts -> src/variants/development_release_strategy.ts
+#	modified:   src/variants/maintenance_release_strategy.ts
+#	modified:   src/variants/production_release_strategy.ts
+#
+# Changes not staged for commit:
+#	modified:   dist/vendor.js
+#
