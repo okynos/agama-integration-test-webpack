@@ -1,7 +1,6 @@
 import { ProductionReleaseStrategy } from "./production_release_strategy";
-import { createAdministratorAccount } from "../checks/first_user";
-import { editRootUserLoginMethod } from "../checks/root_authentication";
-export class DevelReleaseStrategy extends ProductionReleaseStrategy {
+import { createAdministratorAccount, editRootUserLoginMethod } from "../checks/authentication";
+export class DevelopmentReleaseStrategy extends ProductionReleaseStrategy {
   createFirstUser(password: string) {
     createAdministratorAccount(password);
   }

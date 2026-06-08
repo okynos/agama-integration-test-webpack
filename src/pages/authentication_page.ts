@@ -1,92 +1,86 @@
 import { type Page } from "puppeteer-core";
 import { type GConstructor } from "../lib/helpers";
 
-class AuthenticationBasePage {
+class AuthenticationAdministratorAccountPage {
   protected readonly page: Page;
 
-  protected readonly defineAdminUserCheckbox = () =>
+  protected readonly defineAnAdministratorUserCheckbox = () =>
     this.page.locator("::-p-aria(Define an administrator user[role='checkbox'])");
 
   protected readonly rootLoginMethodButton = () =>
     this.page.locator("::-p-aria(Root login method[role='button'])");
 
-  protected readonly acceptButton = () => this.page.locator("button::-p-text(Accept)");
+  private readonly fullNameTextbox = () =>
+    this.page.locator("::-p-aria(Full name[role='textbox'])");
+
+  private readonly usernameCombobox = () =>
+    this.page.locator("::-p-aria(Username[role='combobox'])");
+
+  private readonly userPasswordInput = () => this.page.locator("input#userPassword");
+  private readonly userPasswordConfirmationInput = () =>
+    this.page.locator("input#userPasswordConfirmation");
+
+  protected readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
 
   constructor(page: Page) {
     this.page = page;
   }
 
   async defineAnAdministratorUser() {
-    await this.defineAdminUserCheckbox().click();
+    await this.defineAnAdministratorUserCheckbox().click();
   }
 
-  async pressRootLoginButton() {
+  async selectRootLoginMethod() {
     await this.rootLoginMethodButton().click();
   }
 
+  async fillFullName(fullName: string) {
+    await this.fullNameTextbox().fill(fullName);
+  }
+
+  async fillUserName(userName: string) {
+    await this.usernameCombobox().fill(userName);
+  }
+
+  async fillPassword(password: string) {
+    await this.userPasswordInput().fill(password);
+  }
+
+  async fillPasswordConfirmation(password: string) {
+    await this.userPasswordConfirmationInput().fill(password);
+  }
+
   async accept() {
-    const button = await this.acceptButton().waitHandle();
-    await button.scrollIntoView();
     await this.acceptButton().click();
   }
 }
 
-function AdminUserDefinable<TBase extends GConstructor<AuthenticationBasePage>>(Base: TBase) {
-  return class extends Base {
-    private readonly fullNameInput = () => this.page.locator("input#userFullName");
-
-    private readonly usernameInput = () => this.page.locator("input#userName");
-
-    private readonly userPasswordInput = () => this.page.locator("input#userPassword");
-
-    private readonly userPasswordConfirmationInput = () =>
-      this.page.locator("input#userPasswordConfirmation");
-
-    async fillFullName(fullName: string) {
-      await this.fullNameInput().fill(fullName);
-    }
-
-    async fillUserName(userName: string) {
-      await this.usernameInput().fill(userName);
-    }
-
-    async fillPassword(password: string) {
-      await this.userPasswordInput().fill(password);
-    }
-
-    async fillPasswordConfirmation(password: string) {
-      await this.userPasswordConfirmationInput().fill(password);
-    }
-  };
-}
-
-function RootLoginMethodPasswordDefinable<TBase extends GConstructor<AuthenticationBasePage>>(
-  Base: TBase,
-) {
+function RootLoginMethodPasswordDefinable<
+  TBase extends GConstructor<AuthenticationAdministratorAccountPage>,
+>(Base: TBase) {
   return class extends Base {
     private readonly rootPasswordOption = () =>
-      this.page.locator("::-p-aria(Password Log in using a password)");
+      this.page.locator("::-p-aria(Password Log in using a password[role='option'])");
 
     private readonly rootPasswordInput = () => this.page.locator("input#rootPassword");
 
     private readonly rootPasswordConfirmationInput = () =>
       this.page.locator("input#rootPasswordConfirmation");
 
-    async selectRootLoginPasswordOption() {
+    async selectPasswordAsRootLoginMethod() {
       await this.rootPasswordOption().click();
     }
 
-    async fillPassword(password: string) {
+    async fillRootPassword(password: string) {
       await this.rootPasswordInput().fill(password);
     }
 
-    async fillPasswordConfirmation(password: string) {
+    async fillRootPasswordConfirmation(password: string) {
       await this.rootPasswordConfirmationInput().fill(password);
     }
   };
 }
 
-export class AuthenticationAdministratorAccountPage extends AdminUserDefinable(
-  AuthenticationBasePage,
+export class AuthenticationWithRootLoginPassword extends RootLoginMethodPasswordDefinable(
+  AuthenticationAdministratorAccountPage,
 ) {}
-export class RootLoginMethodPage extends RootLoginMethodPasswordDefinable(AuthenticationBasePage) {}

@@ -1,4 +1,4 @@
-import { DevelReleaseStrategy } from "../variants/devel_release_strategy";
+import { DevelopmentReleaseStrategy } from "../variants/development_release_strategy";
 import { ProductionReleaseStrategy } from "../variants/production_release_strategy";
 import { MaintenanceReleaseStrategy } from "../variants/maintenance_release_strategy";
 import { RegistrationOptions } from "../checks/registration";
@@ -39,7 +39,7 @@ export class ProductStrategyFactory {
       const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
 
       if (webUiVersion >= 21 && webUiCommit >= 155) {
-        return new DevelReleaseStrategy();
+        return new DevelopmentReleaseStrategy();
       } else {
         return new ProductionReleaseStrategy();
       }

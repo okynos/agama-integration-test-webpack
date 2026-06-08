@@ -8,8 +8,7 @@ import {
   verifyRegistrationWarniningAlerts,
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
-import { createFirstUser } from "../checks/first_user";
-import { editRootUser, verifyPasswordStrength } from "../checks/root_authentication";
+import { createFirstUser, editRootUser, verifyPasswordStrength } from "../checks/authentication";
 import { checkInstallation, finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";

@@ -12,11 +12,11 @@ import {
   enableEncryptionWithSidebar,
   verifyEncryptionEnabledWithSidebar,
 } from "../checks/encryption";
-import { createFirstUserWithSidebar } from "../checks/first_user";
 import {
+  createFirstUserWithSidebar,
   editRootUserWithSidebar,
   verifyPasswordStrengthWithSidebar,
-} from "../checks/root_authentication";
+} from "../checks/authentication";
 import {
   checkInstallationWithSidebar,
   finishInstallationCongratulation,
