@@ -35,7 +35,7 @@ import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_re
 import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync";
 
 export class MaintenanceReleaseStrategy implements IProductTestStrategy {
-  setPermanentHostname(hostname: string) {
+  setStaticHostname(hostname: string) {
     setPermanentHostnameWithSidebar(hostname);
   }
 

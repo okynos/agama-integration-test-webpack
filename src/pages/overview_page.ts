@@ -2,7 +2,7 @@ import { type Page } from "puppeteer-core";
 
 export class OverviewPage {
   protected readonly page: Page;
-  private readonly hostnameLink = () => this.page.locator("a[href='#/hostname']");
+  private readonly systemLink = () => this.page.locator("a[href='#/system']");
   private readonly localizationLink = () => this.page.locator("a[href='#/l10n']");
   private readonly networkLink = () => this.page.locator("a[href='#/network']");
   private readonly storageLink = () => this.page.locator("a[href='#/storage']");
@@ -27,8 +27,8 @@ export class OverviewPage {
     await this.installButton().click();
   }
 
-  async goToHostname() {
-    await this.hostnameLink().click();
+  async goToSystem() {
+    await this.systemLink().click();
   }
 
   async goToLocalization() {

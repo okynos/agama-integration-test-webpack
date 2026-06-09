@@ -286,16 +286,31 @@ function disableEncryptionWithSidebar() {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setPermanentHostname = setPermanentHostname;
+exports.setStaticHostname = setStaticHostname;
+exports.setStaticHostnameTransient = setStaticHostnameTransient;
 exports.setPermanentHostnameWithSidebar = setPermanentHostnameWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const overview_transient_page_1 = __webpack_require__(/*! ../pages/overview_transient_page */ "./src/pages/overview_transient_page.ts");
 const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
+const system_page_1 = __webpack_require__(/*! ../pages/system_page */ "./src/pages/system_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
-function setPermanentHostname(hostname) {
+function setStaticHostname(hostname) {
     (0, helpers_1.it)("should allow setting static hostname", async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const systemPage = new system_page_1.SystemPage(helpers_1.page);
+        await overview.goToSystem();
+        await systemPage.selectStaticMode();
+        await systemPage.fill(hostname);
+        await systemPage.accept();
+        await header.goToOverview();
+    });
+}
+function setStaticHostnameTransient(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const overview = new overview_transient_page_1.OverviewTransientPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
         await overview.goToHostname();
@@ -2410,6 +2425,62 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
     page;
+    systemLink = () => this.page.locator("a[href='#/system']");
+    localizationLink = () => this.page.locator("a[href='#/l10n']");
+    networkLink = () => this.page.locator("a[href='#/network']");
+    storageLink = () => this.page.locator("a[href='#/storage']");
+    softwareLink = () => this.page.locator("a[href='#/software']");
+    usersLink = () => this.page.locator("a[href='#/users']");
+    registrationLink = () => this.page.locator("a[href='#/registration']");
+    installButton = () => this.page.locator("button::-p-text(Install now)");
+    overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async ensureSystemInformationPresent(timeout = 30 * 1000) {
+        await this.overviewHeading().setTimeout(timeout).wait();
+    }
+    async install() {
+        await this.installButton().click();
+    }
+    async goToSystem() {
+        await this.systemLink().click();
+    }
+    async goToLocalization() {
+        await this.localizationLink().click();
+    }
+    async goToNetwork() {
+        await this.networkLink().click();
+    }
+    async goToStorage() {
+        await this.storageLink().click();
+    }
+    async goToSoftware() {
+        await this.softwareLink().click();
+    }
+    async goToAuthentication() {
+        await this.usersLink().click();
+    }
+    async goToRegistration() {
+        await this.registrationLink().click();
+    }
+}
+exports.OverviewPage = OverviewPage;
+
+
+/***/ },
+
+/***/ "./src/pages/overview_transient_page.ts"
+/*!**********************************************!*\
+  !*** ./src/pages/overview_transient_page.ts ***!
+  \**********************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OverviewTransientPage = void 0;
+class OverviewTransientPage {
+    page;
     hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
@@ -2450,7 +2521,7 @@ class OverviewPage {
         await this.registrationLink().click();
     }
 }
-exports.OverviewPage = OverviewPage;
+exports.OverviewTransientPage = OverviewTransientPage;
 
 
 /***/ },
@@ -3158,6 +3229,40 @@ exports.StorageZfcpActivateControllersPage = StorageZfcpActivateControllersPage;
 
 /***/ },
 
+/***/ "./src/pages/system_page.ts"
+/*!**********************************!*\
+  !*** ./src/pages/system_page.ts ***!
+  \**********************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SystemPage = void 0;
+class SystemPage {
+    page;
+    modeButton = () => this.page.locator("::-p-aria(Mode[role='button'])");
+    modeStaticOption = () => this.page.locator("::-p-aria(Static Set manually[role='option'])");
+    nameInput = () => this.page.locator("input#hostnameValue");
+    acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectStaticMode() {
+        await this.modeButton().click();
+        await this.modeStaticOption().click();
+    }
+    async fill(hostname) {
+        await this.nameInput().fill(hostname);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.SystemPage = SystemPage;
+
+
+/***/ },
+
 /***/ "./src/pages/trust_registration_certificate_page.ts"
 /*!**********************************************************!*\
   !*** ./src/pages/trust_registration_certificate_page.ts ***!
@@ -3296,12 +3401,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevelopmentReleaseStrategy = void 0;
 const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
 const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
+const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
 class DevelopmentReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
     createFirstUser(password) {
         (0, authentication_1.createAdministratorAccount)(password);
     }
     editRootUser(password) {
         (0, authentication_1.editRootUserLoginMethod)(password);
+    }
+    setStaticHostname(hostname) {
+        (0, hostname_1.setStaticHostname)(hostname);
     }
 }
 exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;
@@ -3335,7 +3444,7 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class MaintenanceReleaseStrategy {
-    setPermanentHostname(hostname) {
+    setStaticHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
     }
     verifyRegistrationWarniningAlerts(use_custom, url) {
@@ -3442,8 +3551,8 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class ProductionReleaseStrategy {
-    setPermanentHostname(hostname) {
-        (0, hostname_1.setPermanentHostname)(hostname);
+    setStaticHostname(hostname) {
+        (0, hostname_1.setStaticHostnameTransient)(hostname);
     }
     verifyRegistrationWarniningAlerts() {
         (0, registration_1.verifyRegistrationWarniningAlerts)();
