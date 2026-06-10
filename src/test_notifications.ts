@@ -4,7 +4,6 @@ import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
-import { downloadLogs } from "./checks/download_logs";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
 
 const options = parse((cmd) =>
@@ -23,7 +22,6 @@ const options = parse((cmd) =>
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "Provide registration code for customer registration")
-    .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
@@ -34,14 +32,17 @@ const testStrategy = ProductStrategyFactory.create(
   options.agamaWebUiPackageVersion,
 );
 
+testStrategy.logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
     productSelectionWithLicenseAndMode(options.productId, options.productMode);
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
-if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
-testStrategy.enableEncryption(options.password);
+testStrategy.verifyRegistrationWarniningAlerts(
+  options.useCustomRegistrationServer,
+  options.registrationServerUrl,
+);
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
@@ -49,12 +50,10 @@ if (options.registrationCode)
     provide_code: options.provideRegistrationCode,
     url: options.registrationServerUrl,
   });
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
+testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
-downloadLogs();
+testStrategy.verifyPasswordStrength();
 if (options.install) {
   testStrategy.performInstallation();
   testStrategy.checkInstallation();

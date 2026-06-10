@@ -132,7 +132,7 @@ export function verifyRegistrationWarniningAlerts(): void {
     const warningText = await getTextContent(
       productRegistrationCustom.alertWarningEnterARegistrationCodeText(),
     );
-    assert.deepEqual(warningText, "Enter a registration code");
+    assert.deepEqual(warningText, "Please provide Registration Code.");
   });
 
   it("should show warning alert for invalid registration code", async function () {

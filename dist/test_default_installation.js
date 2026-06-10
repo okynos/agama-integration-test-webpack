@@ -708,7 +708,7 @@ function verifyRegistrationWarniningAlerts() {
         await overview.goToRegistration();
         await productRegistrationCustom.register();
         const warningText = await (0, helpers_1.getTextContent)(productRegistrationCustom.alertWarningEnterARegistrationCodeText());
-        strict_1.default.deepEqual(warningText, "Enter a registration code");
+        strict_1.default.deepEqual(warningText, "Please provide Registration Code.");
     });
     (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
         const productRegistrationCustom = new registration_page_1.RegistrationCustomPage(helpers_1.page);
@@ -2779,7 +2779,7 @@ class RegistrationBasePage {
     registrationServerButton = () => this.page.locator("::-p-aria(Registration server)");
     infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     alertWarningUnknownRegistrationCodeText = () => this.page.locator("::-p-text(Unknown Registration Code.)");
-    alertWarningEnterARegistrationCodeText = () => this.page.locator("::-p-text(Enter a registration code)");
+    alertWarningEnterARegistrationCodeText = () => this.page.locator("::-p-text(Please provide Registration Code.)");
     alertWarningNetworkErrorText = () => this.page.locator("::-p-text(Network error)");
     constructor(page) {
         this.page = page;

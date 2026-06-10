@@ -16,7 +16,7 @@ class RegistrationBasePage {
     this.page.locator("::-p-text(Unknown Registration Code.)");
 
   public readonly alertWarningEnterARegistrationCodeText = () =>
-    this.page.locator("::-p-text(Enter a registration code)");
+    this.page.locator("::-p-text(Please provide Registration Code.)");
 
   public readonly alertWarningNetworkErrorText = () =>
     this.page.locator("::-p-text(Network error)");
