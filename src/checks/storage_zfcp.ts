@@ -22,7 +22,7 @@ export function prepareZfcpStorage() {
     await storageNoDeviceFound.activateZfcpDisks();
     await storageZfcpControllersNotActivated.activateControllers();
     await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
-    await storageZfcpActivateControllers.accept();
+    await waitUntilOverlaySettled(() => storageZfcpActivateControllers.accept());
 
     await waitUntilOverlaySettled(() => multipath.activate());
 

@@ -41,7 +41,7 @@ if (options.productId !== "none")
     productSelectionWithLicenseAndMode(options.productId, options.productMode);
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
-if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
+if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
 testStrategy.verifyRegistrationWarniningAlerts(
   options.useCustomRegistrationServer,
   options.registrationServerUrl,
