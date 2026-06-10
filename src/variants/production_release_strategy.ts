@@ -1,5 +1,5 @@
 import { IProductTestStrategy } from "../lib/product_strategy_factory";
-import { setPermanentHostname } from "../checks/hostname";
+import { setStaticHostnameTransient } from "../checks/hostname";
 import {
   RegistrationOptions,
   enterExtensionRegistrationHA,
@@ -23,8 +23,8 @@ import { verifyDecryptDestructiveActions } from "../checks/storage_result_destru
 import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
 
 export class ProductionReleaseStrategy implements IProductTestStrategy {
-  setPermanentHostname(hostname: string) {
-    setPermanentHostname(hostname);
+  setStaticHostname(hostname: string) {
+    setStaticHostnameTransient(hostname);
   }
 
   verifyRegistrationWarniningAlerts() {
