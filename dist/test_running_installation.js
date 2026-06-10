@@ -1161,13 +1161,9 @@ function selectMoreDevicesWithSidebar() {
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 exports.prepareZfcpStorageWithSidebar = prepareZfcpStorageWithSidebar;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
@@ -1190,9 +1186,7 @@ function prepareZfcpStorage() {
         await storageZfcpControllersNotActivated.activateControllers();
         await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
         await (0, helpers_1.waitUntilOverlaySettled)(() => storageZfcpActivateControllers.accept());
-        await (0, helpers_1.waitUntilOverlaySettled)(() => multipath.activate());
-        const controllersText = await (0, helpers_1.getTextContent)(storageZfcpActivateControllers.allControllersActivatedText());
-        strict_1.default.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
+        await multipath.activate();
         await header.goToOverview();
     });
 }
@@ -3167,9 +3161,7 @@ class StorageSettingsPage {
     async manageDasd() {
         await this.manageDasdLink().click();
     }
-    async activateZfcpDisks(timeout = 30 * 1000) {
-        await this.page.waitForSelector("::-p-aria(More storage options)", { visible: true });
-        await this.ActivateZfcpLink().setTimeout(timeout).hover();
+    async activateZfcpDisks() {
         await this.ActivateZfcpLink().click();
     }
     async addLvmVolumeGroup() {

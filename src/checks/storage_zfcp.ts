@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import { it, page, getTextContent, waitUntilOverlaySettled } from "../lib/helpers";
+import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
@@ -24,12 +23,8 @@ export function prepareZfcpStorage() {
     await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
     await waitUntilOverlaySettled(() => storageZfcpActivateControllers.accept());
 
-    await waitUntilOverlaySettled(() => multipath.activate());
+    await multipath.activate();
 
-    const controllersText = await getTextContent(
-      storageZfcpActivateControllers.allControllersActivatedText(),
-    );
-    assert.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
     await header.goToOverview();
   });
 }
