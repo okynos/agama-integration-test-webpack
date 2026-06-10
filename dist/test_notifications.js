@@ -168,35 +168,6 @@ function verifyPasswordStrengthWithSidebar() {
 
 /***/ },
 
-/***/ "./src/checks/download_logs.ts"
-/*!*************************************!*\
-  !*** ./src/checks/download_logs.ts ***!
-  \*************************************/
-(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.downloadLogs = downloadLogs;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
-const options_toggle_page_1 = __webpack_require__(/*! ../pages/options_toggle_page */ "./src/pages/options_toggle_page.ts");
-const filePath = "/root/Downloads/agama-logs.tar.gz";
-async function downloadLogs() {
-    (0, helpers_1.it)(`should download logs`, async function () {
-        await new options_toggle_page_1.OptionsTogglePage(helpers_1.page).downloadLogs();
-        await (0, helpers_1.waitOnFile)(filePath);
-        const fileSize = fs_1.default.statSync(filePath).size;
-        (0, strict_1.default)(fileSize > 0, "Agama Logfile is empty.");
-    });
-}
-
-
-/***/ },
-
 /***/ "./src/checks/encryption.ts"
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
@@ -315,31 +286,16 @@ function disableEncryptionWithSidebar() {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setStaticHostname = setStaticHostname;
-exports.setStaticHostnameTransient = setStaticHostnameTransient;
+exports.setPermanentHostname = setPermanentHostname;
 exports.setPermanentHostnameWithSidebar = setPermanentHostnameWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const overview_transient_page_1 = __webpack_require__(/*! ../pages/overview_transient_page */ "./src/pages/overview_transient_page.ts");
 const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
-const system_page_1 = __webpack_require__(/*! ../pages/system_page */ "./src/pages/system_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
-function setStaticHostname(hostname) {
+function setPermanentHostname(hostname) {
     (0, helpers_1.it)("should allow setting static hostname", async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const systemPage = new system_page_1.SystemPage(helpers_1.page);
-        await overview.goToSystem();
-        await systemPage.selectStaticMode();
-        await systemPage.fill(hostname);
-        await systemPage.accept();
-        await header.goToOverview();
-    });
-}
-function setStaticHostnameTransient(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const overview = new overview_transient_page_1.OverviewTransientPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
         await overview.goToHostname();
@@ -1240,8 +1196,10 @@ function prepareZfcpStorage() {
         await storageNoDeviceFound.activateZfcpDisks();
         await storageZfcpControllersNotActivated.activateControllers();
         await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
-        await (0, helpers_1.waitUntilOverlaySettled)(() => storageZfcpActivateControllers.accept());
-        await (0, helpers_1.waitUntilOverlaySettled)(() => multipath.activate());
+        await storageZfcpActivateControllers.accept();
+        const elementText = await (0, helpers_1.getTextContent)(multipath.multipathText());
+        strict_1.default.deepEqual(elementText, "The system seems to have multipath hardware. Do you want to activate multipath?");
+        await multipath.activate();
         const controllersText = await (0, helpers_1.getTextContent)(storageZfcpActivateControllers.allControllersActivatedText());
         strict_1.default.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
         await header.goToOverview();
@@ -1817,7 +1775,7 @@ exports.ActivateMultipathPage = void 0;
 class ActivateMultipathPage {
     page;
     multipathText = () => this.page.locator("::-p-text(The system seems to have multipath hardware)");
-    activateButton = () => this.page.locator("::-p-aria(Yes[role='button'])");
+    activateButton = () => this.page.locator("::-p-text(Yes)");
     constructor(page) {
         this.page = page;
     }
@@ -2490,37 +2448,6 @@ exports.NetworkWithSidebarPage = NetworkWithSidebarPage;
 
 /***/ },
 
-/***/ "./src/pages/options_toggle_page.ts"
-/*!******************************************!*\
-  !*** ./src/pages/options_toggle_page.ts ***!
-  \******************************************/
-(__unused_webpack_module, exports) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OptionsTogglePage = void 0;
-class OptionsTogglePage {
-    page;
-    moreInstallerOptionsToggle = () => this.page.locator("::-p-aria(More installer options)");
-    optionsToggle = () => this.page.locator("::-p-aria(Options toggle)");
-    downloadLogsMenuItem = () => this.page.locator("::-p-aria(Download logs)");
-    constructor(page) {
-        this.page = page;
-    }
-    async downloadLogs() {
-        const toggle = await Promise.any([
-            this.moreInstallerOptionsToggle().waitHandle(),
-            this.optionsToggle().waitHandle(),
-        ]);
-        await toggle.click();
-        await this.downloadLogsMenuItem().click();
-    }
-}
-exports.OptionsTogglePage = OptionsTogglePage;
-
-
-/***/ },
-
 /***/ "./src/pages/overview_page.ts"
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -2531,62 +2458,6 @@ exports.OptionsTogglePage = OptionsTogglePage;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
-    page;
-    systemLink = () => this.page.locator("a[href='#/system']");
-    localizationLink = () => this.page.locator("a[href='#/l10n']");
-    networkLink = () => this.page.locator("a[href='#/network']");
-    storageLink = () => this.page.locator("a[href='#/storage']");
-    softwareLink = () => this.page.locator("a[href='#/software']");
-    usersLink = () => this.page.locator("a[href='#/users']");
-    registrationLink = () => this.page.locator("a[href='#/registration']");
-    installButton = () => this.page.locator("button::-p-text(Install now)");
-    overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
-    constructor(page) {
-        this.page = page;
-    }
-    async ensureSystemInformationPresent(timeout = 30 * 1000) {
-        await this.overviewHeading().setTimeout(timeout).wait();
-    }
-    async install() {
-        await this.installButton().click();
-    }
-    async goToSystem() {
-        await this.systemLink().click();
-    }
-    async goToLocalization() {
-        await this.localizationLink().click();
-    }
-    async goToNetwork() {
-        await this.networkLink().click();
-    }
-    async goToStorage() {
-        await this.storageLink().click();
-    }
-    async goToSoftware() {
-        await this.softwareLink().click();
-    }
-    async goToAuthentication() {
-        await this.usersLink().click();
-    }
-    async goToRegistration() {
-        await this.registrationLink().click();
-    }
-}
-exports.OverviewPage = OverviewPage;
-
-
-/***/ },
-
-/***/ "./src/pages/overview_transient_page.ts"
-/*!**********************************************!*\
-  !*** ./src/pages/overview_transient_page.ts ***!
-  \**********************************************/
-(__unused_webpack_module, exports) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OverviewTransientPage = void 0;
-class OverviewTransientPage {
     page;
     hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
@@ -2628,7 +2499,7 @@ class OverviewTransientPage {
         await this.registrationLink().click();
     }
 }
-exports.OverviewTransientPage = OverviewTransientPage;
+exports.OverviewPage = OverviewPage;
 
 
 /***/ },
@@ -3320,9 +3191,7 @@ class StorageSettingsPage {
     async manageDasd() {
         await this.manageDasdLink().click();
     }
-    async activateZfcpDisks(timeout = 30 * 1000) {
-        await this.page.waitForSelector("::-p-aria(More storage options)", { visible: true });
-        await this.ActivateZfcpLink().setTimeout(timeout).hover();
+    async activateZfcpDisks() {
         await this.ActivateZfcpLink().click();
     }
     async addLvmVolumeGroup() {
@@ -3405,40 +3274,6 @@ class StorageZfcpActivateControllersPage {
     }
 }
 exports.StorageZfcpActivateControllersPage = StorageZfcpActivateControllersPage;
-
-
-/***/ },
-
-/***/ "./src/pages/system_page.ts"
-/*!**********************************!*\
-  !*** ./src/pages/system_page.ts ***!
-  \**********************************/
-(__unused_webpack_module, exports) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SystemPage = void 0;
-class SystemPage {
-    page;
-    modeButton = () => this.page.locator("::-p-aria(Mode[role='button'])");
-    modeStaticOption = () => this.page.locator("::-p-aria(Static Set manually[role='option'])");
-    nameInput = () => this.page.locator("input#hostnameValue");
-    acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
-    constructor(page) {
-        this.page = page;
-    }
-    async selectStaticMode() {
-        await this.modeButton().click();
-        await this.modeStaticOption().click();
-    }
-    async fill(hostname) {
-        await this.nameInput().fill(hostname);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.SystemPage = SystemPage;
 
 
 /***/ },
@@ -3541,10 +3376,10 @@ exports.ZfcpPage = ZfcpPage;
 
 /***/ },
 
-/***/ "./src/test_extended.ts"
-/*!******************************!*\
-  !*** ./src/test_extended.ts ***!
-  \******************************/
+/***/ "./src/test_notifications.ts"
+/*!***********************************!*\
+  !*** ./src/test_notifications.ts ***!
+  \***********************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -3554,7 +3389,6 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
@@ -3566,10 +3400,10 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "Provide registration code for customer registration")
-    .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaWebUiPackageVersion);
+testStrategy.logInWithIncorrectPassword();
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -3577,9 +3411,7 @@ if (options.productId !== "none")
     else
         (0, product_selection_1.productSelection)(options.productId);
 testStrategy.ensureLandingOnOverview();
-if (options.staticHostname)
-    testStrategy.setStaticHostname(options.staticHostname);
-testStrategy.enableEncryption(options.password);
+testStrategy.verifyRegistrationWarniningAlerts(options.useCustomRegistrationServer, options.registrationServerUrl);
 if (options.registrationCode)
     testStrategy.enterProductRegistration({
         use_custom: options.useCustomRegistrationServer,
@@ -3587,13 +3419,10 @@ if (options.registrationCode)
         provide_code: options.provideRegistrationCode,
         url: options.registrationServerUrl,
     });
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
+testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp")
-    testStrategy.prepareZfcpStorage();
-(0, download_logs_1.downloadLogs)();
+testStrategy.verifyPasswordStrength();
 if (options.install) {
     testStrategy.performInstallation();
     testStrategy.checkInstallation();
@@ -3614,16 +3443,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevelopmentReleaseStrategy = void 0;
 const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
 const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
-const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
 class DevelopmentReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
     createFirstUser(password) {
         (0, authentication_1.createAdministratorAccount)(password);
     }
     editRootUser(password) {
         (0, authentication_1.editRootUserLoginMethod)(password);
-    }
-    setStaticHostname(hostname) {
-        (0, hostname_1.setStaticHostname)(hostname);
     }
 }
 exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;
@@ -3657,7 +3482,7 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class MaintenanceReleaseStrategy {
-    setStaticHostname(hostname) {
+    setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
     }
     verifyRegistrationWarniningAlerts(use_custom, url) {
@@ -3764,8 +3589,8 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class ProductionReleaseStrategy {
-    setStaticHostname(hostname) {
-        (0, hostname_1.setStaticHostnameTransient)(hostname);
+    setPermanentHostname(hostname) {
+        (0, hostname_1.setPermanentHostname)(hostname);
     }
     verifyRegistrationWarniningAlerts() {
         (0, registration_1.verifyRegistrationWarniningAlerts)();
@@ -4230,7 +4055,7 @@ module.exports = require("zlib");
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
 /******/ 		// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./src/test_extended.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./src/test_notifications.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -4376,7 +4201,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_extended": 1
+/******/ 			"test_notifications": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -4430,4 +4255,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_extended.js.map
+//# sourceMappingURL=test_notifications.js.map
