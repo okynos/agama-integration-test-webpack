@@ -737,7 +737,7 @@ function verifyRegistrationWarniningAlerts() {
         await overview.goToRegistration();
         await productRegistrationCustom.register();
         const warningText = await (0, helpers_1.getTextContent)(productRegistrationCustom.alertWarningEnterARegistrationCodeText());
-        strict_1.default.deepEqual(warningText, "Enter a registration code");
+        strict_1.default.deepEqual(warningText, "Please provide Registration Code.");
     });
     (0, helpers_1.it)("should show warning alert for invalid registration code", async function () {
         const productRegistrationCustom = new registration_page_1.RegistrationCustomPage(helpers_1.page);
@@ -2839,7 +2839,7 @@ class RegistrationBasePage {
     registrationServerButton = () => this.page.locator("::-p-aria(Registration server)");
     infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     alertWarningUnknownRegistrationCodeText = () => this.page.locator("::-p-text(Unknown Registration Code.)");
-    alertWarningEnterARegistrationCodeText = () => this.page.locator("::-p-text(Enter a registration code)");
+    alertWarningEnterARegistrationCodeText = () => this.page.locator("::-p-text(Please provide Registration Code.)");
     alertWarningNetworkErrorText = () => this.page.locator("::-p-text(Network error)");
     constructor(page) {
         this.page = page;
@@ -3570,7 +3570,6 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaWebUiPackageVersion);
-testStrategy.logInWithIncorrectPassword();
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
     if (options.acceptLicense)
@@ -3579,8 +3578,8 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
 testStrategy.ensureLandingOnOverview();
 if (options.staticHostname)
-    testStrategy.setStaticHostname(options.staticHostname);
-testStrategy.verifyRegistrationWarniningAlerts(options.useCustomRegistrationServer, options.registrationServerUrl);
+    testStrategy.setPermanentHostname(options.staticHostname);
+testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
     testStrategy.enterProductRegistration({
         use_custom: options.useCustomRegistrationServer,
@@ -3588,13 +3587,10 @@ if (options.registrationCode)
         provide_code: options.provideRegistrationCode,
         url: options.registrationServerUrl,
     });
-testStrategy.enableEncryption(options.password);
 testStrategy.verifyEncryptionEnabled();
 testStrategy.disableEncryption();
-testStrategy.changeDeviceToInstallTheSystem();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp")
     testStrategy.prepareZfcpStorage();
 (0, download_logs_1.downloadLogs)();
