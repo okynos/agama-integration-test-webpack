@@ -1,5 +1,5 @@
 import { IProductTestStrategy } from "../lib/product_strategy_factory";
-import { setStaticHostname } from "../checks/hostname";
+import { setStaticHostname, configureTimeSynchronizationServers } from "../checks/system";
 import {
   RegistrationOptions,
   enterExtensionRegistrationHA,
@@ -134,5 +134,9 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   downloadLogs() {
     downloadLogs();
+  }
+
+  configureTimeSynchronizationServers(ntpServerAddresses: string[]): void {
+    configureTimeSynchronizationServers(ntpServerAddresses);
   }
 }

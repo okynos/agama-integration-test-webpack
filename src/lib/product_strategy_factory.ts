@@ -5,6 +5,7 @@ import { RegistrationOptions } from "../checks/registration";
 
 export interface IProductTestStrategy {
   setStaticHostname(hostname: string): void;
+  configureTimeSynchronizationServers?(ntpServerAddresses: string[]): void;
   verifyRegistrationWarniningAlerts(use_custom?: string, url?: string): void;
   enterProductRegistration({ use_custom, code, provide_code, url }: RegistrationOptions): void;
   enableEncryption(password: string): void;

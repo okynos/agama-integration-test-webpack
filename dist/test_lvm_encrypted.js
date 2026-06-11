@@ -285,48 +285,6 @@ function disableEncryptionWithSidebar() {
 
 /***/ },
 
-/***/ "./src/checks/hostname.ts"
-/*!********************************!*\
-  !*** ./src/checks/hostname.ts ***!
-  \********************************/
-(__unused_webpack_module, exports, __webpack_require__) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setStaticHostname = setStaticHostname;
-exports.setPermanentHostnameWithSidebar = setPermanentHostnameWithSidebar;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
-const system_page_1 = __webpack_require__(/*! ../pages/system_page */ "./src/pages/system_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
-function setStaticHostname(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const systemPage = new system_page_1.SystemPage(helpers_1.page);
-        await overview.goToSystem();
-        await systemPage.selectStaticMode();
-        await systemPage.fill(hostname);
-        await systemPage.accept();
-        await header.goToInstallation();
-    });
-}
-function setPermanentHostnameWithSidebar(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
-        await sidebar.goToHostname();
-        await hostnamePage.useStaticHostname();
-        await hostnamePage.fill(hostname);
-        await hostnamePage.accept();
-    });
-}
-
-
-/***/ },
-
 /***/ "./src/checks/installation.ts"
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -1166,6 +1124,62 @@ function prepareZfcpStorageWithSidebar() {
         // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
         await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
     }, 3 * 60 * 1000);
+}
+
+
+/***/ },
+
+/***/ "./src/checks/system.ts"
+/*!******************************!*\
+  !*** ./src/checks/system.ts ***!
+  \******************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setStaticHostname = setStaticHostname;
+exports.setPermanentHostnameWithSidebar = setPermanentHostnameWithSidebar;
+exports.configureTimeSynchronizationServers = configureTimeSynchronizationServers;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
+const system_page_1 = __webpack_require__(/*! ../pages/system_page */ "./src/pages/system_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function setStaticHostname(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const systemPage = new system_page_1.SystemPage(helpers_1.page);
+        await overview.goToSystem();
+        await systemPage.selectStaticMode();
+        await systemPage.fill(hostname);
+        await systemPage.accept();
+        await header.goToInstallation();
+    });
+}
+function setPermanentHostnameWithSidebar(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
+        await sidebar.goToHostname();
+        await hostnamePage.useStaticHostname();
+        await hostnamePage.fill(hostname);
+        await hostnamePage.accept();
+    });
+}
+function configureTimeSynchronizationServers(serverAddresses) {
+    (0, helpers_1.it)("should allow to configure the NTP servers", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const system = new system_page_1.SystemPage(helpers_1.page);
+        await overview.goToSystem();
+        await system.selectCustomMode();
+        for (const server of serverAddresses)
+            await system.addServerAddress(server);
+        await system.accept();
+        await header.goToInstallation();
+    });
 }
 
 
@@ -3235,19 +3249,32 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemPage = void 0;
 class SystemPage {
     page;
-    modeButton = () => this.page.locator("::-p-aria(Mode[role='button'])");
+    hostnameModeButton = () => this.page.locator("#hostnameMode::-p-aria(Mode[role='button'])");
     modeStaticOption = () => this.page.locator("::-p-aria(Static Set manually[role='option'])");
-    nameInput = () => this.page.locator("input#hostnameValue");
+    nameTextbox = () => this.page.locator("::-p-aria(Name[role='textbox'])");
+    ntpModeButton = () => this.page.locator("#ntpMode::-p-aria(Mode[role='button'])");
+    customModeOption = () => this.page.locator("::-p-aria(Custom Set NTP servers manually[role='option'])");
+    serverAddressesTextbox = () => this.page.locator("::-p-aria(Server addresses[role='textbox'])");
     acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
     constructor(page) {
         this.page = page;
     }
     async selectStaticMode() {
-        await this.modeButton().click();
+        await this.hostnameModeButton().click();
         await this.modeStaticOption().click();
     }
     async fill(hostname) {
-        await this.nameInput().fill(hostname);
+        await this.nameTextbox().fill(hostname);
+    }
+    async selectCustomMode() {
+        await this.ntpModeButton().click();
+        await this.customModeOption().click();
+    }
+    async addServerAddress(address) {
+        const inputElement = this.serverAddressesTextbox();
+        const inputHandle = await this.serverAddressesTextbox().waitHandle();
+        await inputElement.fill(address);
+        await inputHandle.press("Enter");
     }
     async accept() {
         await this.acceptButton().click();
@@ -3408,7 +3435,7 @@ exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MaintenanceReleaseStrategy = void 0;
-const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
+const system_1 = __webpack_require__(/*! ../checks/system */ "./src/checks/system.ts");
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
 const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
@@ -3427,7 +3454,7 @@ const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_s
 const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class MaintenanceReleaseStrategy {
     setStaticHostname(hostname) {
-        (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
+        (0, system_1.setPermanentHostnameWithSidebar)(hostname);
     }
     verifyRegistrationWarniningAlerts(use_custom, url) {
         (0, registration_1.verifyRegistrationWarniningAlertsWithSidebar)(use_custom, url);
@@ -3519,7 +3546,7 @@ exports.MaintenanceReleaseStrategy = MaintenanceReleaseStrategy;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductionReleaseStrategy = void 0;
-const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
+const system_1 = __webpack_require__(/*! ../checks/system */ "./src/checks/system.ts");
 const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
 const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
@@ -3538,7 +3565,7 @@ const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_s
 const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class ProductionReleaseStrategy {
     setStaticHostname(hostname) {
-        (0, hostname_1.setStaticHostname)(hostname);
+        (0, system_1.setStaticHostname)(hostname);
     }
     verifyRegistrationWarniningAlerts() {
         (0, registration_1.verifyRegistrationWarniningAlerts)();
@@ -3617,6 +3644,9 @@ class ProductionReleaseStrategy {
     }
     downloadLogs() {
         (0, download_logs_1.downloadLogs)();
+    }
+    configureTimeSynchronizationServers(ntpServerAddresses) {
+        (0, system_1.configureTimeSynchronizationServers)(ntpServerAddresses);
     }
 }
 exports.ProductionReleaseStrategy = ProductionReleaseStrategy;

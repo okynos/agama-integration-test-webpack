@@ -1,4 +1,4 @@
-import { parse } from "./lib/cmdline";
+import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
@@ -23,6 +23,11 @@ const options = parse((cmd) =>
     .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "Provide registration code for customer registration")
     .option("--staticHostname <hostname>", "Static Hostname")
+    .option(
+      "--ntpServerAddresses <ntpServers>...",
+      "Comma-separated list of NTP servers",
+      commaSeparatedList,
+    )
     .option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
@@ -40,6 +45,8 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
 if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
+if (options.ntpServerAddresses)
+  testStrategy.configureTimeSynchronizationServers(options.ntpServerAddresses);
 testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
   testStrategy.enterProductRegistration({

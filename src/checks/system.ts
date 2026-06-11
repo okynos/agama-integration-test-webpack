@@ -30,3 +30,17 @@ export function setPermanentHostnameWithSidebar(hostname: string) {
     await hostnamePage.accept();
   });
 }
+
+export function configureTimeSynchronizationServers(serverAddresses: string[]) {
+  it("should allow to configure the NTP servers", async function () {
+    const overview = new OverviewPage(page);
+    const header = new HeaderPage(page);
+    const system = new SystemPage(page);
+
+    await overview.goToSystem();
+    await system.selectCustomMode();
+    for (const server of serverAddresses) await system.addServerAddress(server);
+    await system.accept();
+    await header.goToInstallation();
+  });
+}
