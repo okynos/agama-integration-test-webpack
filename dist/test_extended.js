@@ -3578,7 +3578,7 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
 testStrategy.ensureLandingOnOverview();
 if (options.staticHostname)
-    testStrategy.setPermanentHostname(options.staticHostname);
+    testStrategy.setStaticHostname(options.staticHostname);
 testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
     testStrategy.enterProductRegistration({
