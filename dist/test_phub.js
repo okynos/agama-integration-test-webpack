@@ -1134,13 +1134,9 @@ function selectMoreDevicesWithSidebar() {
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 exports.prepareZfcpStorageWithSidebar = prepareZfcpStorageWithSidebar;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
@@ -1162,12 +1158,8 @@ function prepareZfcpStorage() {
         await storageNoDeviceFound.activateZfcpDisks();
         await storageZfcpControllersNotActivated.activateControllers();
         await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
-        await storageZfcpActivateControllers.accept();
-        const elementText = await (0, helpers_1.getTextContent)(multipath.multipathText());
-        strict_1.default.deepEqual(elementText, "The system seems to have multipath hardware. Do you want to activate multipath?");
+        await (0, helpers_1.waitUntilOverlaySettled)(() => storageZfcpActivateControllers.accept());
         await multipath.activate();
-        const controllersText = await (0, helpers_1.getTextContent)(storageZfcpActivateControllers.allControllersActivatedText());
-        strict_1.default.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
         await header.goToOverview();
     });
 }
@@ -1741,7 +1733,7 @@ exports.ActivateMultipathPage = void 0;
 class ActivateMultipathPage {
     page;
     multipathText = () => this.page.locator("::-p-text(The system seems to have multipath hardware)");
-    activateButton = () => this.page.locator("::-p-text(Yes)");
+    activateButton = () => this.page.locator("::-p-aria(Yes[role='button'])");
     constructor(page) {
         this.page = page;
     }

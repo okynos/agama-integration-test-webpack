@@ -6,7 +6,7 @@ export class ActivateMultipathPage {
   public readonly multipathText = () =>
     this.page.locator("::-p-text(The system seems to have multipath hardware)");
 
-  private readonly activateButton = () => this.page.locator("::-p-text(Yes)");
+  protected readonly activateButton = () => this.page.locator("::-p-aria(Yes[role='button'])");
 
   constructor(page: Page) {
     this.page = page;

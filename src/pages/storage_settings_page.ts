@@ -31,7 +31,7 @@ export class StorageSettingsPage {
 
   private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
 
-  private readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+  protected readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
   private readonly addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
 
   private readonly expandPartitionsButton = () =>
