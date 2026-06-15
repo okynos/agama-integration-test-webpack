@@ -1,4 +1,4 @@
-import { it, page, sleep, getTextContent } from "../lib/helpers";
+import { it, page, sleep, getTextContent, waitUntilOverlaySettled } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
@@ -21,7 +21,7 @@ export function createAdministratorAccount(password: string) {
     await defineAdministratorUser.fillUserName("bernhard");
     await defineAdministratorUser.fillPassword(password);
     await defineAdministratorUser.fillPasswordConfirmation(password);
-    await defineAdministratorUser.accept();
+    await waitUntilOverlaySettled(() => defineAdministratorUser.accept());
     await header.goToOverview();
   });
 }
@@ -77,7 +77,7 @@ export function editRootUserLoginMethod(password: string) {
     await setARootPassword.selectPasswordAsRootLoginMethod();
     await setARootPassword.fillRootPassword(password);
     await setARootPassword.fillRootPasswordConfirmation(password);
-    await setARootPassword.accept();
+    await waitUntilOverlaySettled(() => setARootPassword.accept());
     await header.goToOverview();
   });
 }

@@ -42,7 +42,7 @@ function createAdministratorAccount(password) {
         await defineAdministratorUser.fillUserName("bernhard");
         await defineAdministratorUser.fillPassword(password);
         await defineAdministratorUser.fillPasswordConfirmation(password);
-        await defineAdministratorUser.accept();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => defineAdministratorUser.accept());
         await header.goToOverview();
     });
 }
@@ -90,7 +90,7 @@ function editRootUserLoginMethod(password) {
         await setARootPassword.selectPasswordAsRootLoginMethod();
         await setARootPassword.fillRootPassword(password);
         await setARootPassword.fillRootPasswordConfirmation(password);
-        await setARootPassword.accept();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => setARootPassword.accept());
         await header.goToOverview();
     });
 }
