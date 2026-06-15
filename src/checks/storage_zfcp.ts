@@ -1,4 +1,5 @@
-import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
+import assert from "node:assert/strict";
+import { it, page, getTextContent } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
@@ -21,10 +22,19 @@ export function prepareZfcpStorage() {
     await storageNoDeviceFound.activateZfcpDisks();
     await storageZfcpControllersNotActivated.activateControllers();
     await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
-    await waitUntilOverlaySettled(() => storageZfcpActivateControllers.accept());
+    await storageZfcpActivateControllers.accept();
 
+    const elementText = await getTextContent(multipath.multipathText());
+    assert.deepEqual(
+      elementText,
+      "The system seems to have multipath hardware. Do you want to activate multipath?",
+    );
     await multipath.activate();
 
+    const controllersText = await getTextContent(
+      storageZfcpActivateControllers.allControllersActivatedText(),
+    );
+    assert.deepEqual(controllersText, "All the available zFCP controllers are already activated.");
     await header.goToOverview();
   });
 }
