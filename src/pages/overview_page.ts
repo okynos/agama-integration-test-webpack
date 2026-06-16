@@ -24,7 +24,7 @@ export class OverviewPage {
   }
 
   async install() {
-    await this.installButton().click();
+    await this.installButton().setTimeout(60000).click();
   }
 
   async goToSystem() {

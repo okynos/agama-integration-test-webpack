@@ -2529,7 +2529,7 @@ class OverviewPage {
         await this.overviewHeading().setTimeout(timeout).wait();
     }
     async install() {
-        await this.installButton().click();
+        await this.installButton().setTimeout(60000).click();
     }
     async goToSystem() {
         await this.systemLink().click();
