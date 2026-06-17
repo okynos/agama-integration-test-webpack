@@ -43,7 +43,7 @@ function createAdministratorAccount(password) {
         await defineAdministratorUser.fillPassword(password);
         await defineAdministratorUser.fillPasswordConfirmation(password);
         await (0, helpers_1.waitUntilOverlaySettled)(() => defineAdministratorUser.accept());
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function createFirstUser(password) {
@@ -61,7 +61,7 @@ function createFirstUser(password) {
         await createFirstUser.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function createFirstUserWithSidebar(password) {
@@ -91,7 +91,7 @@ function editRootUserLoginMethod(password) {
         await setARootPassword.fillRootPassword(password);
         await setARootPassword.fillRootPasswordConfirmation(password);
         await (0, helpers_1.waitUntilOverlaySettled)(() => setARootPassword.accept());
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function editRootUser(password) {
@@ -108,7 +108,7 @@ function editRootUser(password) {
         await setARootPassword.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function editRootUserWithSidebar(password) {
@@ -143,7 +143,7 @@ function verifyPasswordStrength() {
         await setARootPassword.fillPassword("a23b5678");
         const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
         strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function verifyPasswordStrengthWithSidebar() {
@@ -206,7 +206,7 @@ function enableEncryption(password) {
         await encryptionSettings.fillPasswordConfirmation(password);
         await encryptionSettings.accept();
         await storageSettings.encryptionIsEnabledText().wait();
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function enableEncryptionWithSidebar(password) {
@@ -232,7 +232,7 @@ function verifyEncryptionEnabled() {
         await storageSettings.selectEncryption();
         const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
         strict_1.default.deepEqual(elementText, "Encryption is enabled");
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function verifyEncryptionEnabledWithSidebar() {
@@ -258,7 +258,7 @@ function disableEncryption() {
         await encryptionSettings.accept();
         const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
         strict_1.default.deepEqual(elementText, "Encryption is disabled");
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function disableEncryptionWithSidebar() {
@@ -305,7 +305,7 @@ function setStaticHostname(hostname) {
         await systemPage.selectStaticMode();
         await systemPage.fill(hostname);
         await systemPage.accept();
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function setStaticHostnameTransient(hostname) {
@@ -317,7 +317,7 @@ function setStaticHostnameTransient(hostname) {
         await hostnamePage.useStaticHostname();
         await hostnamePage.fill(hostname);
         await hostnamePage.accept();
-        await header.goToOverview();
+        await header.goToInstallation();
         // prefer explicit wait over hard delay.
         await overview.ensureSystemInformationPresent();
     });
@@ -502,7 +502,7 @@ function setOnlyInstallationNetwork() {
         await overview.goToNetwork();
         await networkPage.selectConnectionDetails();
         await networkWiredConnectionPage.selectInstallationOnly();
-        await header.goToOverview();
+        await header.goToInstallation();
     });
     (0, helpers_1.it)("should alert no network after installation", async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
@@ -510,7 +510,7 @@ function setOnlyInstallationNetwork() {
         const networkPage = new network_page_1.NetworkPage(helpers_1.page);
         await overview.goToNetwork();
         await networkPage.verifyWarningAlert();
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function setOnlyInstallationNetworkWithSidebar() {
@@ -624,7 +624,7 @@ function enterProductRegistration({ use_custom, code, provide_code, url, }) {
         const productRegistrationSCC = new registration_page_1.RegistrationSCCPage(helpers_1.page);
         const registeredText = await (0, helpers_1.getTextContent)(productRegistrationSCC.infoHasBeenRegisteredText());
         strict_1.default.match(registeredText, /SUSE Linux Enterprise Server.*has been registered with below information/);
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function enterExtensionRegistrationHA(code) {
@@ -636,7 +636,7 @@ function enterExtensionRegistrationHA(code) {
         await extensionRegistrationHA.fillCode(code);
         await extensionRegistrationHA.register();
         strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationHA.extensionRegisteredText()), /The extension has been registered/);
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function enterExtensionRegistrationPHub() {
@@ -649,7 +649,7 @@ function enterExtensionRegistrationPHub() {
         strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.trustKeyText()), /is unknown. Do you want to trust this key?/);
         await extensionRegistrationPHub.trustKey();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function verifyRegistrationWarniningAlerts() {
@@ -675,7 +675,7 @@ function verifyRegistrationWarniningAlerts() {
         await productRegistrationCustom.register();
         const warningText = await (0, helpers_1.getTextContent)(productRegistrationCustom.alertWarningNetworkErrorText());
         strict_1.default.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
-        await header.goToOverview();
+        await header.goToInstallation();
     }, 90000);
 }
 function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, url, }) {
@@ -806,7 +806,7 @@ function selectADesktop(desktop) {
         await software.selectADesktop();
         await (0, helpers_1.waitUntilOverlaySettled)(() => softwareDesktopSelectionPage.select(desktop));
         await (0, helpers_1.waitUntilOverlaySettled)(() => softwareDesktopSelectionPage.accept());
-        await header.reviewAndInstall();
+        await header.goToInstallation();
     });
 }
 function changePatterns(patterns) {
@@ -820,7 +820,7 @@ function changePatterns(patterns) {
         for (const pattern of patterns)
             await softwarePatternsSelection.select(pattern);
         await softwarePatternsSelection.accept();
-        header.goToOverview();
+        header.goToInstallation();
     });
 }
 function selectPatternsWithSidebar(patterns) {
@@ -880,7 +880,7 @@ function changeDeviceToInstallTheSystem() {
         helpers_1.page.setDefaultTimeout(40000);
         await storage.resetToDefault();
         await storage.ensureStorageSettingsPresent();
-        await header.goToOverview();
+        await header.goToInstallation();
         // prefer explicit wait over hard delay.
         await overview.ensureSystemInformationPresent(120000);
     }, 150000);
@@ -937,7 +937,7 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         await configRootPartition.inputPartitionSize("5 GiB");
         await configRootPartition.disableAllowGrowing();
         await (0, helpers_1.waitUntilOverlaySettled)(() => configRootPartition.accept());
-        await header.reviewAndInstall();
+        await header.goToInstallation();
     });
 }
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() {
@@ -989,7 +989,7 @@ function prepareDasdStorage() {
         await dasd.waitFormattingDevice();
         await dasd.back();
         await storage.waitForElement("::-p-text(Installation devices)", 60000);
-        await header.goToOverview();
+        await header.goToInstallation();
     }, 6 * 60 * 1000);
 }
 function prepareDasdStorageWithSidebar() {
@@ -1065,7 +1065,7 @@ function verifyDecryptDestructiveActions(destructiveActions) {
         for (const action of destructiveActions) {
             await storage.destructiveActionText(action).wait();
         }
-        await new header_page_1.HeaderPage(helpers_1.page).goToOverview();
+        await new header_page_1.HeaderPage(helpers_1.page).goToInstallation();
     });
 }
 function verifyDecryptDestructiveActionsWithSidebar(destructiveActions) {
@@ -1108,7 +1108,7 @@ function selectMoreDevices() {
         await storage.selectMoreDevices();
         await storage.addLvmVolumeGroup();
         await lvm.accept();
-        await header.reviewAndInstall();
+        await header.goToInstallation();
         await overview.ensureSystemInformationPresent();
     });
 }
@@ -1160,7 +1160,7 @@ function prepareZfcpStorage() {
         await storageZfcpActivateControllers.select(["0.0.fa00", "0.0.fc00"]);
         await (0, helpers_1.waitUntilOverlaySettled)(() => storageZfcpActivateControllers.accept());
         await multipath.activate();
-        await header.goToOverview();
+        await header.goToInstallation();
     });
 }
 function prepareZfcpStorageWithSidebar() {
@@ -2162,16 +2162,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderPage = void 0;
 class HeaderPage {
     page;
-    overviewLink = () => this.page.locator("a[href='#/overview']");
-    reviewAndInstallButton = () => this.page.locator("::-p-aria(Review and install)");
+    installationLink = () => this.page.locator("a[href='#/overview']");
     constructor(page) {
         this.page = page;
     }
-    async goToOverview() {
-        await this.overviewLink().click();
-    }
-    async reviewAndInstall() {
-        await this.reviewAndInstallButton().click();
+    async goToInstallation() {
+        await this.installationLink().click();
     }
 }
 exports.HeaderPage = HeaderPage;
@@ -3398,6 +3394,9 @@ exports.DevelopmentReleaseStrategy = void 0;
 const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
 const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
 const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
+const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
+const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
+const software_1 = __webpack_require__(/*! ../checks/software */ "./src/checks/software.ts");
 class DevelopmentReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
     createFirstUser(password) {
         (0, authentication_1.createAdministratorAccount)(password);
@@ -3407,6 +3406,15 @@ class DevelopmentReleaseStrategy extends production_release_strategy_1.Productio
     }
     setStaticHostname(hostname) {
         (0, hostname_1.setStaticHostname)(hostname);
+    }
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+        (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize)();
+    }
+    selectDesktop(desktop) {
+        (0, software_1.selectADesktop)(desktop);
+    }
+    selectMoreDevices() {
+        (0, storage_select_installation_device_1.selectMoreDevices)();
     }
 }
 exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;

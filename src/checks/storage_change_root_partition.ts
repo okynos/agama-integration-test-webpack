@@ -23,7 +23,7 @@ export function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     await configRootPartition.inputPartitionSize("5 GiB");
     await configRootPartition.disableAllowGrowing();
     await waitUntilOverlaySettled(() => configRootPartition.accept());
-    await header.reviewAndInstall();
+    await header.goToInstallation();
   });
 }
 

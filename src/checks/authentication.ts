@@ -22,7 +22,7 @@ export function createAdministratorAccount(password: string) {
     await defineAdministratorUser.fillPassword(password);
     await defineAdministratorUser.fillPasswordConfirmation(password);
     await waitUntilOverlaySettled(() => defineAdministratorUser.accept());
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -43,7 +43,7 @@ export function createFirstUser(password: string) {
     await createFirstUser.accept();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -78,7 +78,7 @@ export function editRootUserLoginMethod(password: string) {
     await setARootPassword.fillRootPassword(password);
     await setARootPassword.fillRootPasswordConfirmation(password);
     await waitUntilOverlaySettled(() => setARootPassword.accept());
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -97,7 +97,7 @@ export function editRootUser(password: string) {
     await setARootPassword.accept();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -148,7 +148,7 @@ export function verifyPasswordStrength() {
       elementTextPasswordFailDictionary,
       "The password fails the dictionary check - it is too simplistic/systematic",
     );
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 

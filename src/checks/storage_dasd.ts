@@ -21,7 +21,7 @@ export function prepareDasdStorage() {
       await dasd.waitFormattingDevice();
       await dasd.back();
       await storage.waitForElement("::-p-text(Installation devices)", 60000);
-      await header.goToOverview();
+      await header.goToInstallation();
     },
     6 * 60 * 1000,
   );

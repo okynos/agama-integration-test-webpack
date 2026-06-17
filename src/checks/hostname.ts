@@ -16,7 +16,7 @@ export function setStaticHostname(hostname: string) {
     await systemPage.selectStaticMode();
     await systemPage.fill(hostname);
     await systemPage.accept();
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -30,7 +30,7 @@ export function setStaticHostnameTransient(hostname: string) {
     await hostnamePage.useStaticHostname();
     await hostnamePage.fill(hostname);
     await hostnamePage.accept();
-    await header.goToOverview();
+    await header.goToInstallation();
     // prefer explicit wait over hard delay.
     await overview.ensureSystemInformationPresent();
   });

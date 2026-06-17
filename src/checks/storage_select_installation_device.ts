@@ -16,7 +16,7 @@ export function selectMoreDevices() {
     await storage.selectMoreDevices();
     await storage.addLvmVolumeGroup();
     await lvm.accept();
-    await header.reviewAndInstall();
+    await header.goToInstallation();
     await overview.ensureSystemInformationPresent();
   });
 }
