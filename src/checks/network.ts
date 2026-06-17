@@ -16,7 +16,7 @@ export function setOnlyInstallationNetwork() {
     await overview.goToNetwork();
     await networkPage.selectConnectionDetails();
     await networkWiredConnectionPage.selectInstallationOnly();
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 
   it("should alert no network after installation", async function () {
@@ -26,7 +26,7 @@ export function setOnlyInstallationNetwork() {
 
     await overview.goToNetwork();
     await networkPage.verifyWarningAlert();
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 

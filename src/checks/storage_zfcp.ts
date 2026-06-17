@@ -24,8 +24,7 @@ export function prepareZfcpStorage() {
     await waitUntilOverlaySettled(() => storageZfcpActivateControllers.accept());
 
     await multipath.activate();
-
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 

@@ -40,7 +40,7 @@ export function changeDeviceToInstallTheSystem() {
     page.setDefaultTimeout(40000);
     await storage.resetToDefault();
     await storage.ensureStorageSettingsPresent();
-    await header.goToOverview();
+    await header.goToInstallation();
     // prefer explicit wait over hard delay.
     await overview.ensureSystemInformationPresent(120000);
   }, 150000);
