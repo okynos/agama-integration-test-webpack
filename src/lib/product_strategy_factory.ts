@@ -34,19 +34,23 @@ export interface IProductTestStrategy {
 
 export class ProductStrategyFactory {
   public static create(productVersion: string, agamaWebUiPackageVersion: string): IProductTestStrategy {
-    if (productVersion === "16.1") {
-      const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
-      const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
-
-      if (webUiVersion >= 21 && webUiCommit >= 155) {
-        return new DevelopmentReleaseStrategy();
-      } else {
-        return new ProductionReleaseStrategy();
-      }
-    } else if (productVersion === "16.0") {
+    if (productVersion === "16.0") {
       return new MaintenanceReleaseStrategy();
-    } else {
-      throw new Error(`Unsupported product version: ${productVersion}`);
     }
+
+    if (productVersion === "16.1") {
+      const [versionPart, commitPart] = agamaWebUiPackageVersion.split("+");
+      const [webUiVersion, webUiCommit] = [Number(versionPart), Number(commitPart?.split(".")[0])];
+
+      // tracks preparation changes not yet in production since the version/commit
+      // where we can find a relevant UI update.
+      const isPreProduction = webUiVersion === 22 || (webUiVersion === 21 && webUiCommit >= 155);
+
+      return isPreProduction
+        ? new DevelopmentReleaseStrategy()
+        : new ProductionReleaseStrategy();
+    }
+
+    throw new Error(`Unsupported product version: ${productVersion}`);
   }
 }

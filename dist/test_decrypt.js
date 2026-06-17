@@ -1637,22 +1637,20 @@ const production_release_strategy_1 = __webpack_require__(/*! ../variants/produc
 const maintenance_release_strategy_1 = __webpack_require__(/*! ../variants/maintenance_release_strategy */ "./src/variants/maintenance_release_strategy.ts");
 class ProductStrategyFactory {
     static create(productVersion, agamaWebUiPackageVersion) {
-        if (productVersion === "16.1") {
-            const webUiVersion = agamaWebUiPackageVersion.split("+").map(Number)[0];
-            const webUiCommit = agamaWebUiPackageVersion.split("+")[1].split(".").map(Number)[0];
-            if (webUiVersion >= 21 && webUiCommit >= 155) {
-                return new development_release_strategy_1.DevelopmentReleaseStrategy();
-            }
-            else {
-                return new production_release_strategy_1.ProductionReleaseStrategy();
-            }
-        }
-        else if (productVersion === "16.0") {
+        if (productVersion === "16.0") {
             return new maintenance_release_strategy_1.MaintenanceReleaseStrategy();
         }
-        else {
-            throw new Error(`Unsupported product version: ${productVersion}`);
+        if (productVersion === "16.1") {
+            const [versionPart, commitPart] = agamaWebUiPackageVersion.split("+");
+            const [webUiVersion, webUiCommit] = [Number(versionPart), Number(commitPart?.split(".")[0])];
+            // tracks preparation changes not yet in production since the version/commit
+            // where we can find a relevant UI update.
+            const isPreProduction = webUiVersion === 22 || (webUiVersion === 21 && webUiCommit >= 155);
+            return isPreProduction
+                ? new development_release_strategy_1.DevelopmentReleaseStrategy()
+                : new production_release_strategy_1.ProductionReleaseStrategy();
         }
+        throw new Error(`Unsupported product version: ${productVersion}`);
     }
 }
 exports.ProductStrategyFactory = ProductStrategyFactory;
