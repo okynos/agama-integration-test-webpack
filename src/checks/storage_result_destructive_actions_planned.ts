@@ -12,7 +12,7 @@ export function verifyDecryptDestructiveActions(destructiveActions: string[]) {
     for (const action of destructiveActions) {
       await storage.destructiveActionText(action).wait();
     }
-    await new HeaderPage(page).goToOverview();
+    await new HeaderPage(page).goToInstallation();
   });
 }
 

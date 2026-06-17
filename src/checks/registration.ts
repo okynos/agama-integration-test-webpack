@@ -79,7 +79,7 @@ export function enterProductRegistration({
       registeredText,
       /SUSE Linux Enterprise Server.*has been registered with below information/,
     );
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -96,7 +96,7 @@ export function enterExtensionRegistrationHA(code: string) {
       await getTextContent(extensionRegistrationHA.extensionRegisteredText()),
       /The extension has been registered/,
     );
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -117,7 +117,7 @@ export function enterExtensionRegistrationPHub() {
       await getTextContent(extensionRegistrationPHub.registeredText()),
       "The extension was registered without any registration code.",
     );
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -159,7 +159,7 @@ export function verifyRegistrationWarniningAlerts(): void {
     );
     assert.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
 
-    await header.goToOverview();
+    await header.goToInstallation();
   }, 90000);
 }
 

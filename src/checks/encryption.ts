@@ -21,7 +21,7 @@ export function enableEncryption(password: string) {
     await encryptionSettings.fillPasswordConfirmation(password);
     await encryptionSettings.accept();
     await storageSettings.encryptionIsEnabledText().wait();
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -51,7 +51,7 @@ export function verifyEncryptionEnabled() {
     await storageSettings.selectEncryption();
     const elementText = await getTextContent(storageSettings.encryptionIsEnabledText());
     assert.deepEqual(elementText, "Encryption is enabled");
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
@@ -82,7 +82,7 @@ export function disableEncryption() {
 
     const elementText = await getTextContent(storageSettings.encryptionIsDisabledText());
     assert.deepEqual(elementText, "Encryption is disabled");
-    await header.goToOverview();
+    await header.goToInstallation();
   });
 }
 
