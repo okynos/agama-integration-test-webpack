@@ -4,6 +4,7 @@ import { setStaticHostname } from "../checks/hostname";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { selectMoreDevices } from "../checks/storage_select_installation_device";
 import { selectADesktop } from "../checks/software";
+import { downloadLogs } from "../checks/download_logs";
 export class DevelopmentReleaseStrategy extends ProductionReleaseStrategy {
   createFirstUser(password: string) {
     createAdministratorAccount(password);
@@ -27,5 +28,9 @@ export class DevelopmentReleaseStrategy extends ProductionReleaseStrategy {
 
   selectMoreDevices() {
     selectMoreDevices();
+  }
+
+  downloadLogs() {
+    downloadLogs();
   }
 }
