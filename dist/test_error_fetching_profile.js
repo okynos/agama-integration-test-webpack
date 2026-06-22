@@ -473,7 +473,7 @@ exports.ErrorFetchingProfilePage = void 0;
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class ErrorFetchingProfilePage {
     page;
-    alertWarningMsg = () => this.page.locator("::-p-text(It was not possible to load the configuration)");
+    alertWarningMsg = () => this.page.locator("::-p-text(Configuration cannot be applied because it is invalid or could not be reached)");
     constructor(page) {
         this.page = page;
     }
@@ -481,7 +481,7 @@ class ErrorFetchingProfilePage {
         const elementText = await this.alertWarningMsg()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.match(elementText, /It was not possible to load the configuration/);
+        await strict_1.default.match(elementText, /Configuration cannot be applied because it is invalid or could not be reached/);
     }
 }
 exports.ErrorFetchingProfilePage = ErrorFetchingProfilePage;

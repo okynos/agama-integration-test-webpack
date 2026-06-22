@@ -4,7 +4,9 @@ import assert from "node:assert/strict";
 export class ErrorFetchingProfilePage {
   private readonly page: Page;
   private readonly alertWarningMsg = () =>
-    this.page.locator("::-p-text(It was not possible to load the configuration)");
+    this.page.locator(
+      "::-p-text(Configuration cannot be applied because it is invalid or could not be reached)",
+    );
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +16,9 @@ export class ErrorFetchingProfilePage {
     const elementText = await this.alertWarningMsg()
       .map((span) => span.textContent)
       .wait();
-    await assert.match(elementText, /It was not possible to load the configuration/);
+    await assert.match(
+      elementText,
+      /Configuration cannot be applied because it is invalid or could not be reached/,
+    );
   }
 }
