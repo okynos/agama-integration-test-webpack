@@ -2,42 +2,31 @@ import { type Page } from "puppeteer-core";
 
 export class ConfigurePartitionPage {
   private readonly page: Page;
-  private readonly fileSystemButton = () => this.page.locator("::-p-aria(File system)");
-  private readonly btrfsOption = () => this.page.locator('::-p-aria(Btrfs[role="option"])');
-  private readonly sizeModeToggleMenu = () => this.page.locator("::-p-aria(Size mode)");
-  private readonly manualMenuItem = () =>
-    this.page.locator("::-p-aria(Manual Define a custom size)");
 
-  private readonly sizeGiBTextbox = () => this.page.locator("::-p-aria(Size)[type='text']");
+  private readonly sizeModeButton = () => this.page.locator("::-p-aria(Size[role='button'])");
+  private readonly fixedOption = () =>
+    this.page.locator("::-p-aria(Fixed Set a specific size[role='option'])");
 
-  private readonly allowGrowingCheckBox = () => this.page.locator("::-p-aria(Allow growing)");
-  private readonly acceptButton = () => this.page.locator("::-p-aria(Accept)");
+  private readonly valueTextbox = () => this.page.locator("::-p-aria(Value[role='textbox'])");
+  private readonly fileSystemButton = () =>
+    this.page.locator("::-p-aria(File system[role='button'])");
+
+  private readonly btrfsOption = () => this.page.locator("::-p-aria(Btrfs[role='option'])");
+  private readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
 
   constructor(page: Page) {
     this.page = page;
   }
 
-  async changeFilesystemToBtrfs() {
-    // page is not ready until accept button is enabled
-    await this.acceptButton().wait();
+  async setASpecificSize(value: string) {
+    await this.sizeModeButton().click();
+    await this.fixedOption().click();
+    await this.valueTextbox().fill(value);
+  }
+
+  async changeFileSystemToBtrfs() {
     await this.fileSystemButton().click();
     await this.btrfsOption().click();
-  }
-
-  async selectSizeMode() {
-    await this.sizeModeToggleMenu().click();
-  }
-
-  async changeSizeModeToManual() {
-    await this.manualMenuItem().click();
-  }
-
-  async inputPartitionSize(size: string) {
-    await this.sizeGiBTextbox().fill(size);
-  }
-
-  async disableAllowGrowing() {
-    await this.allowGrowingCheckBox().click();
   }
 
   async accept() {
