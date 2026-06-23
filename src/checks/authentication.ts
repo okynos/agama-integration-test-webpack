@@ -122,12 +122,12 @@ export function verifyPasswordStrength() {
   it("should verify the strength of typed password", async function () {
     const header = new HeaderPage(page);
     const overview = new OverviewPage(page);
-    const users = new UsersPage(page);
-    const setARootPassword = new SetARootPasswordPage(page);
 
+    const setARootPassword = new AuthenticationWithRootLoginPassword(page);
     await overview.goToAuthentication();
-    await users.editRootUser();
-    await setARootPassword.fillPassword("a23b56c");
+    await setARootPassword.selectRootLoginMethod();
+    await setARootPassword.selectPasswordAsRootLoginMethod();
+    await setARootPassword.fillRootPassword("a23b56c");
     const elementTextPasswordLess8Characters = await getTextContent(
       setARootPassword.alertPasswordLess8Characters(),
     );
