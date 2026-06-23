@@ -130,11 +130,11 @@ function verifyPasswordStrength() {
     (0, helpers_1.it)("should verify the strength of typed password", async function () {
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        const setARootPassword = new authentication_page_1.AuthenticationWithRootLoginPassword(helpers_1.page);
         await overview.goToAuthentication();
-        await users.editRootUser();
-        await setARootPassword.fillPassword("a23b56c");
+        await setARootPassword.selectRootLoginMethod();
+        await setARootPassword.selectPasswordAsRootLoginMethod();
+        await setARootPassword.fillRootPassword("a23b56c");
         const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
         strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
         await setARootPassword.fillPassword("a23b56ca");
@@ -1767,6 +1767,9 @@ class AuthenticationAdministratorAccountPage {
     userPasswordInput = () => this.page.locator("input#userPassword");
     userPasswordConfirmationInput = () => this.page.locator("input#userPasswordConfirmation");
     acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
+    alertPasswordLess8Characters = () => this.page.locator("::-p-text(The password is shorter than 8 characters)");
+    alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
+    alertPasswordFailDictionaryCheck = () => this.page.locator("::-p-text(it is too simplistic/systematic)");
     constructor(page) {
         this.page = page;
     }
