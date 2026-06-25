@@ -967,32 +967,30 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const configure_partition_page_1 = __webpack_require__(/*! ../pages/configure_partition_page */ "./src/pages/configure_partition_page.ts");
+const configure_partition_with_sidebar_page_1 = __webpack_require__(/*! ../pages/configure_partition_with_sidebar_page */ "./src/pages/configure_partition_with_sidebar_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
+        const configurePartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         await overview.goToStorage();
         await storage.expandPartitions();
         await storage.clickOptionForRoot();
         await storage.editRootPartition();
-        await configRootPartition.changeFilesystemToBtrfs();
-        await configRootPartition.selectSizeMode();
-        await configRootPartition.changeSizeModeToManual();
-        await configRootPartition.inputPartitionSize("5 GiB");
-        await configRootPartition.disableAllowGrowing();
-        await (0, helpers_1.waitUntilOverlaySettled)(() => configRootPartition.accept());
+        await configurePartition.setASpecificSize("5 GiB");
+        await configurePartition.changeFileSystemToBtrfs();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => configurePartition.accept());
         await header.goToInstallation();
     });
 }
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() {
     (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
+        const configRootPartition = new configure_partition_with_sidebar_page_1.ConfigurePartitionWithSidebarPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.expandPartitions();
@@ -1875,6 +1873,44 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ConfigurePartitionPage = void 0;
 class ConfigurePartitionPage {
     page;
+    sizeModeButton = () => this.page.locator("::-p-aria(Size[role='button'])");
+    fixedOption = () => this.page.locator("::-p-aria(Fixed Set a specific size[role='option'])");
+    valueTextbox = () => this.page.locator("::-p-aria(Value[role='textbox'])");
+    fileSystemButton = () => this.page.locator("::-p-aria(File system[role='button'])");
+    btrfsOption = () => this.page.locator("::-p-aria(Btrfs[role='option'])");
+    acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
+    constructor(page) {
+        this.page = page;
+    }
+    async setASpecificSize(value) {
+        await this.sizeModeButton().click();
+        await this.fixedOption().click();
+        await this.valueTextbox().fill(value);
+    }
+    async changeFileSystemToBtrfs() {
+        await this.fileSystemButton().click();
+        await this.btrfsOption().click();
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigurePartitionPage = ConfigurePartitionPage;
+
+
+/***/ },
+
+/***/ "./src/pages/configure_partition_with_sidebar_page.ts"
+/*!************************************************************!*\
+  !*** ./src/pages/configure_partition_with_sidebar_page.ts ***!
+  \************************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigurePartitionWithSidebarPage = void 0;
+class ConfigurePartitionWithSidebarPage {
+    page;
     fileSystemButton = () => this.page.locator("::-p-aria(File system)");
     btrfsOption = () => this.page.locator('::-p-aria(Btrfs[role="option"])');
     sizeModeToggleMenu = () => this.page.locator("::-p-aria(Size mode)");
@@ -1907,7 +1943,7 @@ class ConfigurePartitionPage {
         await this.acceptButton().click();
     }
 }
-exports.ConfigurePartitionPage = ConfigurePartitionPage;
+exports.ConfigurePartitionWithSidebarPage = ConfigurePartitionWithSidebarPage;
 
 
 /***/ },
