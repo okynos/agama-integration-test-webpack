@@ -15,10 +15,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createAdministratorAccount = createAdministratorAccount;
-exports.createFirstUser = createFirstUser;
 exports.createFirstUserWithSidebar = createFirstUserWithSidebar;
 exports.editRootUserLoginMethod = editRootUserLoginMethod;
-exports.editRootUser = editRootUser;
 exports.editRootUserWithSidebar = editRootUserWithSidebar;
 exports.verifyPasswordStrength = verifyPasswordStrength;
 exports.verifyPasswordStrengthWithSidebar = verifyPasswordStrengthWithSidebar;
@@ -43,24 +41,6 @@ function createAdministratorAccount(password) {
         await defineAdministratorUser.fillPassword(password);
         await defineAdministratorUser.fillPasswordConfirmation(password);
         await (0, helpers_1.waitUntilOverlaySettled)(() => defineAdministratorUser.accept());
-        await header.goToInstallation();
-    });
-}
-function createFirstUser(password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
-        await createFirstUser.fillUserName("bernhard");
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
         await header.goToInstallation();
     });
 }
@@ -91,23 +71,6 @@ function editRootUserLoginMethod(password) {
         await setARootPassword.fillRootPassword(password);
         await setARootPassword.fillRootPasswordConfirmation(password);
         await (0, helpers_1.waitUntilOverlaySettled)(() => setARootPassword.accept());
-        await header.goToInstallation();
-    });
-}
-function editRootUser(password) {
-    (0, helpers_1.it)("should edit the root user", async function () {
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await overview.goToAuthentication();
-        await users.editRootUser();
-        await setARootPassword.usePassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
         await header.goToInstallation();
     });
 }
@@ -352,11 +315,9 @@ function disableEncryptionWithSidebar() {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.setStaticHostname = setStaticHostname;
-exports.setStaticHostnameTransient = setStaticHostnameTransient;
 exports.setPermanentHostnameWithSidebar = setPermanentHostnameWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const overview_transient_page_1 = __webpack_require__(/*! ../pages/overview_transient_page */ "./src/pages/overview_transient_page.ts");
 const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
 const system_page_1 = __webpack_require__(/*! ../pages/system_page */ "./src/pages/system_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
@@ -371,20 +332,6 @@ function setStaticHostname(hostname) {
         await systemPage.fill(hostname);
         await systemPage.accept();
         await header.goToInstallation();
-    });
-}
-function setStaticHostnameTransient(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const overview = new overview_transient_page_1.OverviewTransientPage(helpers_1.page);
-        const header = new header_page_1.HeaderPage(helpers_1.page);
-        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
-        await overview.goToHostname();
-        await hostnamePage.useStaticHostname();
-        await hostnamePage.fill(hostname);
-        await hostnamePage.accept();
-        await header.goToInstallation();
-        // prefer explicit wait over hard delay.
-        await overview.ensureSystemInformationPresent();
     });
 }
 function setPermanentHostnameWithSidebar(hostname) {
@@ -2645,62 +2592,6 @@ exports.OverviewPage = OverviewPage;
 
 /***/ },
 
-/***/ "./src/pages/overview_transient_page.ts"
-/*!**********************************************!*\
-  !*** ./src/pages/overview_transient_page.ts ***!
-  \**********************************************/
-(__unused_webpack_module, exports) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.OverviewTransientPage = void 0;
-class OverviewTransientPage {
-    page;
-    hostnameLink = () => this.page.locator("a[href='#/hostname']");
-    localizationLink = () => this.page.locator("a[href='#/l10n']");
-    networkLink = () => this.page.locator("a[href='#/network']");
-    storageLink = () => this.page.locator("a[href='#/storage']");
-    softwareLink = () => this.page.locator("a[href='#/software']");
-    usersLink = () => this.page.locator("a[href='#/users']");
-    registrationLink = () => this.page.locator("a[href='#/registration']");
-    installButton = () => this.page.locator("button::-p-text(Install now)");
-    overviewHeading = () => this.page.locator('::-p-aria([name="System Information"][role="heading"])');
-    constructor(page) {
-        this.page = page;
-    }
-    async ensureSystemInformationPresent(timeout = 30 * 1000) {
-        await this.overviewHeading().setTimeout(timeout).wait();
-    }
-    async install() {
-        await this.installButton().click();
-    }
-    async goToHostname() {
-        await this.hostnameLink().click();
-    }
-    async goToLocalization() {
-        await this.localizationLink().click();
-    }
-    async goToNetwork() {
-        await this.networkLink().click();
-    }
-    async goToStorage() {
-        await this.storageLink().click();
-    }
-    async goToSoftware() {
-        await this.softwareLink().click();
-    }
-    async goToAuthentication() {
-        await this.usersLink().click();
-    }
-    async goToRegistration() {
-        await this.registrationLink().click();
-    }
-}
-exports.OverviewTransientPage = OverviewTransientPage;
-
-
-/***/ },
-
 /***/ "./src/pages/overview_with_sidebar_page.ts"
 /*!*************************************************!*\
   !*** ./src/pages/overview_with_sidebar_page.ts ***!
@@ -3696,34 +3587,7 @@ if (options.install) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevelopmentReleaseStrategy = void 0;
 const production_release_strategy_1 = __webpack_require__(/*! ./production_release_strategy */ "./src/variants/production_release_strategy.ts");
-const authentication_1 = __webpack_require__(/*! ../checks/authentication */ "./src/checks/authentication.ts");
-const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
-const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
-const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
-const software_1 = __webpack_require__(/*! ../checks/software */ "./src/checks/software.ts");
-const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class DevelopmentReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
-    createFirstUser(password) {
-        (0, authentication_1.createAdministratorAccount)(password);
-    }
-    editRootUser(password) {
-        (0, authentication_1.editRootUserLoginMethod)(password);
-    }
-    setStaticHostname(hostname) {
-        (0, hostname_1.setStaticHostname)(hostname);
-    }
-    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
-        (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize)();
-    }
-    selectDesktop(desktop) {
-        (0, software_1.selectADesktop)(desktop);
-    }
-    selectMoreDevices() {
-        (0, storage_select_installation_device_1.selectMoreDevices)();
-    }
-    downloadLogs() {
-        (0, download_logs_1.downloadLogs)();
-    }
 }
 exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;
 
@@ -3869,7 +3733,7 @@ const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_s
 const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class ProductionReleaseStrategy {
     setStaticHostname(hostname) {
-        (0, hostname_1.setStaticHostnameTransient)(hostname);
+        (0, hostname_1.setStaticHostname)(hostname);
     }
     verifyRegistrationWarniningAlerts() {
         (0, registration_1.verifyRegistrationWarniningAlerts)();
@@ -3893,10 +3757,10 @@ class ProductionReleaseStrategy {
         (0, registration_1.enterExtensionRegistrationPHub)();
     }
     createFirstUser(password) {
-        (0, authentication_1.createFirstUser)(password);
+        (0, authentication_1.createAdministratorAccount)(password);
     }
     editRootUser(password) {
-        (0, authentication_1.editRootUser)(password);
+        (0, authentication_1.editRootUserLoginMethod)(password);
     }
     performInstallation() {
         (0, installation_1.performInstallation)();
