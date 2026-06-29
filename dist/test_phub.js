@@ -168,6 +168,50 @@ function verifyPasswordStrengthWithSidebar() {
 
 /***/ },
 
+/***/ "./src/checks/download_logs.ts"
+/*!*************************************!*\
+  !*** ./src/checks/download_logs.ts ***!
+  \*************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.downloadLogs = downloadLogs;
+exports.downloadLogsWithSidebar = downloadLogsWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
+const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const options_toggle_page_1 = __webpack_require__(/*! ../pages/options_toggle_page */ "./src/pages/options_toggle_page.ts");
+async function downloadLogs() {
+    (0, helpers_1.it)("should download logs", async function () {
+        const downloadFolder = "/root/Downloads";
+        const optionsPage = new options_toggle_page_1.OptionsTogglePage(helpers_1.page);
+        await optionsPage.downloadLogs();
+        await optionsPage.successAlertHeading().setTimeout(10000).wait();
+        const downloadedFiles = fs_1.default.readdirSync(downloadFolder);
+        (0, strict_1.default)(downloadedFiles.length > 0, "No files found in the download directory.");
+        const exactFilePath = path_1.default.join(downloadFolder, downloadedFiles[0]);
+        const fileSize = fs_1.default.statSync(exactFilePath).size;
+        (0, strict_1.default)(fileSize > 0, "Agama Logfile is empty.");
+    });
+}
+async function downloadLogsWithSidebar() {
+    (0, helpers_1.it)("should download logs", async function () {
+        const filePathWithSidebar = "/root/Downloads/agama-logs.tar.gz";
+        await new options_toggle_page_1.OptionsTogglePage(helpers_1.page).downloadLogs();
+        await (0, helpers_1.waitOnFile)(filePathWithSidebar);
+        const fileSize = fs_1.default.statSync(filePathWithSidebar).size;
+        (0, strict_1.default)(fileSize > 0, "Agama Logfile is empty.");
+    });
+}
+
+
+/***/ },
+
 /***/ "./src/checks/encryption.ts"
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
@@ -2417,6 +2461,38 @@ exports.NetworkWithSidebarPage = NetworkWithSidebarPage;
 
 /***/ },
 
+/***/ "./src/pages/options_toggle_page.ts"
+/*!******************************************!*\
+  !*** ./src/pages/options_toggle_page.ts ***!
+  \******************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OptionsTogglePage = void 0;
+class OptionsTogglePage {
+    page;
+    moreOptionsButton = () => this.page.locator('::-p-aria(More options[role="button"])');
+    optionsToggle = () => this.page.locator("::-p-aria(Options toggle)");
+    downloadLogsMenuItem = () => this.page.locator("::-p-aria(Download logs)");
+    successAlertHeading = () => this.page.locator(".pf-v6-c-alert.pf-m-success h4::-p-text(Installation logs download)");
+    constructor(page) {
+        this.page = page;
+    }
+    async downloadLogs() {
+        const toggle = await Promise.any([
+            this.moreOptionsButton().waitHandle(),
+            this.optionsToggle().waitHandle(),
+        ]);
+        await toggle.click();
+        await this.downloadLogsMenuItem().click();
+    }
+}
+exports.OptionsTogglePage = OptionsTogglePage;
+
+
+/***/ },
+
 /***/ "./src/pages/overview_page.ts"
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -3431,6 +3507,7 @@ const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/h
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const software_1 = __webpack_require__(/*! ../checks/software */ "./src/checks/software.ts");
+const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class DevelopmentReleaseStrategy extends production_release_strategy_1.ProductionReleaseStrategy {
     createFirstUser(password) {
         (0, authentication_1.createAdministratorAccount)(password);
@@ -3449,6 +3526,9 @@ class DevelopmentReleaseStrategy extends production_release_strategy_1.Productio
     }
     selectMoreDevices() {
         (0, storage_select_installation_device_1.selectMoreDevices)();
+    }
+    downloadLogs() {
+        (0, download_logs_1.downloadLogs)();
     }
 }
 exports.DevelopmentReleaseStrategy = DevelopmentReleaseStrategy;
@@ -3481,6 +3561,7 @@ const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/s
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
+const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class MaintenanceReleaseStrategy {
     setStaticHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -3557,6 +3638,9 @@ class MaintenanceReleaseStrategy {
     ensureLandingOnOverview() {
         (0, overview_1.ensureLandingOnOverviewWithSidebar)();
     }
+    downloadLogs() {
+        (0, download_logs_1.downloadLogsWithSidebar)();
+    }
 }
 exports.MaintenanceReleaseStrategy = MaintenanceReleaseStrategy;
 
@@ -3588,6 +3672,7 @@ const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/s
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
+const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
 class ProductionReleaseStrategy {
     setStaticHostname(hostname) {
         (0, hostname_1.setStaticHostnameTransient)(hostname);
@@ -3666,6 +3751,9 @@ class ProductionReleaseStrategy {
     }
     ensureLandingOnOverview() {
         (0, overview_1.ensureLandingOnOverview)();
+    }
+    downloadLogs() {
+        (0, download_logs_1.downloadLogs)();
     }
 }
 exports.ProductionReleaseStrategy = ProductionReleaseStrategy;

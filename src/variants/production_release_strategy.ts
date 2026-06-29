@@ -21,6 +21,7 @@ import { selectMoreDevices } from "../checks/storage_select_installation_device"
 import { setOnlyInstallationNetwork } from "../checks/network";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
+import { downloadLogs } from "../checks/download_logs";
 
 export class ProductionReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
@@ -125,5 +126,9 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   ensureLandingOnOverview() {
     ensureLandingOnOverview();
+  }
+
+  downloadLogs() {
+    downloadLogs();
   }
 }

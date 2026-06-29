@@ -4,7 +4,6 @@ import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
-import { downloadLogs } from "./checks/download_logs";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
 
 const options = parse((cmd) =>
@@ -54,7 +53,7 @@ testStrategy.disableEncryption();
 testStrategy.createFirstUser(options.password);
 testStrategy.editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
-downloadLogs();
+testStrategy.downloadLogs();
 if (options.install) {
   testStrategy.performInstallation();
   testStrategy.checkInstallation();
