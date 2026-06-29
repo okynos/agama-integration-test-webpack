@@ -191,7 +191,7 @@ async function downloadLogs() {
         const downloadFolder = "/root/Downloads";
         const optionsPage = new options_toggle_page_1.OptionsTogglePage(helpers_1.page);
         await optionsPage.downloadLogs();
-        await optionsPage.successAlertHeading().setTimeout(10000).wait();
+        await optionsPage.successAlertHeading().wait();
         const downloadedFiles = fs_1.default.readdirSync(downloadFolder);
         (0, strict_1.default)(downloadedFiles.length > 0, "No files found in the download directory.");
         const exactFilePath = path_1.default.join(downloadFolder, downloadedFiles[0]);

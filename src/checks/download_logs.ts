@@ -10,7 +10,7 @@ export async function downloadLogs() {
 
     const optionsPage = new OptionsTogglePage(page);
     await optionsPage.downloadLogs();
-    await optionsPage.successAlertHeading().setTimeout(10000).wait();
+    await optionsPage.successAlertHeading().wait();
 
     const downloadedFiles = fs.readdirSync(downloadFolder);
     assert(downloadedFiles.length > 0, "No files found in the download directory.");
