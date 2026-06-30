@@ -1,5 +1,5 @@
 import { IProductTestStrategy } from "../lib/product_strategy_factory";
-import { setPermanentHostnameWithSidebar } from "../checks/hostname";
+import { setPermanentHostnameWithSidebar } from "../checks/system";
 import {
   verifyRegistrationWarniningAlertsWithSidebar,
   RegistrationOptions,
