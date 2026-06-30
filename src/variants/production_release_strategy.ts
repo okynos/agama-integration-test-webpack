@@ -1,5 +1,5 @@
 import { IProductTestStrategy } from "../lib/product_strategy_factory";
-import { setStaticHostnameTransient } from "../checks/hostname";
+import { setStaticHostname } from "../checks/hostname";
 import {
   RegistrationOptions,
   enterExtensionRegistrationHA,
@@ -8,7 +8,11 @@ import {
   verifyRegistrationWarniningAlerts,
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
-import { createFirstUser, editRootUser, verifyPasswordStrength } from "../checks/authentication";
+import {
+  createAdministratorAccount,
+  editRootUserLoginMethod,
+  verifyPasswordStrength,
+} from "../checks/authentication";
 import { checkInstallation, finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
@@ -25,7 +29,7 @@ import { downloadLogs } from "../checks/download_logs";
 
 export class ProductionReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
-    setStaticHostnameTransient(hostname);
+    setStaticHostname(hostname);
   }
 
   verifyRegistrationWarniningAlerts() {
@@ -57,11 +61,11 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
   }
 
   createFirstUser(password: string) {
-    createFirstUser(password);
+    createAdministratorAccount(password);
   }
 
   editRootUser(password: string) {
-    editRootUser(password);
+    editRootUserLoginMethod(password);
   }
 
   performInstallation() {

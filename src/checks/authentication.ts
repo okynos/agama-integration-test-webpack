@@ -26,27 +26,6 @@ export function createAdministratorAccount(password: string) {
   });
 }
 
-export function createFirstUser(password: string) {
-  it("should create first user", async function () {
-    const users = new UsersPage(page);
-    const createFirstUser = new CreateFirstUserPage(page);
-    const overview = new OverviewPage(page);
-    const header = new HeaderPage(page);
-
-    await overview.goToAuthentication();
-
-    await users.defineAUserNow();
-    await createFirstUser.fillFullName("Bernhard M. Wiedemann");
-    await createFirstUser.fillUserName("bernhard");
-    await createFirstUser.fillPassword(password);
-    await createFirstUser.fillPasswordConfirmation(password);
-    await createFirstUser.accept();
-    // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-    await sleep(2000);
-    await header.goToInstallation();
-  });
-}
-
 export function createFirstUserWithSidebar(password: string) {
   it("should create first user", async function () {
     const users = new UsersPage(page);
@@ -78,25 +57,6 @@ export function editRootUserLoginMethod(password: string) {
     await setARootPassword.fillRootPassword(password);
     await setARootPassword.fillRootPasswordConfirmation(password);
     await waitUntilOverlaySettled(() => setARootPassword.accept());
-    await header.goToInstallation();
-  });
-}
-
-export function editRootUser(password: string) {
-  it("should edit the root user", async function () {
-    const overview = new OverviewPage(page);
-    const header = new HeaderPage(page);
-    const users = new UsersPage(page);
-    const setARootPassword = new SetARootPasswordPage(page);
-
-    await overview.goToAuthentication();
-    await users.editRootUser();
-    await setARootPassword.usePassword();
-    await setARootPassword.fillPassword(password);
-    await setARootPassword.fillPasswordConfirmation(password);
-    await setARootPassword.accept();
-    // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-    await sleep(2000);
     await header.goToInstallation();
   });
 }
