@@ -3416,10 +3416,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SystemPage = void 0;
 class SystemPage {
     page;
-    hostnameModeButton = () => this.page.locator("#hostnameMode::-p-aria(Mode[role='button'])");
+    hostnameModeButton = () => this.page.locator("::-p-aria(Hostname Mode[role='button'])");
     modeStaticOption = () => this.page.locator("::-p-aria(Static Set manually[role='option'])");
     nameTextbox = () => this.page.locator("::-p-aria(Name[role='textbox'])");
-    ntpModeButton = () => this.page.locator("#ntpMode::-p-aria(Mode[role='button'])");
+    ntpModeButton = () => this.page.locator("::-p-aria(Time Synchronization Servers Mode[role='button'])");
     customModeOption = () => this.page.locator("::-p-aria(Custom Set NTP servers manually[role='option'])");
     serverAddressesTextbox = () => this.page.locator("::-p-aria(Server addresses[role='textbox'])");
     acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
