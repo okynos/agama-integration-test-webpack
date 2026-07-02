@@ -1224,7 +1224,7 @@ function setStaticHostname(hostname) {
         await overview.goToSystem();
         await systemPage.selectStaticMode();
         await systemPage.fill(hostname);
-        await systemPage.accept();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => systemPage.accept());
         await header.goToInstallation();
     });
 }

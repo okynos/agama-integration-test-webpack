@@ -1,4 +1,4 @@
-import { it, page } from "../lib/helpers";
+import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import { HostnamePage } from "../pages/hostname_page";
 import { SystemPage } from "../pages/system_page";
@@ -14,7 +14,7 @@ export function setStaticHostname(hostname: string) {
     await overview.goToSystem();
     await systemPage.selectStaticMode();
     await systemPage.fill(hostname);
-    await systemPage.accept();
+    await waitUntilOverlaySettled(() => systemPage.accept());
     await header.goToInstallation();
   });
 }
