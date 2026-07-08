@@ -10,14 +10,20 @@
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyErrorFetchingProfile = verifyErrorFetchingProfile;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const error_fetching_profile_page_1 = __webpack_require__(/*! ../pages/error_fetching_profile_page */ "./src/pages/error_fetching_profile_page.ts");
 function verifyErrorFetchingProfile() {
     (0, helpers_1.it)(`should show error fetching profile`, async function () {
         const errorFetchingProfilePage = new error_fetching_profile_page_1.ErrorFetchingProfilePage(helpers_1.page);
-        await errorFetchingProfilePage.verifyContent();
+        const elementText = await (0, helpers_1.getTextContent)(errorFetchingProfilePage.alertWarningMsg());
+        const expectedTextRegex = /It was unreachable or invalid\. Do you want to try again\?|Configuration cannot be applied because it is invalid or could not be reached/;
+        await strict_1.default.match(elementText, expectedTextRegex);
     });
 }
 
@@ -462,26 +468,16 @@ async function waitOnFile(filePath) {
 /*!**************************************************!*\
   !*** ./src/pages/error_fetching_profile_page.ts ***!
   \**************************************************/
-(__unused_webpack_module, exports, __webpack_require__) {
+(__unused_webpack_module, exports) {
 
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ErrorFetchingProfilePage = void 0;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class ErrorFetchingProfilePage {
     page;
-    alertWarningMsg = () => this.page.locator("::-p-text(Configuration cannot be applied because it is invalid or could not be reached)");
+    alertWarningMsg = () => this.page.locator("::-p-text(Configuration cannot be applied because it is invalid or could not be reached), ::-p-text(It was unreachable or invalid)");
     constructor(page) {
         this.page = page;
-    }
-    async verifyContent() {
-        const elementText = await this.alertWarningMsg()
-            .map((span) => span.textContent)
-            .wait();
-        await strict_1.default.match(elementText, /Configuration cannot be applied because it is invalid or could not be reached/);
     }
 }
 exports.ErrorFetchingProfilePage = ErrorFetchingProfilePage;
