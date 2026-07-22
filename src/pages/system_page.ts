@@ -2,15 +2,16 @@ import { type Page } from "puppeteer-core";
 
 export class SystemPage {
   private readonly page: Page;
+
   protected readonly hostnameModeButton = () =>
-    this.page.locator("#hostnameMode::-p-aria(Mode[role='button'])");
+    this.page.locator("::-p-aria(Hostname Mode[role='button'])");
 
   private readonly modeStaticOption = () =>
     this.page.locator("::-p-aria(Static Set manually[role='option'])");
 
   private readonly nameTextbox = () => this.page.locator("::-p-aria(Name[role='textbox'])");
   protected readonly ntpModeButton = () =>
-    this.page.locator("#ntpMode::-p-aria(Mode[role='button'])");
+    this.page.locator("::-p-aria(Time Synchronization Servers Mode[role='button'])");
 
   protected readonly customModeOption = () =>
     this.page.locator("::-p-aria(Custom Set NTP servers manually[role='option'])");
