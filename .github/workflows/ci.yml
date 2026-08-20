@@ -40,7 +40,7 @@ jobs:
 
       - name: Create archive
         if: github.event_name == 'push'
-        run: tar -czf dist.tar.gz dist
+        run: tar -czf ${{ github.sha }}.tar.gz dist
 
       - name: Release on push to branch from fork
         if: github.event_name == 'push' && github.ref != 'refs/heads/main'
@@ -49,8 +49,8 @@ jobs:
           # for a fork PR is the fork itself: owner/fork-name
           repository: ${{ github.repository }}
           tag_name: tag-${{ github.ref_name }} # Use the branch name as the tag
-          name: "Build for commit ${{ github.sha }}"
-          files: dist.tar.gz
+          name: "Latest build of branch ${{ github.ref_name }}"
+          files: ${{ github.sha }}.tar.gz
           overwrite_files: true
 
       - name: Release on merge to main
