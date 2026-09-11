@@ -24,6 +24,7 @@ export class OverviewPage {
   }
 
   async install() {
+    (await this.installButton().waitHandle()).scrollIntoView();
     await this.installButton().click();
   }
 
