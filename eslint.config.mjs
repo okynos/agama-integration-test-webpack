@@ -43,6 +43,7 @@ export default [
                 "error",
                 {
                     ignoreRestSiblings: true,
+                    argsIgnorePattern: "^_",
                 },
             ],
             "@typescript-eslint/no-unsafe-function-type": "off",

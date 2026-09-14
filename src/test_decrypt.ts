@@ -5,7 +5,7 @@ import { decryptDevice } from "./checks/decryption";
 import { logIn } from "./checks/login";
 import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
-import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
+import { productSelection } from "./checks/product_selection";
 
 const options = parse((cmd) =>
   cmd
@@ -41,7 +41,11 @@ const testStrategy = ProductStrategyFactory.create(
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
-    productSelectionWithLicenseAndMode(options.productId, options.productMode);
+    testStrategy.productSelectionWithLicense(
+      options.productId,
+      options.productMode,
+      options.productVersion,
+    );
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
 testStrategy.ensureLandingOnOverview();
